@@ -15,12 +15,6 @@ def lambda_handler(event, context):
     encrypted_data_key = base64.b64decode(event.get('encrypted_data_key'))
     encrypted_message = base64.b64decode(event.get('encrypted_message'))
     
-    if not encrypted_data_key or not encrypted_message:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'error': 'Encrypted data key or message key is missing in the request'})
-        }
-    
     # Decrypt the data key using KMS
     response = kms_client.decrypt(
         CiphertextBlob=encrypted_data_key

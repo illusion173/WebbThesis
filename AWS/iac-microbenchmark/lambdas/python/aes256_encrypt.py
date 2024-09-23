@@ -18,11 +18,6 @@ def lambda_handler(event, context):
     
     # Extract the message from the API Gateway event
     message = event.get('message')
-    if not message:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'error': 'Message key is missing in the request'})
-        }
     
     # Create a new data key for AES-256-GCM encryption
     response = kms_client.generate_data_key(
