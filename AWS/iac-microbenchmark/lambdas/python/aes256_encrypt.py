@@ -2,6 +2,7 @@ import boto3
 import base64
 import json
 import os
+import secrets
 
 # Initialize encryption using AES-GCM
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -27,8 +28,10 @@ def lambda_handler(event, context):
     
     plaintext_data_key = response['Plaintext']
     encrypted_data_key = response['CiphertextBlob']
-    
-    iv = os.urandom(16)  # 16 bytes for AES-GCM IV
+
+    # Generate 16 secure random bytes
+    iv = secrets.token_bytes(16) # 16 bytes for AES-GCM IV
+
     cipher = Cipher(algorithms.AES(plaintext_data_key), modes.GCM(iv))
     encryptor = cipher.encryptor()
     

@@ -8,9 +8,6 @@ def lambda_handler(event, context):
     # Initialize KMS client
     kms_client = boto3.client('kms')
     
-    # Get the KMS key ARN from environment variables
-    # kms_key_id = os.environ['KMS_KEY_ARN']
-    
     # Extract the encrypted data key and encrypted message from the event
     encrypted_data_key = base64.b64decode(event.get('encrypted_data_key'))
     encrypted_message = base64.b64decode(event.get('encrypted_message'))

@@ -3,32 +3,31 @@ import boto3
 import base64
 from botocore.exceptions import ClientError
 import os
-# Initialize the KMS client
+
 kms_client = boto3.client('kms')
 
 def lambda_handler(event, context):
-    message = event['message']  # The message to sign
+    message = event['message']  # The original message
+    signature_b64 = event['signature']  # The base64 encoded signature
 
     ecc_kms_key_id = os.environ['ECC256_KMS_KEY_ARN']
+    # Decode the signature from base64
+    signature = base64.b64decode(signature_b64)
+
     try:
-        # Sign the message
-        response = kms_client.sign(
+        # Verify the signature
+        response = kms_client.verify(
             KeyId=ecc_kms_key_id,
             Message=message.encode('utf-8'),
             MessageType='RAW',
+            Signature=signature,
             SigningAlgorithm='ECDSA_SHA_256'  # Use 'ECDSA_SHA_384' for P-384
         )
         
-        signature = response['Signature']
-
-        # Encode the signature to base64 for easier transport
-        signature_b64 = base64.b64encode(signature).decode('utf-8')
-
         return {
             'statusCode': 200,
-            'body': json.dumps({'signature': signature_b64})
+            'body': json.dumps({'verified': response['SignatureValid']})
         }
-
     except ClientError as e:
         return {
             'statusCode': e.response['ResponseMetadata']['HTTPStatusCode'],
