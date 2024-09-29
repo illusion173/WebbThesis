@@ -11,6 +11,7 @@
     "cdk": "cdk"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
     "@types/jest": "^29.5.12",
     "@types/node": "20.14.9",
     "aws-cdk": "2.156.0",
@@ -20,7 +21,10 @@
     "typescript": "~5.5.3"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "^3.658.1",
     "aws-cdk-lib": "2.156.0",
+    "aws-sdk": "^2.1691.0",
+    "base-64": "^1.0.0",
     "constructs": "^10.0.0",
     "dotenv": "^16.4.5",
     "source-map-support": "^0.5.21"
