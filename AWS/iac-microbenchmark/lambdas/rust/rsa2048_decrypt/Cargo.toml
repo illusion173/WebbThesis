@@ -1,5 +1,5 @@
 [package]
-name = "aes256_encrypt"
+name = "rsa2048_decrypt"
 version = "0.1.0"
 edition = "2021"
 

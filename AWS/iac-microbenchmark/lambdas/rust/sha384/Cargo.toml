@@ -1,5 +1,5 @@
 [package]
-name = "aes256_encrypt"
+name = "sha384"
 version = "0.1.0"
 edition = "2021"
 
@@ -16,10 +16,9 @@ edition = "2021"
 
 [dependencies]
 lambda_http = "0.13.0"
-tokio = { version = "1", features = ["macros"] }
 aws-sdk-kms = "1.45.0"
+tokio = { version = "1", features = ["macros"] }
 aws-config = { version = "1.5.7", features = ["behavior-version-latest"] }
 serde = "1.0.210"
 serde_json = "1.0.128"
 base64 = "0.22.1"
-openssl = { version = "0.10.66", features = ["vendored"] }

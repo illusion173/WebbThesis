@@ -3,4 +3,16 @@ resolver="2"
 members = [
     "aes256_decrypt",
     "aes256_encrypt",
+    "ecc256_sign",
+    "ecc256_verify",
+    "ecc384_sign",
+    "ecc384_verify",
+    "sha256",
+    "sha384",
+    "rsa2048_encrypt",
+    "rsa2048_decrypt",
+    "rsa3072_encrypt",
+    "rsa3072_decrypt",
+    "rsa4096_encrypt",
+    "rsa4096_decrypt"
 ]
