@@ -1,7 +1,7 @@
 use aws_sdk_kms::{self as kms, primitives::Blob};
 use base64::encode;
 use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
-use serde::{de::Error, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::env;
 
@@ -56,7 +56,6 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Attempt to sign the message using KMS
     match kms_encrypt_message(&kms_client, &aes_kms_key_id, message_blob).await {
         Ok(encrypted_message_strct) => {
-
             let response_body = json!(encrypted_message_strct);
 
             Ok(Response::builder()
@@ -97,7 +96,7 @@ async fn kms_encrypt_message(
         .ciphertext_blob
         .ok_or_else(|| Error::from("No encrypted data key returned"))?;
 
-    // Generate IV and tag for AES-GCM 
+    // Generate IV and tag for AES-GCM
     let mut iv = [0u8; 16]; // Initialize a 16-byte array for IV
 
     openssl::rand::rand_bytes(&mut iv).map_err(|_| Error::from("Failed to generate IV"))?;

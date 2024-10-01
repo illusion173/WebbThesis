@@ -3,7 +3,7 @@ use aws_sdk_kms::{self as kms, primitives::Blob};
 
 use base64::encode;
 use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
-use serde::{de::Error, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::env;
 
@@ -34,9 +34,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             return Ok(Response::builder()
                 .header("Access-Control-Allow-Origin", "*")
                 .status(400)
-                .body(Body::from(
-                    "Invalid Request Body, missing message.",
-                ))
+                .body(Body::from("Invalid Request Body, missing message."))
                 .expect("Failed to build a response."))
         }
     };
