@@ -2,27 +2,157 @@
 package main
 
 import (
-    "context"
-    "fmt"
-    "github.com/aws/aws-sdk-go-v2/aws"
-    "github.com/aws/aws-sdk-go-v2/config"
-    "github.com/aws/aws-sdk-go-v2/service/kms"
-	  "github.com/aws/aws-lambda-go/events"
-	  "github.com/aws/aws-lambda-go/lambda"
+	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"io"
+	"os"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/kms"
+	"github.com/aws/aws-sdk-go-v2/service/kms/types"
 )
 
-func handleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
-	fmt.Printf("Body size = %d.\n", len(request.Body))
+type RSA2048Request struct {
+	Message string `json:"message"`
+}
 
-	fmt.Println("Headers:")
-	for key, value := range request.Headers {
-		fmt.Printf("    %s: %s\n", key, value)
+type RSA2048Response struct {
+	Ciphertext   string `json:"ciphertext"`
+	Iv           string `json:"iv"`
+	EncryptedKey string `json:"encrypted_key"`
+}
+
+func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	rsaKmsKeyId := os.Getenv("RSA2048_KMS_KEY_ARN")
+	if rsaKmsKeyId == "" {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 400,
+			Headers: map[string]string{
+				"Access-Control-Allow-Origin": "*",
+			},
+			Body: "RSA 2048 KMS key ARN not set",
+		}, nil
 	}
 
-	return events.APIGatewayProxyResponse{Body: request.Body, StatusCode: 200}, nil
+	// Parse the request body
+	var reqBody RSA2048Request
+	err := json.Unmarshal([]byte(request.Body), &reqBody)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 400,
+			Headers: map[string]string{
+				"Access-Control-Allow-Origin": "*",
+				"Content-Type":                "application/json",
+			},
+			Body: "Invalid Request Body, missing message.",
+		}, nil
+	}
+
+	cfg, err := config.LoadDefaultConfig(ctx)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 500,
+			Headers: map[string]string{
+				"Access-Control-Allow-Origin": "*",
+				"Content-Type":                "application/json",
+			},
+			Body: fmt.Sprintf("Error loading AWS config: %v", err),
+		}, nil
+	}
+
+	kmsClient := kms.NewFromConfig(cfg)
+
+	// Encrypt the message
+	rsaResponse, err := awsKmsRsaEncrypt(ctx, kmsClient, rsaKmsKeyId, reqBody.Message)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 500,
+			Headers: map[string]string{
+				"Access-Control-Allow-Origin": "*",
+				"Content-Type":                "application/json",
+			},
+			Body: fmt.Sprintf("Error encrypting message: %v", err),
+		}, nil
+	}
+
+	// Build the response
+	responseBody, err := json.Marshal(rsaResponse)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 500,
+			Headers: map[string]string{
+				"Access-Control-Allow-Origin": "*",
+				"Content-Type":                "application/json",
+			},
+			Body: fmt.Sprintf("Error marshalling response: %v", err),
+		}, nil
+	}
+
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Headers: map[string]string{
+			"Access-Control-Allow-Origin": "*",
+			"Content-Type":                "application/json",
+		},
+		Body: string(responseBody),
+	}, nil
+}
+
+func awsKmsRsaEncrypt(ctx context.Context, kmsClient *kms.Client, keyID, message string) (*RSA2048Response, error) {
+	// Generate AES key and IV
+	aesKey := make([]byte, 32)
+	iv := make([]byte, aes.BlockSize)
+
+	_, err := io.ReadFull(rand.Reader, aesKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate AES key: %v", err)
+	}
+	_, err = io.ReadFull(rand.Reader, iv)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate IV: %v", err)
+	}
+
+	// Encrypt the message using AES-CTR
+	block, err := aes.NewCipher(aesKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create AES cipher: %v", err)
+	}
+
+	stream := cipher.NewCTR(block, iv)
+	ciphertext := make([]byte, len(message))
+	stream.XORKeyStream(ciphertext, []byte(message))
+
+	// Encrypt the AES key using KMS
+	kmsEncryptOutput, err := kmsClient.Encrypt(ctx, &kms.EncryptInput{
+		KeyId:               aws.String(keyID),
+		Plaintext:           aesKey,
+		EncryptionAlgorithm: types.EncryptionAlgorithmSpecRsaesOaepSha256,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("KMS encryption failed: %v", err)
+	}
+
+	// Base64 encode the ciphertext, IV, and encrypted AES key
+	encodedCiphertext := base64.StdEncoding.EncodeToString(ciphertext)
+	encodedIV := base64.StdEncoding.EncodeToString(iv)
+	encodedEncryptedAESKey := base64.StdEncoding.EncodeToString(kmsEncryptOutput.CiphertextBlob)
+
+	// Build the response
+	return &RSA2048Response{
+		Ciphertext:   encodedCiphertext,
+		Iv:           encodedIV,
+		EncryptedKey: encodedEncryptedAESKey,
+	}, nil
 }
 
 func main() {
-	lambda.Start(handleRequest)
+	lambda.Start(handler)
 }
