@@ -1,0 +1,2 @@
+aws lambda create-function --function-name myFunction --runtime provided.al2023 --handler bootstrap --architectures x86_64 --role arn:aws:iam::417838760454:role/TestLFBenchRole --zip-file fileb://myFunction.zip
+
