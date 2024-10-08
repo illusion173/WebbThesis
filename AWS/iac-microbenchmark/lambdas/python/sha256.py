@@ -29,6 +29,8 @@ def lambda_handler(event, context):
         signature = base64.b64encode(response['Mac']).decode('utf-8')
         return {
             'statusCode': 200,
+            'headers' : {"Access-Control-Allow-Origin": "*",
+                     "content-type": "application/json"},
             'body': json.dumps({
                 'signature': signature
             })
@@ -36,5 +38,7 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers' : {"Access-Control-Allow-Origin": "*",
+                     "content-type": "application/json"},
             'body': json.dumps({'error': str(e)})
         }

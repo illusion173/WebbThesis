@@ -39,6 +39,9 @@ def lambda_handler(event, context):
     # Return the response without json.dumps
     return {
         'statusCode': 200,
+        'headers' : {"Access-Control-Allow-Origin": "*",
+                     "content-type": "application/json"},
+
         'encrypted_data_key': base64.b64encode(encrypted_data_key).decode('utf-8'),
         'iv': base64.b64encode(iv).decode('utf-8'),
         'tag': base64.b64encode(tag).decode('utf-8'),

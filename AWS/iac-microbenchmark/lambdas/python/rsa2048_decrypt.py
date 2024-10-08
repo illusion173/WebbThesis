@@ -34,6 +34,8 @@ def lambda_handler(event, context):
     except ClientError as e:
         print(f"Error decrypting AES key: {e}")
         return {
+        'headers' : {"Access-Control-Allow-Origin": "*",
+                     "content-type": "application/json"},
             'statusCode': 500,
             'body': json.dumps('Decryption failed')
         }
@@ -45,5 +47,7 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
+        'headers' : {"Access-Control-Allow-Origin": "*",
+                     "content-type": "application/json"},
         'body': plaintext.decode('utf-8')
     }
