@@ -1,7 +1,22 @@
 #!/bin/bash
 
 # Array of project directory names
-projects=("sha256")
+projects=(
+    "rsa2048_decrypt"
+    "rsa2048_encrypt"
+    "rsa3072_decrypt"
+    "rsa3072_encrypt"
+    "rsa4096_decrypt"
+    "rsa4096_encrypt"
+    "sha256"
+    "sha384"
+    "aes256_decrypt"
+    "aes256_encrypt"
+    "ecc256_sign"
+    "ecc256_verify"
+    "ecc384_sign"
+    "ecc384_verify"
+)
 
 # AWS Lambda dependencies including Jackson for JSON parsing
 lambda_dependencies='
@@ -115,6 +130,23 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+EOL
+
+    # Add AES and RSA imports if the project is related to AES or RSA
+    if [[ "$project" == *"aes256"* || "$project" == *"rsa"* ]]; then
+        cat <<EOL >> src/main/java/com/webb/LambdaHandler.java
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Base64;
+EOL
+    fi
+
+    # Continue with the rest of the LambdaHandler class
+    cat <<EOL >> src/main/java/com/webb/LambdaHandler.java
 public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     // Create an instance of ObjectMapper for JSON parsing and serialization
@@ -259,4 +291,3 @@ EOL
 done
 
 echo "All projects created successfully!"
-
