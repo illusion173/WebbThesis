@@ -2,8 +2,8 @@ import { KMSClient, DecryptCommand } from "@aws-sdk/client-kms";
 import { createDecipheriv } from "crypto";
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 
-// Handler for AWS Lambda
-export const decryptHandler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+// handler for AWS Lambda
+export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
 
   // Initialize the KMS client
   const kmsClient = new KMSClient({ region: 'us-east-1' });
