@@ -41,6 +41,31 @@ lambda_dependencies='
     </dependency>
 '
 
+# Maven shade plugin build section
+maven_shade_plugin='
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.2.2</version>
+            <configuration>
+                <createDependencyReducedPom>false</createDependencyReducedPom>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
+'
+
 # Loop through each project and create Maven project structure
 for project in "${projects[@]}"; do
     echo "Creating project: $project"
@@ -66,6 +91,9 @@ for project in "${projects[@]}"; do
 
     # Use awk to add the lambda dependencies just before the closing </dependencies> tag
     awk -v deps="$lambda_dependencies" '/<\/dependencies>/ { print deps } 1' "$temp_file" > pom.xml
+
+    # Add the build section (after </dependencies> and before the end of </project>)
+    awk -v build="$maven_shade_plugin" '/<\/dependencies>/ { print $0 "\n" build; next }1' pom.xml > "$temp_file" && mv "$temp_file" pom.xml
 
     # Modify the Java version in pom.xml (escape < and > with \)
     sed -i '/<\/properties>/i \

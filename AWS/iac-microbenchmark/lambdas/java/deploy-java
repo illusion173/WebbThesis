@@ -1,0 +1,6 @@
+mvn clean package
+
+aws lambda create-function --function-name myJavaFunction \
+--runtime java21 --handler com.webb.LambdaHandler::handleRequest \
+--role arn:aws:iam::417838760454:role/TestLFBenchRole \
+--zip-file fileb://"projectname"-1.0-SNAPSHOT.jar
