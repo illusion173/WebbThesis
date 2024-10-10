@@ -1,41 +1,52 @@
 package com.webb;
 
 public class Aes256EncryptResponseMessage {
-    private String message;
-    private String sender;
-    private String status;
+    private String ciphertext;
+    private String iv;
+    private String tag;
+    private String encrypted_key;
 
     // Default constructor (required for Jackson)
     public Aes256EncryptResponseMessage() {}
 
-    public Aes256EncryptResponseMessage(String message, String sender, String status) {
-        this.message = message;
-        this.sender = sender;
-        this.status = status;
+    // Constructor with parameters for new fields
+    public Aes256EncryptResponseMessage(String ciphertext, String iv, String tag, String encrypted_key) {
+        this.ciphertext = ciphertext;
+        this.iv = iv;
+        this.tag = tag;
+        this.encrypted_key = encrypted_key;
     }
 
-    // Getters and setters
-    public String getMessage() {
-        return message;
+    // Getters and setters for the new fields
+    public String getCiphertext() {
+        return ciphertext;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setCiphertext(String ciphertext) {
+        this.ciphertext = ciphertext;
     }
 
-    public String getSender() {
-        return sender;
+    public String getIv() {
+        return iv;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
+    public void setIv(String iv) {
+        this.iv = iv;
     }
 
-    public String getStatus() {
-        return status;
+    public String getTag() {
+        return tag;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public String getEncrypted_key() {
+        return encrypted_key;
+    }
+
+    public void setEncrypted_key(String encrypted_key) {
+        this.encrypted_key = encrypted_key;
     }
 }

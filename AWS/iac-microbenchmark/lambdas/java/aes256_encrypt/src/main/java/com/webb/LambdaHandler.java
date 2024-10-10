@@ -1,78 +1,166 @@
 package com.webb;
 
-import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.util.Base64;
+import java.util.HashMap;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.kms.KmsClient;
+import software.amazon.awssdk.services.kms.model.GenerateDataKeyRequest;
+import software.amazon.awssdk.services.kms.model.GenerateDataKeyResponse;
+import software.amazon.awssdk.regions.Region;
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
-import java.nio.charset.StandardCharsets;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.Base64;
+
+
 public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     // Create an instance of ObjectMapper for JSON parsing and serialization
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private KmsClient kmsClient;
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
         context.getLogger().log("Received event: " + request);
 
-        // Create a response object
-        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+          // Create a response object
+          APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+          HashMap<String,String> rspHeaders = new HashMap<>();
+          rspHeaders.put("Access-Control-Allow-Origin", "*");
+          rspHeaders.put("Content-Type", "application/json");
+          response.setHeaders(rspHeaders);
 
         try {
+        	
+            // Get KMS key ARN from environment variables
+            String Aes256EncryptKmsKeyId = System.getenv("AES256_KMS_KEY_ARN");
+        	
             // Get the JSON string from the request body
             String body = request.getBody();
-            context.getLogger().log("Request body: " + body);
-
-            // Deserialize the request body into Aes256EncryptRequestMessage object
+                    
+            // Deserialize the request body into Sha256RequestMessage object
             Aes256EncryptRequestMessage requestMessage = objectMapper.readValue(body, Aes256EncryptRequestMessage.class);
 
-            // Log the fields (message and sender)
-            context.getLogger().log("Message: " + requestMessage.getMessage());
-            context.getLogger().log("Sender: " + requestMessage.getSender());
 
-            // Create a ResponseMessage object
-            Aes256EncryptResponseMessage responseMessage = new Aes256EncryptResponseMessage(
-                requestMessage.getMessage(),
-                requestMessage.getSender(),
-                "Success"
-            );
+            String message = requestMessage.getMessage();
+            byte[] messageBytes = message.getBytes();
+                       
+            try {
+           	                
+                kmsClient = KmsClient.builder()
+                        .region(Region.US_EAST_1)
+                        .build();
+                
+                // Step 1: Generate a Data Key
+                GenerateDataKeyRequest dataKeyRequest = GenerateDataKeyRequest.builder()
+                        .keyId(Aes256EncryptKmsKeyId) // The KMS Key ID
+                        .keySpec("AES_256") // Specifying the key spec as AES_256
+                        .build(); 
+                
+                
+                GenerateDataKeyResponse dataKeyResponse = kmsClient.generateDataKey(dataKeyRequest);
+                
+                // Step 2: Extract the Plaintext (unencrypted) Data Key
+                SdkBytes plaintextDataKey = dataKeyResponse.plaintext(); // The unencrypted key
+                if (plaintextDataKey == null) {
+                    throw new RuntimeException("No plaintext data key returned");
+                }
 
-            // Serialize ResponseMessage object to JSON
-            String responseBody = objectMapper.writeValueAsString(responseMessage);
+                byte[] plaintextDataKeyBytes = plaintextDataKey.asByteArray(); // Convert to byte array
 
-            // Set success response
-            response.setStatusCode(200);
-            response.setBody(responseBody);
-            response.setHeaders(Map.of("Content-Type", "application/json"));
-        } catch (Exception e) {
+                // Step 3: Extract the Encrypted Data Key
+                SdkBytes encryptedDataKey = dataKeyResponse.ciphertextBlob(); // The encrypted key
+                if (encryptedDataKey == null) {
+                    throw new RuntimeException("No encrypted data key returned");
+                }
+
+                byte[] encryptedDataKeyBytes = encryptedDataKey.asByteArray(); // Convert to byte array
+
+                // Step 4: Create IV
+                byte[] iv = new byte[12]; // 12-byte IV is recommended for AES-GCM
+                
+                SecureRandom secureRandom = new SecureRandom();
+                
+                secureRandom.nextBytes(iv);
+                
+                
+                Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+                
+                SecretKeySpec keySpec = new SecretKeySpec(plaintextDataKeyBytes, "AES");
+
+                // GCM uses 128-bit tags, so we pass a 128-bit (16-byte) tag length
+                GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv);
+
+                cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+                
+                
+                // Step 5: Encrypt the message (this will include generating the tag)
+                byte[] ciphertext = cipher.doFinal(messageBytes);
+                
+                
+                // Step 6: Get the authentication tag (automatically generated by AES-GCM)
+                byte[] tag = new byte[16]; // GCM tag is always 16 bytes (128 bits)
+                System.arraycopy(ciphertext, ciphertext.length - 16, tag, 0, 16);
+
+                // Step 7: Store the actual ciphertext (excluding the tag part)
+                byte[] actualCiphertext = new byte[ciphertext.length - 16];
+                System.arraycopy(ciphertext, 0, actualCiphertext, 0, actualCiphertext.length);      
+                
+                String ivb64 = Base64.getEncoder().encodeToString(iv);
+                String tagb64 = Base64.getEncoder().encodeToString(tag);
+                String cipherTextb64 = Base64.getEncoder().encodeToString(actualCiphertext);
+                String encryptedKeyb64 = Base64.getEncoder().encodeToString(encryptedDataKeyBytes);
+                
+                // Create a ResponseMessage object
+                Aes256EncryptResponseMessage responseMessage = new Aes256EncryptResponseMessage(
+                		cipherTextb64,
+                		ivb64,
+                		tagb64,
+                		encryptedKeyb64
+                );
+                
+                String responseBody = objectMapper.writeValueAsString(responseMessage);
+
+                // Set success response
+                response.setStatusCode(200);
+                response.setBody(responseBody);
+                
+                return response;
+
+           }
+           catch (Exception e) {
+           	
+               // Handle any errors
+               context.getLogger().log("Error encrypting AES-256: " + e.getMessage());
+               
+           	HashMap<String,String> rspErrorBody = new HashMap<>();
+           	rspErrorBody.put("Error", "Error while encrypting AES-256: " + e.getMessage());
+
+               // Set error response
+               response.setStatusCode(500);
+               response.setBody(rspErrorBody.toString());
+               return response;
+           }
+            
+            } catch (Exception e) {
+        	
+        	
             // Handle any errors
             context.getLogger().log("Error parsing request: " + e.getMessage());
-
-            // Create error response in JSON format
-            Aes256EncryptResponseMessage errorResponse = new Aes256EncryptResponseMessage(null, null, "Error: " + e.getMessage());
-
-            // Serialize the error response
-            String responseBody = "";
-            try {
-                responseBody = objectMapper.writeValueAsString(errorResponse);
-            } catch (Exception ex) {
-                context.getLogger().log("Error serializing error response: " + ex.getMessage());
-            }
+            
+        	HashMap<String,String> rspErrorBody = new HashMap<>();
+        	rspErrorBody.put("Error", "Error while parsing request body: " + e.getMessage());
 
             // Set error response
             response.setStatusCode(500);
-            response.setBody(responseBody);
-            response.setHeaders(Map.of("Content-Type", "application/json"));
+            response.setBody(rspErrorBody.toString());
+            return response;
         }
-
-        return response;
     }
 }

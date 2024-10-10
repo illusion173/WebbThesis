@@ -31,14 +31,16 @@ fi
 for dir in "$BASE_DIR"/*; do
     if [[ -d "$dir" ]]; then
         echo "Processing directory: $dir"
-        cd "$dir" || continue
-
+        
         # Skip the x86 and arm directories
-        if [[ "$dir" == "$ARCH_DIR" || "$dir" == "$ARCH_DIR" ]]; then
+        if [[ "$(basename "$dir")" == "x86" || "$(basename "$dir")" == "arm" ]]; then
             echo "Skipping architecture directory: $dir"
             continue
         fi
         
+        # Change to the project directory
+        cd "$dir" || continue
+
         # Run Maven clean package
         mvn clean package
         

@@ -1,41 +1,24 @@
 package com.webb;
 
 public class Ecc256VerifyResponseMessage {
-    private String message;
-    private String sender;
-    private String status;
+    private boolean verified;
 
     // Default constructor (required for Jackson)
     public Ecc256VerifyResponseMessage() {}
 
-    public Ecc256VerifyResponseMessage(String message, String sender, String status) {
-        this.message = message;
-        this.sender = sender;
-        this.status = status;
+    public Ecc256VerifyResponseMessage(boolean verified) {
+        this.verified = verified;
+
     }
 
     // Getters and setters
-    public String getMessage() {
-        return message;
+    public boolean getVerified() {
+        return verified;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
-    public String getSender() {
-        return sender;
-    }
 
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

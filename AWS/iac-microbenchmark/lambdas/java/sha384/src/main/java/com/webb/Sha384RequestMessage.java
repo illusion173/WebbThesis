@@ -2,7 +2,6 @@ package com.webb;
 
 public class Sha384RequestMessage {
     private String message;
-    private String sender;
 
     // Default constructor (required for Jackson)
     public Sha384RequestMessage() {}
@@ -16,11 +15,4 @@ public class Sha384RequestMessage {
         this.message = message;
     }
 
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
 }

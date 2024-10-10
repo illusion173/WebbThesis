@@ -1,41 +1,23 @@
 package com.webb;
 
 public class Ecc256SignResponseMessage {
-    private String message;
-    private String sender;
-    private String status;
+    private String signature;
+
 
     // Default constructor (required for Jackson)
     public Ecc256SignResponseMessage() {}
 
-    public Ecc256SignResponseMessage(String message, String sender, String status) {
-        this.message = message;
-        this.sender = sender;
-        this.status = status;
+    public Ecc256SignResponseMessage(String signature) {
+        this.signature = signature;
+        
     }
 
     // Getters and setters
-    public String getMessage() {
-        return message;
+    public String getSignature() {
+        return signature;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }
