@@ -22,8 +22,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
-        context.getLogger().log("Received event: " + request);
-
+        
           // Create a response object
           APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
           HashMap<String,String> rspHeaders = new HashMap<>();

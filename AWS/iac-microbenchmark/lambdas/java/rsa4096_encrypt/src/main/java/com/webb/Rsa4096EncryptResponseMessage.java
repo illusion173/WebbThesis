@@ -1,41 +1,44 @@
 package com.webb;
 
 public class Rsa4096EncryptResponseMessage {
-    private String message;
-    private String sender;
-    private String status;
+	  	private String ciphertext;
+	    private String iv;
+	    private String encryptedKey;
+	    
+	    public  Rsa4096EncryptResponseMessage() {}
+	    
+	    public  Rsa4096EncryptResponseMessage(String ciphertext, String iv, String encryptedKey) {
+	        this.ciphertext = ciphertext;
+	        this.iv = iv;
+	        this.encryptedKey = encryptedKey;
+	    }
+	    
+	    
+	    // Getter and Setter for ciphertext
+	    public String getCiphertext() {
+	        return ciphertext;
+	    }
 
-    // Default constructor (required for Jackson)
-    public Rsa4096EncryptResponseMessage() {}
 
-    public Rsa4096EncryptResponseMessage(String message, String sender, String status) {
-        this.message = message;
-        this.sender = sender;
-        this.status = status;
-    }
+	    public void setCiphertext(String ciphertext) {
+	        this.ciphertext = ciphertext;
+	    }
 
-    // Getters and setters
-    public String getMessage() {
-        return message;
-    }
+	    // Getter and Setter for iv
+	    public String getIv() {
+	        return iv;
+	    }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+	    public void setIv(String iv) {
+	        this.iv = iv;
+	    }
 
-    public String getSender() {
-        return sender;
-    }
+	    // Getter and Setter for encrypted_key
+	    public String getEncryptedKey() {
+	        return encryptedKey;
+	    }
 
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	    public void setEncryptedKey(String encryptedKey) {
+	        this.encryptedKey = encryptedKey;
+	    }
 }

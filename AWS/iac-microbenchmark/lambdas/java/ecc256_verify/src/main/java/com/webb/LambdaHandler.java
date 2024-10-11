@@ -22,8 +22,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
-        context.getLogger().log("Received event: " + request);
-
+       
           // Create a response object
           APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
           HashMap<String,String> rspHeaders = new HashMap<>();
@@ -50,9 +49,11 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             
             
             try {
+            	
                 kmsClient = KmsClient.builder()
                         .region(Region.US_EAST_1)
                         .build();
+                
             	// Convert message to SdkBytes
                 SdkBytes messageBytes = SdkBytes.fromByteArray(message);
 

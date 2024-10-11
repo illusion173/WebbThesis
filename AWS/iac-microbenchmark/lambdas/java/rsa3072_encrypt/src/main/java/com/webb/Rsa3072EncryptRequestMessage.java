@@ -2,7 +2,6 @@ package com.webb;
 
 public class Rsa3072EncryptRequestMessage {
     private String message;
-    private String sender;
 
     // Default constructor (required for Jackson)
     public Rsa3072EncryptRequestMessage() {}
@@ -16,11 +15,4 @@ public class Rsa3072EncryptRequestMessage {
         this.message = message;
     }
 
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
-        this.sender = sender;
-    }
 }
