@@ -1,0 +1,7 @@
+aws lambda create-function --function-name dotnettest \
+    --runtime dotnet8 \
+    --role arn:aws:iam::417838760454:role/TestLFBenchRole \
+    --handler LambdaApiProxy::LambdaApiProxy.Function::FunctionHandler \
+    --zip-file fileb://LambdaApiProxy.zip \
+    --timeout 30 \
+    --memory-size 256
