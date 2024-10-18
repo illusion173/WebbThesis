@@ -2,10 +2,10 @@ use aws_sdk_kms::{self as kms, primitives::Blob, Client};
 use base64::encode;
 use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
 use openssl::rand::rand_bytes;
+use openssl::symm::{Cipher, Crypter, Mode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::env;
-use openssl::symm::{Cipher, Crypter, Mode}; // OpenSSL for encryption
+use std::env; // OpenSSL for encryption
 #[derive(Serialize, Deserialize, Debug)]
 struct RSA3072Request {
     message: String,
@@ -74,8 +74,8 @@ async fn aws_kms_rsa_encrypt(
     let mut aes_buf = [0; 32];
     rand_bytes(&mut aes_buf).unwrap();
 
-    // Supply 32 bytes for iv
-    let mut iv_buf = [0; 32];
+    // Supply 16 bytes for iv
+    let mut iv_buf = [0; 16];
     rand_bytes(&mut iv_buf).unwrap();
 
     // Encrypt the message using AES-CTR

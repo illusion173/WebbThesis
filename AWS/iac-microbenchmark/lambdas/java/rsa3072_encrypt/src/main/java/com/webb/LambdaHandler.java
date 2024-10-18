@@ -56,7 +56,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             	
                 // Generate AES key and IV
                 byte[] aesKey = new byte[32]; // 32 bytes for AES-256
-                byte[] iv = new byte[32]; // 32 bytes for IV
+                byte[] iv = new byte[16]; // 16 bytes for IV
                 SecureRandom secureRandom = new SecureRandom();
 
                 secureRandom.nextBytes(aesKey);

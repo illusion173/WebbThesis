@@ -75,7 +75,7 @@ async fn aws_kms_rsa_encrypt(
     rand_bytes(&mut aes_buf).unwrap();
 
     // Supply 32 bytes for iv
-    let mut iv_buf = [0; 32];
+    let mut iv_buf = [0; 16];
     rand_bytes(&mut iv_buf).unwrap();
 
     // Encrypt the message using AES-CTR

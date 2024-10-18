@@ -70,7 +70,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     }
 }
 
-/// Function to encrypt a message using AWS KMS. AES 256
+/// Function to decrypt a message using AWS KMS. AES 256
 async fn kms_decrypt_message(
     kms_client: &kms::Client,
     key_id: &str,

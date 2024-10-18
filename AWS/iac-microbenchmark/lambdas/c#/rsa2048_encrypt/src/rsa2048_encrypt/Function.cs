@@ -78,7 +78,7 @@ namespace LambdaApiProxy
 
                 // Generate AES key and IV
                 byte[] aesKey = new byte[32];
-                byte[] iv = new byte[32];
+                byte[] iv = new byte[16];
 
                 RandomNumberGenerator.Fill(aesKey);  // Fill the array with random bytes
                 RandomNumberGenerator.Fill(iv);
