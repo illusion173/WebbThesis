@@ -2,7 +2,7 @@ import boto3
 import base64
 import os
 import secrets
-
+import json
 # Initialize encryption using AES-GCM
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
@@ -42,8 +42,11 @@ def lambda_handler(event, context):
         'headers' : {"Access-Control-Allow-Origin": "*",
                      "content-type": "application/json"},
 
-        'encrypted_data_key': base64.b64encode(encrypted_data_key).decode('utf-8'),
-        'iv': base64.b64encode(iv).decode('utf-8'),
-        'tag': base64.b64encode(tag).decode('utf-8'),
-        'encrypted_message': base64.b64encode(ciphertext).decode('utf-8')
+        'body' : json.dumps({
+            'encrypted_data_key': base64.b64encode(encrypted_data_key).decode('utf-8'),
+            'iv': base64.b64encode(iv).decode('utf-8'),
+            'tag': base64.b64encode(tag).decode('utf-8'),
+            'encrypted_message': base64.b64encode(ciphertext).decode('utf-8')
+        })
+       
     }

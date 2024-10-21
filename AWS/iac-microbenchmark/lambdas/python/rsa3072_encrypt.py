@@ -46,7 +46,9 @@ def lambda_handler(event, context):
         'statusCode': 200,
         'headers' : {"Access-Control-Allow-Origin": "*",
                      "content-type": "application/json"},
-        'iv': base64.b64encode(iv).decode('utf-8'),
-        'ciphertext': base64.b64encode(ciphertext).decode('utf-8'),
-        'encrypted_aes_key': base64.b64encode(encrypted_aes_key).decode('utf-8')
+        'body' : json.dumps({
+            'iv': base64.b64encode(iv).decode('utf-8'),
+            'ciphertext': base64.b64encode(ciphertext).decode('utf-8'),
+            'encrypted_aes_key': base64.b64encode(encrypted_aes_key).decode('utf-8')
+        })    
     }
