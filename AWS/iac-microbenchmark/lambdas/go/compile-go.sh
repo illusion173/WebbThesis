@@ -8,7 +8,7 @@ fi
 
 # Set architecture based on the argument
 if [ "$1" == "x86" ]; then
-    ARCH="x86_64"
+    ARCH="amd64"
 elif [ "$1" == "arm" ]; then
     ARCH="arm64"
 else
