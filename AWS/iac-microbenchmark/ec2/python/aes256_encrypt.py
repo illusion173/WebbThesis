@@ -15,14 +15,14 @@ def main():
     # Get the KMS key ARN from environment variables
     kms_key_id = os.environ['AES_KMS_KEY_ARN']
 
-    # Read JSON input from stdin
-    input_data = sys.stdin.read()
 
-    # Parse the JSON input
-    data = json.loads(input_data)
+    # Get the name argument from sys.argv
+    request_json_raw = sys.argv[1]
 
-    # Extract the message from the event payload
-    message = data.get('message')
+    request_json = json.loads(request_json_raw)
+
+    message = request_json["message"]
+
 
     # Create a new data key for AES-256-GCM encryption
     response = kms_client.generate_data_key(

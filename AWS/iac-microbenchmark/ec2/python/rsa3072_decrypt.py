@@ -11,18 +11,17 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 kms_client = boto3.client('kms')
 
 def main():
-    # Read JSON input from stdin
-    input_data = sys.stdin.read()
-    # Parse the JSON input
-    data = json.loads(input_data)
+    # Get the name argument from sys.argv
+    request_json_raw = sys.argv[1]
 
+    request_json = json.loads(request_json_raw)
     # Get the KMS key ID from environment variables
     rsa_kms_key_id = os.environ['RSA3072_KMS_KEY_ID']
     
     # Get the data from the input payload
-    encrypted_aes_key_b64 = data.get('encrypted_aes_key')
-    iv_b64 = data.get('iv')
-    ciphertext_b64 = data.get('ciphertext')
+    encrypted_aes_key_b64 = request_json.get('encrypted_aes_key')
+    iv_b64 = request_json.get('iv')
+    ciphertext_b64 = request_json.get('ciphertext')
 
     # Decode base64 values
     encrypted_aes_key = base64.b64decode(encrypted_aes_key_b64)

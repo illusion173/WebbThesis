@@ -13,13 +13,13 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 kms_client = boto3.client('kms')
 
 def main():
-    # Read JSON input from stdin
-    input_data = sys.stdin.read()
-    # Parse the JSON input
-    data = json.loads(input_data)
+    # Get the name argument from sys.argv
+    request_json_raw = sys.argv[1]
+
+    request_json = json.loads(request_json_raw)
 
     # Extract the message from the input payload
-    message = data.get('message')
+    message = request_json.get('message')
 
     # Get the KMS key ID from environment variables
     rsa_kms_key_id = os.environ['RSA4096_KMS_KEY_ID']

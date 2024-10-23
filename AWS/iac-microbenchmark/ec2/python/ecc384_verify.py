@@ -10,15 +10,15 @@ import json
 kms_client = boto3.client('kms')
 
 def main():
-    # Read JSON input from stdin
-    input_data = sys.stdin.read()
-    # Parse the JSON input
-    data = json.loads(input_data)
+    # Get the name argument from sys.argv
+    request_json_raw = sys.argv[1]
+
+    request_json = json.loads(request_json_raw)
 
     # Extract the message from the event payload
-    message = data.get('message')
+    message = request_json.get('message')
 
-    signature_b64 = data.get('signature')
+    signature_b64 = request_json.get('signature')
 
     signature = base64.b64decode(signature_b64)
 

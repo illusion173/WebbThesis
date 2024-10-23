@@ -6,20 +6,19 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import sys
 
 def main():
-    # Read JSON input from stdin
-    input_data = sys.stdin.read()
-
-# Parse the JSON input
-    data = json.loads(input_data)
-
     # Initialize KMS client
     kms_client = boto3.client('kms')
-    
+
+     # Get the name argument from sys.argv
+    request_json_raw = sys.argv[1]
+
+    request_json = json.loads(request_json_raw)
+
     # Extract the encrypted data key and encrypted message from the data
-    encrypted_data_key = base64.b64decode(data.get('encrypted_data_key'))
-    ciphertext = base64.b64decode(data.get('encrypted_message'))
-    iv = base64.b64decode(data.get('iv'))
-    tag = base64.b64decode(data.get('tag'))
+    encrypted_data_key = base64.b64decode(request_json.get('encrypted_data_key'))
+    ciphertext = base64.b64decode(request_json.get('encrypted_message'))
+    iv = base64.b64decode(request_json.get('iv'))
+    tag = base64.b64decode(request_json.get('tag'))
     
     # Decrypt the data key using KMS
     response = kms_client.decrypt(

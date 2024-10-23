@@ -10,14 +10,13 @@ import sys
 kms_client = boto3.client('kms')
 
 def main():
-# Read JSON input from stdin
-    input_data = sys.stdin.read()
+  # Get the name argument from sys.argv
+    request_json_raw = sys.argv[1]
 
-# Parse the JSON input
-    data = json.loads(input_data)
+    request_json = json.loads(request_json_raw)
 
     # Extract the message from the event payload
-    message = data.get('message')
+    message = request_json.get('message')
 
     ecc_kms_key_id = os.environ['ECC256_KMS_KEY_ARN']
     # Sign the message
