@@ -38,8 +38,9 @@ func main() {
 		return
 	}
 
+	context := context.Background()
 	// Load the default AWS configuration
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-1"))
+	cfg, err := config.LoadDefaultConfig(context, config.WithRegion("us-east-1"))
 	if err != nil {
 		fmt.Printf("unable to load SDK config, %v\n", err)
 		return
@@ -58,7 +59,7 @@ func main() {
 		MacAlgorithm: types.MacAlgorithmSpecHmacSha256,
 	}
 
-	response, err := kmsClient.GenerateMac(context.TODO(), input)
+	response, err := kmsClient.GenerateMac(context, input)
 	if err != nil {
 		fmt.Printf("Error generating MAC: %v\n", err)
 		return

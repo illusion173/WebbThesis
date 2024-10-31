@@ -5,7 +5,6 @@ import base64
 from botocore.exceptions import ClientError
 import os
 import sys
-import json
 
 kms_client = boto3.client('kms')
 

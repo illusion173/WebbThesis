@@ -3,13 +3,10 @@ import time
 import json
 import requests
 import platform
-import time
 import subprocess
-import time
 import psutil
-import json
 from botocore.exceptions import ClientError
-
+import uuid
 # Initialize a boto3 client for CloudWatch Logs
 cloudwatch_logs_client = boto3.client('logs', region_name='us-east-1')  # Specify the correct region
 log_group_name = "WebbBenchmark"
@@ -79,7 +76,6 @@ def post_tc_results(test_case_results: list, log_stream_name: str):
     # Send the log event
     try:
         response = cloudwatch_logs_client.put_log_events(**log_event)
-        print(">Successful Reporting")
 
     except ClientError as e:
         print(f"Failed to post log: {e}")
@@ -116,17 +112,26 @@ def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct
     # Retrieve settings based on language, fallback to default if language is unknown
     settings = language_settings.get(language, language_settings_default)
 
+    if settings["file_loc"] == "":
+        print("ERROR FOR A TEST CASE, default entered?")
+        print("No File Location for executable?")
+        print(f"Operation: {operation}")
+        print(f"Language: {language}")
+        # EXIT FAILURE STOP BENCHMARK
+        exit(1)
+
     # Develop log stream name for reporting in CloudWatch
     log_stream_name = f"{instance_type}/{arch_dir}/{language}/{operation}/{start_type}"
 
     # Build the test case
     test_case = {
+        "id" : str(uuid.uuid4()), # generate a unique id for the test case
         "command": settings["command"],
         "file_loc": settings["file_loc"],
         "operation_input": input,
         "validation": correct_answer,
         "start_type": start_type,
-        "log_stream": log_stream_name,
+        "log_stream_name": log_stream_name,
         "iterations": iterations,
         "operation" : operation,
         "language" : language
@@ -156,9 +161,6 @@ def execute_tc(test_case: dict):
     subprocess_input = []
     test_case_results = []
 
-    # Initialize max memory usage variable
-    max_memory_usage = 0
-
     # So input can be command, file loc, input
     # or for executables file_loc, input
     if test_case["command"] == "":
@@ -173,14 +175,24 @@ def execute_tc(test_case: dict):
     # Retrieve how many times we need to run this test case
     num_iterations = test_case["iterations"]
 
-    # Check if we need to do a warm-up, execute the operations once
+    # Check if we need to do a warm-up, execute the operations 50 times to warm up
     if test_case["start_type"] == "warm":
-        execute_warmup(subprocess_input)
+
+        for i in range(0,50):
+            execute_warmup(subprocess_input)
 
     for iteration in range(num_iterations):
+        start_time = 0.0
+        end_time = 0.0
+        cpu_usage_samples = []  # to store CPU usage samples
+        mem_usage_samples = [] # to store mem usage samples
+
+        # Final result dict
+        singular_test_case_result = {}
+
         # Start the timer
         start_time = time.perf_counter()
-
+        
         # Use subprocess to run the operation
         process = subprocess.Popen(
             subprocess_input,
@@ -192,37 +204,47 @@ def execute_tc(test_case: dict):
         # Create a process object for tracking memory
         process_psutil = psutil.Process(process.pid)
 
-        # Continuously check memory usage while the process is running
-        while True:
-            
-            # Check if the process is still running before accessing its memory info
-            if process_psutil.is_running():
-                memory_usage = process_psutil.memory_info().rss  # Resident Set Size (RSS)
-                max_memory_usage = max(max_memory_usage, memory_usage)
-            else:
-                break  # Break if the process is no longer running
-            time.sleep(0.0001)  # Sleep to avoid excessive CPU usage
+        try:
 
-        
-        # Measure the end time
+            while process.poll() is None:  # While the script is still running
+
+                # Update peak memory and CPU usage
+                mem_usage_samples.append(process_psutil.memory_info().rss)
+                
+                cpu_usage_samples.append(process_psutil.cpu_percent(interval=0.1))  # interval of 0.1 sec for real-time updates
+
+                time.sleep(0.01)  # Adjust this if needed to reduce CPU overhead
+
+        except Exception as e:
+            process.kill()
+            raise e
+
         end_time = time.perf_counter()
 
+        execution_time = start_time - end_time
+
+        average_cpu_usage = sum(cpu_usage_samples) / len(cpu_usage_samples) if cpu_usage_samples else 0
+
+        max_cpu_usage = max(cpu_usage_samples)
+
+        average_mem_usage = sum(mem_usage_samples) / len(mem_usage_samples) if mem_usage_samples else 0
+
+        max_mem = max(mem_usage_samples)
+
         stdout, stderr = process.communicate()
-        
+
+        # Grab the function's output for verification
         test_case_output = json.loads(stdout.decode())
 
-        # Calculate execution time
-        execution_time = end_time - start_time
-
-        singular_test_case_result = {}
-
+        # Compile results in to dict
         singular_test_case_result["execution_time"] = execution_time * 1000 # Convert to ms
-
-        singular_test_case_result["max_memory_usage"] =  max_memory_usage / (1024 ** 2)  # Convert to MB
-
+        singular_test_case_result["max_cpu_usage"] =  max_cpu_usage   # in % float
+        singular_test_case_result["avg_cpu_usage"] =  average_cpu_usage   # in % float
+        singular_test_case_result["max_memory_usage"] =  max_mem / (1024 ** 2)  # Convert to MB float float
+        singular_test_case_result["avg_memory_usage"] =  average_mem_usage / (1024 ** 2)  # Convert to MB float
         singular_test_case_result["successful"] = determine_result_tc(test_case_output,test_case["validation"]) # bool 
-
         singular_test_case_result["iteration"] = iteration # int
+        singular_test_case_result["test_case_id"] = test_case["id"]
 
         test_case_results.append(singular_test_case_result)
 
@@ -232,6 +254,8 @@ def main():
 
     # Get Architecture
     architecture = platform.machine()
+
+    instance_type = get_instance_type()
 
     if architecture == "x86_64":
         arch_dir = "x86"
@@ -270,8 +294,6 @@ def main():
         "warm"
     ]
 
-    instance_type = get_instance_type()
-
     # Key is operation, value is json containing answers
     correct_answers = get_correct_answers(operations)
     print("Succesful loading of correct answers")
@@ -281,7 +303,7 @@ def main():
     print("Succesful loading of operation inputs")
 
     test_cases = []
-    iterations = 50
+    iterations = 100
 
     # First we need to create the testcases themselves
     for language in languages:
@@ -301,18 +323,23 @@ def main():
 
     print("Beginning AWS EC2 Benchmark Runnner")
 
+    print("EXECUTE")
+
     for test_case in test_cases:
 
         print("---------------------------------------")
-        print(f">Executing Test Case Operation: {test_case["operation"]}")
+        print(f"Executing Test Case")
+        print(f">Operation: {test_case["operation"]}")
         print(f">Language: {test_case["language"]}")
         print(f">Start Type: {test_case["start_type"]}")
 
         # Execute Test Case
         test_case_result = execute_tc(test_case)
+        log_stream_name = test_case["log_stream_name"]
 
         # After Test Case execution, post the results to cloudwatch logs
-        post_tc_results(test_case_result, test_case["log_stream_name"])
+        post_tc_results(test_case_result, log_stream_name)
+        print(f"Succesful Upload of test case results to log stream: {log_stream_name}")
 
         print("---------------------------------------")
 
@@ -321,7 +348,8 @@ def main():
         time.sleep(1)
 
     print("Finished AWS EC2 Benchmark Runner")
-    print(f"Check selected Cloud Watch Log Group to view data: {log_group_name}")
+    print(f"Check selected Cloud Watch Log Group to view all data: {log_group_name}")
+    exit(0)
 
 if __name__ == "__main__":
     print("Begin Initialization of AWS EC2 Benchmark runner")

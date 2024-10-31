@@ -28,6 +28,7 @@ do
 
     # Create new Lambda project
     dotnet new lambda.EmptyFunction -n "$project"
+    dotnet new console -n "$project"
 
     cd "$project/src/$project" || continue  # Safely change directory
 
