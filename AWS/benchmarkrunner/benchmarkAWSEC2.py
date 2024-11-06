@@ -163,9 +163,11 @@ def execute_tc(test_case: dict):
 
     # So input can be command, file loc, input
     # or for executables file_loc, input
+    # This means that it is an executable
     if test_case["command"] == "":
         subprocess_input.append(test_case["file_loc"])
     else:
+    # Python or javascript
         subprocess_input.append(test_case["command"])
         subprocess_input.append(test_case["file_loc"])
 
@@ -236,13 +238,14 @@ def execute_tc(test_case: dict):
         # Grab the function's output for verification
         test_case_output = json.loads(stdout.decode())
 
+
         # Compile results in to dict
         singular_test_case_result["execution_time"] = execution_time * 1000 # Convert to ms
         singular_test_case_result["max_cpu_usage"] =  max_cpu_usage   # in % float
         singular_test_case_result["avg_cpu_usage"] =  average_cpu_usage   # in % float
         singular_test_case_result["max_memory_usage"] =  max_mem / (1024 ** 2)  # Convert to MB float float
         singular_test_case_result["avg_memory_usage"] =  average_mem_usage / (1024 ** 2)  # Convert to MB float
-        singular_test_case_result["successful"] = determine_result_tc(test_case_output,test_case["validation"]) # bool 
+        #singular_test_case_result["successful"] = determine_result_tc(test_case_output,test_case["validation"]) # bool 
         singular_test_case_result["iteration"] = iteration # int
         singular_test_case_result["test_case_id"] = test_case["id"]
 

@@ -5,9 +5,9 @@ using Amazon;
 using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
 
-namespace LambdaApiProxy
+namespace Program
 {
-    // Struct representing the incoming request
+    // Struct representing the incoming request for decryption
     public struct aes256_decryptRequest
     {
         public string EncryptedMessage { get; set; }
@@ -16,7 +16,7 @@ namespace LambdaApiProxy
         public string Tag { get; set; }
     }
 
-    // Struct representing the outgoing response
+    // Struct representing the outgoing response after decryption
     public struct aes256_decryptResponse
     {
         public string Message { get; set; }
@@ -73,8 +73,9 @@ namespace LambdaApiProxy
                 var encryptedMessage = Convert.FromBase64String(request.EncryptedMessage);
                 var decryptedMessageBytes = new byte[encryptedMessage.Length];
 
-                int iv_size = 16;
-                using (var aesGcm = new AesGcm(plaintextDataKey, iv_size))
+                int tag_size = 16;
+                // Decrypt the message using AES-GCM
+                using (var aesGcm = new AesGcm(plaintextDataKey, tag_size))
                 {
                     aesGcm.Decrypt(iv, encryptedMessage, tag, decryptedMessageBytes);
                 }
