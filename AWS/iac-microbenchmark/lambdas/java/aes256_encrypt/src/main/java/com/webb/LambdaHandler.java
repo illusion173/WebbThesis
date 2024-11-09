@@ -83,7 +83,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
                 byte[] encryptedDataKeyBytes = encryptedDataKey.asByteArray(); // Convert to byte array
 
                 // Step 4: Create IV
-                byte[] iv = new byte[12]; // 12-byte IV is recommended for AES-GCM
+                byte[] iv = new byte[16]; // 16-byte IV is recommended for AES-GCM
                 
                 SecureRandom secureRandom = new SecureRandom();
                 
