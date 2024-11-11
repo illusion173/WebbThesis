@@ -7,6 +7,8 @@ import subprocess
 import psutil
 from botocore.exceptions import ClientError
 import uuid
+from datetime import datetime
+
 # Initialize a boto3 client for CloudWatch Logs
 cloudwatch_logs_client = boto3.client('logs', region_name='us-east-1')  # Specify the correct region
 log_group_name = "WebbBenchmark"
@@ -134,7 +136,8 @@ def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct
         "log_stream_name": log_stream_name,
         "iterations": iterations,
         "operation" : operation,
-        "language" : language
+        "language" : language,
+        "architecture" : arch_dir
     }
 
     return test_case
@@ -180,9 +183,9 @@ def execute_tc(test_case: dict):
     # Check if we need to do a warm-up, execute the operations 50 times to warm up
     if test_case["start_type"] == "warm":
 
-        for i in range(0,50):
+        for i in range(0,10):
             execute_warmup(subprocess_input)
-
+      
     for iteration in range(num_iterations):
         start_time = 0.0
         end_time = 0.0
@@ -213,7 +216,7 @@ def execute_tc(test_case: dict):
                 # Update peak memory and CPU usage
                 mem_usage_samples.append(process_psutil.memory_info().rss)
                 
-                cpu_usage_samples.append(process_psutil.cpu_percent(interval=0.1))  # interval of 0.1 sec for real-time updates
+                cpu_usage_samples.append(process_psutil.cpu_percent(interval=0.01))  # interval of 0.1 sec for real-time updates
 
                 time.sleep(0.01)  # Adjust this if needed to reduce CPU overhead
 
@@ -223,7 +226,7 @@ def execute_tc(test_case: dict):
 
         end_time = time.perf_counter()
 
-        execution_time = start_time - end_time
+        execution_time = end_time - start_time
 
         average_cpu_usage = sum(cpu_usage_samples) / len(cpu_usage_samples) if cpu_usage_samples else 0
 
@@ -348,7 +351,7 @@ def main():
 
         print("")
         # Sleep for a second before moving on to next test case to settle
-        time.sleep(1)
+        time.sleep(0.05)
 
     print("Finished AWS EC2 Benchmark Runner")
     print(f"Check selected Cloud Watch Log Group to view all data: {log_group_name}")
