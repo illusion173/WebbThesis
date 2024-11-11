@@ -1,0 +1,23 @@
+{
+  "SHA256_KMS_KEY_ARN" : "",
+  "SHA384_KMS_KEY_ARN" : "",
+  "AES_KMS_KEY_ARN" : "",
+  "RSA2048_KMS_KEY_ARN" : "",
+  "RSA3072_KMS_KEY_ARN" : "",
+  "RSA4096_KMS_KEY_ARN" : "",
+  "ECC256_KMS_KEY_ARN" : "",
+  "ECC384_KMS_KEY_ARN" : "",
+
+  "LAMBDA_ROLE_ARN" : "arn:aws:iam::417838760454:role/WebbBenchmarkLambdaRole",
+  "LAMBDA_MEMORY_SIZES": [128, 512, 1024, 1769, 10240],
+
+  "EC2_ROLE_ARN" : "arn:aws:iam::417838760454:role/WebbBenchmarkEC2Role",
+  "EC2_ARCHITECTURES":["x86_64", "arm64"],
+  "EC2_INSTANCE_AMI_ID_x86_64": "ami-005fc0f236362e99f",
+  "EC2_INSTANCE_AMI_ID_arm64": "ami-07ee04759daf109de",
+  "EC2_INSTANCE_TYPES_x86_64": ["t2.micro","t2.xlarge","t2.2xlarge"],
+  "EC2_INSTANCE_TYPES_arm64": ["t4g.micro","t4g.xlarge","t4g.2xlarge"],
+
+  "EC2_KEYPAIR_NAME": "BenchmarkKP",
+  "USER_DATA_SCRIPT": ["sudo apt-get update","sudo apt-get install git", ""]
+}
