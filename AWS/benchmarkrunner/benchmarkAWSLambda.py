@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 
 # Initialize a boto3 client for CloudWatch Logs
 cloudwatch_logs_client = boto3.client('logs', region_name='us-east-1')  # Specify the correct region
-log_group_name = "WebbBenchmark"
+log_group_name = "WebbBenchmarkLambda"
 finished_warm_up_times = []
 
 def get_correct_answers(operations: list) -> dict:
@@ -143,10 +143,6 @@ def execute_tc(test_case: dict):
         except requests.exceptions.RequestException as e:
                 print(f"HTTP Request failed: {e}")
                 exit(1)
-
-def determine_result():
-
-    return True
 
 def save_filter_times()->None:
 

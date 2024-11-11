@@ -11,7 +11,7 @@ from datetime import datetime
 
 # Initialize a boto3 client for CloudWatch Logs
 cloudwatch_logs_client = boto3.client('logs', region_name='us-east-1')  # Specify the correct region
-log_group_name = "WebbBenchmark"
+log_group_name = "WebbBenchmarkEC2"
 
 def get_correct_answers(operations: list) -> dict:
     correct_answers = {}
