@@ -51,7 +51,6 @@ def get_lambda_api_urls():
         # Store the corresponding 'api_url' in the dictionary
         lambda_api_urls[key] = entry['api_url']
 
-
     return lambda_api_urls
 
 # Function to get the API URL using a specific key
@@ -65,7 +64,6 @@ def create_tc(start_option: str, operation: str, language: str, lambda_url: str,
 
     # Develop log stream name for filtering report in CloudWatch
     log_stream_name = f"{memory_size}/{arch_dir}/{language}/{operation}/{start_option}"
-
 
     # Build the test case
     test_case = {
@@ -260,8 +258,6 @@ def main():
 
     print("Finished AWS Lambda Benchmark Runner")
     exit(0)
-
-
 
 if __name__ == "__main__":
     main()
