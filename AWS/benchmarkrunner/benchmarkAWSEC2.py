@@ -5,9 +5,8 @@ import requests
 import platform
 import subprocess
 import psutil
-from botocore.exceptions import ClientError
 import uuid
-from datetime import datetime
+import pandas as pd
 
 # Initialize a boto3 client for CloudWatch Logs
 cloudwatch_logs_client = boto3.client('logs', region_name='us-east-1')  # Specify the correct region
@@ -34,53 +33,47 @@ def get_testcase_inputs(operations: list) -> dict:
 
     return test_case_inputs
 
-# Record Test Case results
-def post_tc_results(test_case_results: list, log_stream_name: str):
+def save_testcase_results(finished_test_cases: list, file_name: str) -> None:
+    """
+    Save the test case results to a CSV file using pandas.
+    """
+    # List to hold all rows of data
+    data_rows = []
 
-    events = []
+    # Format the data for saving
+    for finished_test_case in finished_test_cases:
 
-    # Check if log stream exists
-    try:
-        response = cloudwatch_logs_client.describe_log_streams(
-            logGroupName=log_group_name,
-            logStreamNamePrefix=log_stream_name
-        )
-        log_streams = response['logStreams']
+        test_case_results, test_case = finished_test_case
         
-        # If the log stream doesn't exist, create it
-        if not log_streams or not any(ls['logStreamName'] == log_stream_name for ls in log_streams):
-            print(f"Log stream {log_stream_name} doesn't exist. Creating it.")
-            cloudwatch_logs_client.create_log_stream(
-                logGroupName=log_group_name,
-                logStreamName=log_stream_name
-            )
-        else:
-            print(f"Log stream {log_stream_name} already exists.")
+        # Extract relevant data from each test case and result iteration
+        for test_case_result in test_case_results:
 
-    except ClientError as e:
-        print(f"Error checking/creating log stream: {e}")
-        return
+            data_row = {
+                "id": test_case.get("id", ""),
+                "instance_type": test_case.get("instance_type", ""),
+                "architecture": test_case.get("architecture", ""),
+                "start_type": test_case.get("start_type", ""),
+                "operation": test_case.get("operation", ""),
+                "language": test_case.get("language", ""),
+                "iteration": test_case_result.get("iteration", 0),
+                "execution_time_ms": test_case_result.get("execution_time", 0),
+                "max_cpu_usage_percent": test_case_result.get("max_cpu_usage", 0),
+                "avg_cpu_usage_percent": test_case_result.get("avg_cpu_usage", 0),
+                "max_memory_usage_mb": test_case_result.get("max_memory_usage", 0),
+                "avg_memory_usage_mb": test_case_result.get("avg_memory_usage", 0),
+            }
 
-    for test_case_result in test_case_results:
-        log_event= {
-                'timestamp': int(time.time() * 1000),  # Current time in milliseconds
-                'message': json.dumps(test_case_result) 
-        }
-        events.append(log_event)
+            data_rows.append(data_row)
 
-    # Prepare the log event
-    log_event = {
-        'logGroupName': log_group_name,
-        'logStreamName': log_stream_name,
-        'logEvents': events
-    }
-
-    # Send the log event
+    # Convert list of dictionaries to a DataFrame
+    df = pd.DataFrame(data_rows)
+    
+    # Save DataFrame to a CSV file
     try:
-        response = cloudwatch_logs_client.put_log_events(**log_event)
-
-    except ClientError as e:
-        print(f"Failed to post log: {e}")
+        df.to_csv(file_name, index=False)
+        print(f"Results successfully saved to {file_name}")
+    except Exception as e:
+        print(f"Failed to save results: {e}")
 
 # Just checking if the received response from execution matches the correct answer struct    
 def determine_result_tc(received_response: dict, correct_answer: dict):
@@ -103,7 +96,7 @@ def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct
         'c#': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
         'go': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
         'java': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
-        'python': {"command": "python3", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}.py"},
+        'python': {"command": "python3.11", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}.py"},
         'rust': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
         'typescript': {"command": "node", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}.js"}
     }
@@ -122,9 +115,6 @@ def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct
         # EXIT FAILURE STOP BENCHMARK
         exit(1)
 
-    # Develop log stream name for reporting in CloudWatch
-    log_stream_name = f"{instance_type}/{arch_dir}/{language}/{operation}/{start_type}"
-
     # Build the test case
     test_case = {
         "id" : str(uuid.uuid4()), # generate a unique id for the test case
@@ -133,11 +123,11 @@ def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct
         "operation_input": input,
         "validation": correct_answer,
         "start_type": start_type,
-        "log_stream_name": log_stream_name,
         "iterations": iterations,
         "operation" : operation,
         "language" : language,
-        "architecture" : arch_dir
+        "architecture" : arch_dir,
+        "instance_type": instance_type
     }
 
     return test_case
@@ -159,7 +149,7 @@ def execute_warmup(subprocess_input):
     except Exception as e:
         print(f"Error during warm-up execution: {e}")
 
-def execute_tc(test_case: dict):
+def execute_tc(test_case: dict) -> list:
 
     subprocess_input = []
     test_case_results = []
@@ -241,6 +231,8 @@ def execute_tc(test_case: dict):
         # Grab the function's output for verification
         test_case_output = json.loads(stdout.decode())
 
+        print("TESTCASE OUTPUT:")
+        print(test_case_output)
 
         # Compile results in to dict
         singular_test_case_result["execution_time"] = execution_time * 1000 # Convert to ms
@@ -267,6 +259,8 @@ def main():
         arch_dir = "x86"
     else:
         arch_dir = "arm"
+
+    # use comments to select specific test cases
 
     languages = [
         'c#',
@@ -311,6 +305,11 @@ def main():
     test_cases = []
     iterations = 100
 
+    # To save the results
+    save_result_file_name = f"./{architecture}-{instance_type}-AWSEC2-Benchmarkresults.csv"
+
+    finished_test_cases = []
+
     # First we need to create the testcases themselves
     for language in languages:
         for operation in operations:
@@ -328,11 +327,10 @@ def main():
     print("Finished Initialization")
 
     print("Beginning AWS EC2 Benchmark Runnner")
-
-    print("EXECUTE")
+    print(f"Architecture: {architecture}")
+    print(f"Instance Type: {instance_type}")
 
     for test_case in test_cases:
-
         print("---------------------------------------")
         print(f"Executing Test Case")
         print(f">Operation: {test_case["operation"]}")
@@ -341,20 +339,21 @@ def main():
 
         # Execute Test Case
         test_case_result = execute_tc(test_case)
-        log_stream_name = test_case["log_stream_name"]
 
-        # After Test Case execution, post the results to cloudwatch logs
-        post_tc_results(test_case_result, log_stream_name)
-        print(f"Succesful Upload of test case results to log stream: {log_stream_name}")
-
+        # Save a tuple containing the results and the test case into a list to save for later
+        finished_test_cases.append((test_case_result,test_case))
+        print("Finished Test Case.")
         print("---------------------------------------")
-
         print("")
         # Sleep for a second before moving on to next test case to settle
         time.sleep(0.05)
 
     print("Finished AWS EC2 Benchmark Runner")
-    print(f"Check selected Cloud Watch Log Group to view all data: {log_group_name}")
+
+    save_testcase_results(finished_test_cases, save_result_file_name)
+    
+    print(f"Saved Results to file: {save_result_file_name}")
+
     exit(0)
 
 if __name__ == "__main__":
