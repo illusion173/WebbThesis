@@ -86,9 +86,12 @@ def get_instance_type():
         if response.status_code == 200:
             return response.text
         else:
-            return "Unable to retrieve instance type. Status code: {}".format(response.status_code)
+            print(f"Unable to retrieve instance type. Status code: {response.status_code}")
+            exit(1)
     except requests.exceptions.RequestException as e:
-        return "Error querying instance metadata: {}".format(e)
+        print(f"Error querying instance metadata: {e}")
+        exit(1)
+
 
 def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct_answer: dict, start_type: str, instance_type: str, iterations: int)-> dict:
     # Mapping of language to command and file location format
