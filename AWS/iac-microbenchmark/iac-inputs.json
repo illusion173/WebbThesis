@@ -1,6 +1,6 @@
 {
-  "SHA256_KMS_KEY_ARN" : "",
-  "SHA384_KMS_KEY_ARN" : "",
+  "SHA256_KMS_KEY_ARN" : "arn:aws:kms:us-east-1:417838760454:key/4a177bdb-5d10-4043-a67b-12b7036f3ada",
+  "SHA384_KMS_KEY_ARN" : "arn:aws:kms:us-east-1:417838760454:key/fe351b9f-2b6d-4473-bebe-f50ad4ca2d42",
   "AES_KMS_KEY_ARN" : "",
   "RSA2048_KMS_KEY_ARN" : "",
   "RSA3072_KMS_KEY_ARN" : "",

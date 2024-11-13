@@ -7,7 +7,7 @@ import subprocess
 import psutil
 import uuid
 import pandas as pd
-
+import os
 # Initialize a boto3 client for CloudWatch Logs
 cloudwatch_logs_client = boto3.client('logs', region_name='us-east-1')  # Specify the correct region
 log_group_name = "WebbBenchmarkEC2"
@@ -28,8 +28,14 @@ def get_testcase_inputs(operations: list) -> dict:
 
     for operation in operations:
         input_data_loc = f"../../TestArtifacts/inputs/{operation}.json"
-        with open(input_data_loc, 'r') as file:
-            test_case_inputs[operation] = file.read()
+        try:
+            # Open and load the JSON content
+            with open(input_data_loc, 'r') as file:
+                test_case_inputs[operation] = json.load(file)
+        except FileNotFoundError:
+            print(f"Error: File not found - {input_data_loc}")
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON in file {input_data_loc}: {e}")
 
     return test_case_inputs
 
@@ -94,14 +100,19 @@ def get_instance_type():
 
 
 def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct_answer: dict, start_type: str, instance_type: str, iterations: int)-> dict:
+    # Get the base directory where the script is being executed
+    base_dir = str(os.path.dirname(os.path.abspath(__file__)))
+    new_file_base_str = f"iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"
+    file_executable_location = base_dir.replace("benchmarkrunner", new_file_base_str)
+
     # Mapping of language to command and file location format
     language_settings = {
-        'c#': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
-        'go': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
-        'java': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
-        'python': {"command": "python3.11", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}.py"},
-        'rust': {"command": "", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}"},
-        'typescript': {"command": "node", "file_loc": f"../iac-microbenchmark/ec2/{language}/{arch_dir}/{operation}.js"}
+        'c#': {"command": "", "file_loc": f"{file_executable_location}"},
+        'go': {"command": "", "file_loc": f"{file_executable_location}"},
+        'java': {"command": "", "file_loc": f"{file_executable_location}"},
+        'python': {"command": "python3.11", "file_loc": f"{file_executable_location}.py"},
+        'rust': {"command": "", "file_loc": f"{file_executable_location}"},
+        'typescript': {"command": "node", "file_loc": f"{file_executable_location}.js"}
     }
 
     # Default values if language is unknown
@@ -143,17 +154,25 @@ def execute_warmup(subprocess_input):
             subprocess_input,
             stdin=subprocess.PIPE, 
             stdout=subprocess.PIPE, 
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
+            shell=False
         )
         
-        # Wait for the process to complete
-        process.wait()
-        
+        #process_psutil = psutil.Process(process.pid)
+        # Monitor the process while it's running
+        while process.poll() is None:  # While the script is still running
+            # Update peak memory and CPU usage
+            time.sleep(0.01)
+
+        # Create a process object for tracking memory
+        #stdout, stderr = process.communicate()
+        return
     except Exception as e:
-        print(f"Error during warm-up execution: {e}")
+        print(f"Error occurred in warmup: {e}")
+        raise e
+    
 
 def execute_tc(test_case: dict) -> list:
-
     subprocess_input = []
     test_case_results = []
 
@@ -163,12 +182,13 @@ def execute_tc(test_case: dict) -> list:
     if test_case["command"] == "":
         subprocess_input.append(test_case["file_loc"])
     else:
-    # Python or javascript
+        # Python or JavaScript commands
         subprocess_input.append(test_case["command"])
         subprocess_input.append(test_case["file_loc"])
 
-    # Always add input to the end as an arg
+    # Always add input to the end as an argument
     subprocess_input.append(json.dumps(test_case["operation_input"]))
+    print(subprocess_input)
 
     # Retrieve how many times we need to run this test case
     num_iterations = test_case["iterations"]
@@ -176,75 +196,88 @@ def execute_tc(test_case: dict) -> list:
     # Check if we need to do a warm-up, execute the operations 50 times to warm up
     if test_case["start_type"] == "warm":
 
-        for i in range(0,10):
+        print("Begin Warmup")
+
+        for i in range(0, 10):
+            print(f"Iteration: {i}")
             execute_warmup(subprocess_input)
-      
+
+        print("Finished Warmup")
+
     for iteration in range(num_iterations):
+        print(f"Iteration: {iteration}")
         start_time = 0.0
         end_time = 0.0
         cpu_usage_samples = []  # to store CPU usage samples
-        mem_usage_samples = [] # to store mem usage samples
+        mem_usage_samples = []  # to store memory usage samples
 
         # Final result dict
         singular_test_case_result = {}
 
         # Start the timer
         start_time = time.perf_counter()
-        
+
         # Use subprocess to run the operation
         process = subprocess.Popen(
             subprocess_input,
-            stdin=subprocess.PIPE, 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.PIPE
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False
         )
 
         # Create a process object for tracking memory
         process_psutil = psutil.Process(process.pid)
 
         try:
-
+            # Monitor the process while it's running
             while process.poll() is None:  # While the script is still running
-
                 # Update peak memory and CPU usage
                 mem_usage_samples.append(process_psutil.memory_info().rss)
-                
-                cpu_usage_samples.append(process_psutil.cpu_percent(interval=0.01))  # interval of 0.1 sec for real-time updates
+                cpu_usage_samples.append(process_psutil.cpu_percent(interval=0.01))  # interval of 0.01 sec for real-time updates
 
-                time.sleep(0.01)  # Adjust this if needed to reduce CPU overhead
+                # Sleep briefly to avoid using excessive CPU time in the loop
+                time.sleep(0.01)
+
 
         except Exception as e:
-            process.kill()
+            process.kill()  # Ensure the process is killed in case of any exception
+            print(f"Error occurred: {e}")
             raise e
 
+        # After process finishes, record the end time
         end_time = time.perf_counter()
 
         execution_time = end_time - start_time
 
+        # Calculate average and max CPU usage
         average_cpu_usage = sum(cpu_usage_samples) / len(cpu_usage_samples) if cpu_usage_samples else 0
-
         max_cpu_usage = max(cpu_usage_samples)
 
+        # Calculate average and max memory usage
         average_mem_usage = sum(mem_usage_samples) / len(mem_usage_samples) if mem_usage_samples else 0
-
         max_mem = max(mem_usage_samples)
 
+        # Retrieve the process output
         stdout, stderr = process.communicate()
+        print(f"stderr: {stderr.decode()}")
 
         # Grab the function's output for verification
-        test_case_output = json.loads(stdout.decode())
+        try:
+            test_case_output = json.loads(stdout.decode())
+            print("TESTCASE OUTPUT:")
+            print(test_case_output)
+        except json.JSONDecodeError:
+            print("Failed to decode JSON from stdout")
+            test_case_output = {}
 
-        print("TESTCASE OUTPUT:")
-        print(test_case_output)
-
-        # Compile results in to dict
-        singular_test_case_result["execution_time"] = execution_time * 1000 # Convert to ms
-        singular_test_case_result["max_cpu_usage"] =  max_cpu_usage   # in % float
-        singular_test_case_result["avg_cpu_usage"] =  average_cpu_usage   # in % float
-        singular_test_case_result["max_memory_usage"] =  max_mem / (1024 ** 2)  # Convert to MB float float
-        singular_test_case_result["avg_memory_usage"] =  average_mem_usage / (1024 ** 2)  # Convert to MB float
-        #singular_test_case_result["successful"] = determine_result_tc(test_case_output,test_case["validation"]) # bool 
-        singular_test_case_result["iteration"] = iteration # int
+        # Compile results into dict
+        singular_test_case_result["execution_time"] = execution_time * 1000  # Convert to ms
+        singular_test_case_result["max_cpu_usage"] = max_cpu_usage  # in % float
+        singular_test_case_result["avg_cpu_usage"] = average_cpu_usage  # in % float
+        singular_test_case_result["max_memory_usage"] = max_mem / (1024 ** 2)  # Convert to MB
+        singular_test_case_result["avg_memory_usage"] = average_mem_usage / (1024 ** 2)  # Convert to MB
+        singular_test_case_result["iteration"] = iteration  # int
         singular_test_case_result["test_case_id"] = test_case["id"]
 
         test_case_results.append(singular_test_case_result)
@@ -256,7 +289,8 @@ def main():
     # Get Architecture
     architecture = platform.machine()
 
-    instance_type = get_instance_type()
+    #instance_type = get_instance_type()
+    instance_type = "TEST"
 
     if architecture == "x86_64":
         arch_dir = "x86"
@@ -266,29 +300,29 @@ def main():
     # use comments to select specific test cases
 
     languages = [
-        'c#',
-        'go',
-        'java',
+        #'c#',
+        #'go',
+        #'java',
         'python',
-        'rust',
-        'typescript',
+        #'rust',
+        #'typescript',
     ]
 
     operations = [
-    'aes256_decrypt',
-    'aes256_encrypt',
-    'ecc256_sign',
-    'ecc256_verify',
-    'ecc384_sign',
-    'ecc384_verify',
-    'rsa2048_decrypt',
-    'rsa2048_encrypt',
-    'rsa3072_decrypt',
-    'rsa3072_encrypt',
-    'rsa4096_decrypt',
-    'rsa4096_encrypt',
-    'sha256',
-    'sha384',
+        #'aes256_decrypt',
+        #'aes256_encrypt',
+        #'ecc256_sign',
+        #'ecc256_verify',
+        #'ecc384_sign',
+        #'ecc384_verify',
+        #'rsa2048_decrypt',
+        #'rsa2048_encrypt',
+        #'rsa3072_decrypt',
+        #'rsa3072_encrypt',
+        #'rsa4096_decrypt',
+        #'rsa4096_encrypt',
+        'sha256',
+        'sha384',
     ]
 
     #for cold_start
@@ -328,17 +362,23 @@ def main():
                 test_cases.append(new_test_case)
 
     print("Finished Initialization")
+    print("")
+    print("")
 
     print("Beginning AWS EC2 Benchmark Runnner")
     print(f"Architecture: {architecture}")
     print(f"Instance Type: {instance_type}")
 
+
     for test_case in test_cases:
+        test_case_operation = test_case["operation"]
+        test_case_language = test_case["language"]
+        test_case_start_type = test_case["start_type"]
         print("---------------------------------------")
         print(f"Executing Test Case")
-        print(f">Operation: {test_case["operation"]}")
-        print(f">Language: {test_case["language"]}")
-        print(f">Start Type: {test_case["start_type"]}")
+        print(f">Operation: {test_case_operation}")
+        print(f">Language: {test_case_language}")
+        print(f">Start Type: {test_case_start_type}")
 
         # Execute Test Case
         test_case_result = execute_tc(test_case)

@@ -1,4 +1,4 @@
-#!/home/illusion/school/Thesis/WebbThesis/AWS/benchmarkrunner/bin/python3
+#!/home/illusion/school/Thesis/WebbThesis/AWS/benchmarkrunner/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys

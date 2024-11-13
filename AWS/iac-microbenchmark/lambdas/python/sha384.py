@@ -23,7 +23,7 @@ def lambda_handler(event, context):
         response = kms_client.generate_mac(
             KeyId=sha_kms_key_id,
             Message=message_bytes,
-            SigningAlgorithm=SIGN_ALGORITHM
+            MacAlgorithm=SIGN_ALGORITHM
         )
         # Base64 encode the signature for output
         signature = base64.b64encode(response['Mac']).decode('utf-8')
