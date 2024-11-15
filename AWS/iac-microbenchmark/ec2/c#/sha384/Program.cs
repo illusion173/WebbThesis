@@ -43,7 +43,11 @@ namespace Program
             sha384Request request;
             try
             {
-                request = JsonSerializer.Deserialize<sha384Request>(args[0]);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
+                request = JsonSerializer.Deserialize<sha384Request>(args[0], options);
             }
             catch (JsonException)
             {

@@ -8,7 +8,6 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kms.KmsClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kms.model.*;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Sha256Program {
@@ -23,9 +22,15 @@ public class Sha256Program {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        // Read from stdin
-        InputStream input = System.in;
-        Sha256RequestMessage request = mapper.readValue(input, Sha256RequestMessage.class);
+        if (args.length != 1) {
+            System.err.println("Usage: java Sha256Program <message>");
+            System.exit(1);
+        }
+
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Sha256RequestMessage request = mapper.readValue(requestJsonString, Sha256RequestMessage.class);
+        
         String message = request.getMessage();
         
         // convert message to bytes

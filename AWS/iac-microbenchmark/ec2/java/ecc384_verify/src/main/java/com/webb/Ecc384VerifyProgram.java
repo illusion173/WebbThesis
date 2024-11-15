@@ -18,10 +18,14 @@ public class Ecc384VerifyProgram {
         ObjectMapper mapper = new ObjectMapper();
 
         try  {
-        // Read from stdin
-        InputStream input = System.in;
-        Ecc384VerifyRequestMessage request = mapper.readValue(input, Ecc384VerifyRequestMessage.class);
-        
+        if (args.length != 1) {
+            System.err.println("Usage: java Sha384Program <message>");
+            System.exit(1);
+        }
+
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Ecc384VerifyRequestMessage request = mapper.readValue(requestJsonString, Ecc384VerifyRequestMessage.class); 
         // convert message to bytes
         byte[] signatureByteArr = Base64.getDecoder().decode(request.getSignature());
         byte[] messageByteArr = Base64.getDecoder().decode(request.getMessage()); 

@@ -10,7 +10,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import software.amazon.awssdk.services.kms.model.*;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Rsa2048EncryptProgram {
@@ -21,9 +20,15 @@ public class Rsa2048EncryptProgram {
 
         try  {
         // Read from stdin
-        InputStream input = System.in;
-        Rsa2048EncryptRequestMessage request = mapper.readValue(input, Rsa2048EncryptRequestMessage.class);
+        if (args.length != 1) {
+            System.err.println("Usage: java Rsa2048EncryptProgram <message>");
+            System.exit(1);
+        }
 
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Rsa2048EncryptRequestMessage request = mapper.readValue(requestJsonString, Rsa2048EncryptRequestMessage.class);
+        
         String message = request.getMessage();
         
         try {

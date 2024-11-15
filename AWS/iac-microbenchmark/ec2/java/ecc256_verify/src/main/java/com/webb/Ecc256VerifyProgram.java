@@ -18,10 +18,14 @@ public class Ecc256VerifyProgram {
         ObjectMapper mapper = new ObjectMapper();
 
         try  {
-        // Read from stdin
-        InputStream input = System.in;
-        Ecc256VerifyRequestMessage request = mapper.readValue(input, Ecc256VerifyRequestMessage.class);
-        
+        if (args.length != 1) {
+            System.err.println("Usage: java Sha256Program <message>");
+            System.exit(1);
+        }
+
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Ecc256VerifyRequestMessage request = mapper.readValue(requestJsonString, Ecc256VerifyRequestMessage.class); 
         // convert message to bytes
         byte[] signatureByteArr = Base64.getDecoder().decode(request.getSignature());
         byte[] messageByteArr = Base64.getDecoder().decode(request.getMessage()); 
@@ -44,7 +48,7 @@ public class Ecc256VerifyProgram {
                         .message(messageBytes)
                         .messageType("RAW")
                         .signature(signatureBytes)
-                        .signingAlgorithm(SigningAlgorithmSpec.ECDSA_SHA_256)  // Use ECDSA_SHA_384 for P-384 curve
+                        .signingAlgorithm(SigningAlgorithmSpec.ECDSA_SHA_256)  // Use ECDSA_SHA_256 for P-256 curve
                         .build();
 
                 VerifyResponse verifyResponse = kmsClient.verify(verifyRequest);

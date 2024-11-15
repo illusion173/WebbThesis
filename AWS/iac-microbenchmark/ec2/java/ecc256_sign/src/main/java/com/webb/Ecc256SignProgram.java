@@ -7,7 +7,6 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kms.KmsClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kms.model.*;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Ecc256SignProgram {
@@ -17,9 +16,16 @@ public class Ecc256SignProgram {
         ObjectMapper mapper = new ObjectMapper();
 
         try  {
-        // Read from stdin
-        InputStream input = System.in;
-        Ecc256SignRequestMessage request = mapper.readValue(input, Ecc256SignRequestMessage.class);
+        
+        if (args.length != 1) {
+            System.err.println("Usage: java Sha256Program <message>");
+            System.exit(1);
+        }
+
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Ecc256SignRequestMessage request = mapper.readValue(requestJsonString, Ecc256SignRequestMessage.class);  
+        
         String message = request.getMessage();
         
         // convert message to bytes
@@ -37,7 +43,7 @@ public class Ecc256SignProgram {
 						.keyId(KMS_KEY_ARN)
 						.message(messageBytes)
 						.messageType("RAW")
-						.signingAlgorithm(SigningAlgorithmSpec.ECDSA_SHA_256) // Use ECDSA_SHA_384 for P-384 curve
+						.signingAlgorithm(SigningAlgorithmSpec.ECDSA_SHA_256) // Use ECDSA_SHA_256 for P-256 curve
 						.build();
 
 				SignResponse signResponse = kmsClient.sign(signRequest);

@@ -11,7 +11,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import software.amazon.awssdk.services.kms.model.*;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Rsa3072DecryptProgram {
@@ -21,10 +20,16 @@ public class Rsa3072DecryptProgram {
         ObjectMapper mapper = new ObjectMapper();
 
         try  {
-			// Read from stdin
-			InputStream input = System.in;
-			Rsa3072DecryptRequestMessage request = mapper.readValue(input, Rsa3072DecryptRequestMessage.class);
+            // Read from stdin
+            if (args.length != 1) {
+                System.err.println("Usage: java Rsa3072DecryptProgram <message>");
+                System.exit(1);
+            }
 
+            String requestJsonString = args[0];  // Get the message from the command line argument
+
+            Rsa3072DecryptRequestMessage request = mapper.readValue(requestJsonString, Rsa3072DecryptRequestMessage.class);
+            
             // Obtain Values, convert as needed.
             byte[] encryptedAesKey = Base64.getDecoder().decode(request.getEncryptedKey());
             

@@ -21,9 +21,15 @@ public class Rsa4096EncryptProgram {
 
         try  {
         // Read from stdin
-        InputStream input = System.in;
-        Rsa4096EncryptRequestMessage request = mapper.readValue(input, Rsa4096EncryptRequestMessage.class);
+        if (args.length != 1) {
+            System.err.println("Usage: java Rsa4096EncryptProgram <message>");
+            System.exit(1);
+        }
 
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Rsa4096EncryptRequestMessage request = mapper.readValue(requestJsonString, Rsa4096EncryptRequestMessage.class);
+        
         String message = request.getMessage();
         
         try {

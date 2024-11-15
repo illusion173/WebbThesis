@@ -32,10 +32,13 @@ def main():
     decryptor = cipher.decryptor()
     
     # Decrypt the message
-    plaintext_message = decryptor.update(ciphertext) + decryptor.finalize()
+    plaintext_message_bytes = decryptor.update(ciphertext) + decryptor.finalize()
+
+    plaintext_message = plaintext_message_bytes.decode("utf-8")
+
     
 
-    decrypt_message = {"Message" : plaintext_message}
+    decrypt_message = {"message" : plaintext_message}
 
     print(json.dumps(decrypt_message))
 

@@ -21,10 +21,16 @@ public class Rsa4096DecryptProgram {
         ObjectMapper mapper = new ObjectMapper();
 
         try  {
-			// Read from stdin
-			InputStream input = System.in;
-			Rsa4096DecryptRequestMessage request = mapper.readValue(input, Rsa4096DecryptRequestMessage.class);
+            // Read from stdin
+            if (args.length != 1) {
+                System.err.println("Usage: java Rsa4096DecryptProgram <message>");
+                System.exit(1);
+            }
 
+            String requestJsonString = args[0];  // Get the message from the command line argument
+
+            Rsa4096DecryptRequestMessage request = mapper.readValue(requestJsonString, Rsa4096DecryptRequestMessage.class);
+            
             // Obtain Values, convert as needed.
             byte[] encryptedAesKey = Base64.getDecoder().decode(request.getEncryptedKey());
             

@@ -1,0 +1,3 @@
+export SHA384_KMS_KEY_ARN="arn:aws:kms:us-east-1:417838760454:key/fe351b9f-2b6d-4473-bebe-f50ad4ca2d42" 
+export SHA256_KMS_KEY_ARN="arn:aws:kms:us-east-1:417838760454:key/4a177bdb-5d10-4043-a67b-12b7036f3ada" 
+export AES_KMS_KEY_ARN="arn:aws:kms:us-east-1:417838760454:key/d8af2caf-3762-4151-a168-d0848b700a2c"

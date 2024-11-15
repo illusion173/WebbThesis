@@ -40,8 +40,7 @@ async function main(): Promise<void> {
     const plaintextDataKey = response.Plaintext as Uint8Array; // The plaintext data key
     const encryptedDataKey = response.CiphertextBlob as Uint8Array; // The encrypted data key
 
-    // Generate 16 secure random bytes for the IV
-    const iv = crypto.randomBytes(16); // 16 bytes for AES-GCM IV
+    const iv = crypto.randomBytes(12); // 12 bytes for AES-GCM IV
 
     // Create a cipher using AES-GCM
     const cipher = crypto.createCipheriv('aes-256-gcm', plaintextDataKey, iv);

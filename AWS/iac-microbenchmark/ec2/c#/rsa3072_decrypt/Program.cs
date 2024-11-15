@@ -44,7 +44,11 @@ namespace Program
 
             try
             {
-                var requestModel = JsonSerializer.Deserialize<rsa3072_decryptRequest>(args[0]);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
+                var requestModel = JsonSerializer.Deserialize<rsa3072_decryptRequest>(args[0], options);
                 if (string.IsNullOrEmpty(requestModel.CipherText) || string.IsNullOrEmpty(requestModel.Iv) || string.IsNullOrEmpty(requestModel.EncryptedAesKey))
                 {
                     Console.WriteLine("{\"Error\": \"Invalid JSON input. Ensure all fields are populated.\"}");

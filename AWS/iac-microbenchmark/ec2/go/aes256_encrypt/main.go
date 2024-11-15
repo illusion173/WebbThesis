@@ -95,7 +95,7 @@ func main() {
 
 // AES-GCM encryption function
 func encryptMessageWithAESGCM(key []byte, message []byte) ([]byte, []byte, []byte, error) {
-	ivSize := 16
+	ivSize := 12
 
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)

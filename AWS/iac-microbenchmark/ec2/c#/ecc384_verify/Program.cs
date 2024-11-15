@@ -44,8 +44,13 @@ namespace Program
 
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
+
                 // Parse JSON input from argument
-                var requestModel = JsonSerializer.Deserialize<ecc384_verifyRequest>(args[0]);
+                var requestModel = JsonSerializer.Deserialize<ecc384_verifyRequest>(args[0], options);
                 if (string.IsNullOrEmpty(requestModel.Signature) || string.IsNullOrEmpty(requestModel.Message))
                 {
                     Console.WriteLine("{ \"Error\": \"Invalid JSON input. Please provide a valid JSON with 'Signature' and 'Message' fields.\" }");

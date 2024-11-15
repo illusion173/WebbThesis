@@ -21,9 +21,15 @@ public class Rsa3072EncryptProgram {
 
         try  {
         // Read from stdin
-        InputStream input = System.in;
-        Rsa3072EncryptRequestMessage request = mapper.readValue(input, Rsa3072EncryptRequestMessage.class);
+        if (args.length != 1) {
+            System.err.println("Usage: java Rsa3072EncryptProgram <message>");
+            System.exit(1);
+        }
 
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Rsa3072EncryptRequestMessage request = mapper.readValue(requestJsonString, Rsa3072EncryptRequestMessage.class);
+        
         String message = request.getMessage();
         
         try {

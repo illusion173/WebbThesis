@@ -47,7 +47,11 @@ namespace Program
             aes256_decryptRequest request;
             try
             {
-                request = JsonSerializer.Deserialize<aes256_decryptRequest>(args[0]);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
+                request = JsonSerializer.Deserialize<aes256_decryptRequest>(args[0], options);
             }
             catch (JsonException)
             {

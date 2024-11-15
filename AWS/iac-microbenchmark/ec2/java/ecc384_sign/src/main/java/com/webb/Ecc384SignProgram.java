@@ -17,9 +17,16 @@ public class Ecc384SignProgram {
         ObjectMapper mapper = new ObjectMapper();
 
         try  {
-        // Read from stdin
-        InputStream input = System.in;
-        Ecc384SignRequestMessage request = mapper.readValue(input, Ecc384SignRequestMessage.class);
+        
+        if (args.length != 1) {
+            System.err.println("Usage: java Sha384Program <message>");
+            System.exit(1);
+        }
+
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Ecc384SignRequestMessage request = mapper.readValue(requestJsonString, Ecc384SignRequestMessage.class);  
+        
         String message = request.getMessage();
         
         // convert message to bytes

@@ -23,11 +23,17 @@ public class Sha384Program {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        // Read from stdin
-        InputStream input = System.in;
-        Sha384RequestMessage request = mapper.readValue(input, Sha384RequestMessage.class);
+        if (args.length != 1) {
+            System.err.println("Usage: java Sha384Program <message>");
+            System.exit(1);
+        }
+
+        String requestJsonString = args[0];  // Get the message from the command line argument
+
+        Sha384RequestMessage request = mapper.readValue(requestJsonString, Sha384RequestMessage.class);
+
         String message = request.getMessage();
-        
+ 
         // convert message to bytes
         SdkBytes messageBytes = SdkBytes.fromByteArray(message.getBytes(StandardCharsets.UTF_8));
  

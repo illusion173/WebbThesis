@@ -16,8 +16,8 @@ import (
 )
 
 type EncryptedRequest struct {
-	Ciphertext   string `json:"ciphertext"`
-	EncryptedKey string `json:"encrypted_key"`
+	Ciphertext   string `json:"encrypted_message"`
+	EncryptedKey string `json:"encrypted_data_key"`
 	IV           string `json:"iv"`
 	Tag          string `json:"tag"`
 }
@@ -112,7 +112,7 @@ func main() {
 
 // AES-GCM decryption
 func decryptMessageWithAESGCM(key []byte, ciphertext []byte, iv []byte, tag []byte) ([]byte, error) {
-	ivSize := 16
+	ivSize := 12
 
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)

@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import { KMSClient, GenerateMacCommand } from '@aws-sdk/client-kms';
 import * as process from 'process';
 

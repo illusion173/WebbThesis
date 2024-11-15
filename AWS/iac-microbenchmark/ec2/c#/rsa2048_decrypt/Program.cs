@@ -44,6 +44,10 @@ namespace Program
 
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
                 var requestModel = JsonSerializer.Deserialize<rsa2048_decryptRequest>(args[0]);
                 if (string.IsNullOrEmpty(requestModel.CipherText) || string.IsNullOrEmpty(requestModel.Iv) || string.IsNullOrEmpty(requestModel.EncryptedAesKey))
                 {

@@ -47,7 +47,11 @@ namespace Program
             aes256_encryptRequest request;
             try
             {
-                request = JsonSerializer.Deserialize<aes256_encryptRequest>(args[0]);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
+                request = JsonSerializer.Deserialize<aes256_encryptRequest>(args[0], options);
             }
             catch (JsonException)
             {
@@ -69,7 +73,7 @@ namespace Program
                 var encryptedDataKey = dataKeyResponse.CiphertextBlob.ToArray();
 
                 // Generate a secure random IV for AES-GCM
-                int iv_size = 16;
+                int iv_size = 12;
                 int tag_size = 16;
                 byte[] iv = new byte[iv_size];
                 using (var rng = RandomNumberGenerator.Create())

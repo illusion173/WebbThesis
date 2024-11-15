@@ -79,7 +79,7 @@ async fn kms_encrypt_message(
         .ok_or_else(|| "No encrypted data key returned")?;
 
     // Generate IV and tag for AES-GCM
-    let mut iv = [0u8; 16]; // Initialize a 16-byte array for IV
+    let mut iv = [0u8; 12]; // Initialize a 12-byte array for IV
     openssl::rand::rand_bytes(&mut iv).map_err(|_| "Failed to generate IV")?;
 
     // AES-GCM encryption using OpenSSL

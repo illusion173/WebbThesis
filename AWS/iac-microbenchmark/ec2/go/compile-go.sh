@@ -8,39 +8,38 @@ fi
 
 # Set architecture based on the argument
 if [ "$1" == "x86" ]; then
-    ARCH="amd64"
+    ARCH="x86"
 elif [ "$1" == "arm" ]; then
-    ARCH="arm64"
+    ARCH="arm"
 else
     echo "Invalid argument. Use 'x86' or 'arm'."
     exit 1
 fi
 
-# Create the destination directory if it doesn't exist
-mkdir -p "compiledgo/${ARCH}"
-
-# Loop through every child directory
+TARGET_DIR="../${ARCH}"
+# Loop through each child directory
 for dir in */; do
+    # Check if it is a directory
     if [ -d "$dir" ]; then
-        # Change to the child directory
-        cd "$dir" || exit
+        echo "Building project in directory: $dir"
 
-        # Compile for the chosen architecture
-        GOOS=linux GOARCH=${ARCH} go build -tags lambda.norpc -o bootstrap main.go
+        # Navigate into the directory
+        cd "$dir"
 
-        # Get the directory name without trailing slash
-        dirname=$(basename "$dir")
+        # Run go build to create the executable
+        if go build -o "${dir%/}"; then
+            echo "Build successful for $dir"
 
-        # Zip the bootstrap file with the directory name
-        zip "${dirname}.zip" bootstrap
+            # Move the executable to the target directory
+            mv "${dir%/}" "$TARGET_DIR"
+            echo "Moved ${dir%/}.exe to $TARGET_DIR"
+        else
+            echo "Build failed for $dir"
+        fi
 
-        # Move the zip file to the parent directory's compiledgo folder for the specific architecture
-        mv "${dirname}.zip" "../compiledgo/${ARCH}/"
-
-        # Clean up by removing the bootstrap file
-        rm bootstrap
-
-        # Return to the parent directory
+        # Navigate back to the parent directory
         cd ..
     fi
 done
+
+echo "All projects have been processed."

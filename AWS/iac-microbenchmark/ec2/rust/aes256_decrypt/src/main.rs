@@ -6,10 +6,10 @@ use std::error::Error;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct EncryptedMessageStruct {
-    ciphertext: String,
+    encrypted_message: String,
     iv: String,
     tag: String,
-    encrypted_key: String,
+    encrypted_data_key: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Get JSON input from command line
     let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
-        return Err("Usage: ./rustexecutable '{\"ciphertext\":\"your_ciphertext_here\", \"iv\":\"your_iv_here\", \"tag\":\"your_tag_here\", \"encrypted_key\":\"your_encrypted_key_here\"}'".into());
+        return Err("Usage: ./rustexecutable '{\"encrypted_message\":\"your_ciphertext_here\", \"iv\":\"your_iv_here\", \"tag\":\"your_tag_here\", \"encrypted_key\":\"your_encrypted_key_here\"}'".into());
     }
 
     let body_str = &args[1];
@@ -57,7 +57,7 @@ async fn kms_decrypt_message(
     encrypted_message: EncryptedMessageStruct,
 ) -> Result<MessageStruct, Box<dyn Error>> {
     // Decrypt the data key using KMS
-    let encryption_key_decoded = decode(&encrypted_message.encrypted_key)
+    let encryption_key_decoded = decode(&encrypted_message.encrypted_data_key)
         .map(Blob::new)
         .map_err(|_| "Failed to decode encrypted key")?;
 
@@ -78,8 +78,8 @@ async fn kms_decrypt_message(
     // Decode the IV, tag, and ciphertext
     let iv = decode(&encrypted_message.iv).map_err(|_| "Failed to decode IV")?;
     let tag = decode(&encrypted_message.tag).map_err(|_| "Failed to decode tag")?;
-    let ciphertext =
-        decode(&encrypted_message.ciphertext).map_err(|_| "Failed to decode ciphertext")?;
+    let ciphertext = decode(&encrypted_message.encrypted_message)
+        .map_err(|_| "Failed to decode encrypted_message")?;
 
     // AES-GCM decryption
     let cipher = openssl::symm::Cipher::aes_256_gcm();

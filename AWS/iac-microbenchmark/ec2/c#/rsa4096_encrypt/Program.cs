@@ -44,7 +44,11 @@ namespace Program
 
             try
             {
-                var requestModel = JsonSerializer.Deserialize<rsa4096_encryptRequest>(args[0]);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
+                var requestModel = JsonSerializer.Deserialize<rsa4096_encryptRequest>(args[0], options);
                 if (string.IsNullOrEmpty(requestModel.Message))
                 {
                     Console.WriteLine("{\"Error\": \"Invalid JSON input. Ensure the 'Message' field is populated.\"}");

@@ -16,3 +16,7 @@ members = [
     "rsa4096_encrypt",
     "rsa4096_decrypt"
 ]
+
+[workspace.metadata]
+target-dir = "x86"
+#target-dir = "arm"
