@@ -457,7 +457,9 @@ replay_pid*
 # Byte-compiled / optimized / DLL files
 *.py[cod]
 *$py.class
-
+lib64
+pyvenv.cfg
+share/
 # C extensions
 
 # Distribution / packaging
