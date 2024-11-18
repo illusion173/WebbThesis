@@ -355,9 +355,9 @@ def main():
     operations = [
         #'aes256_decrypt', # works for all
         #'aes256_encrypt', # works for all
-        'ecc256_sign',
+        #'ecc256_sign',
         #'ecc256_verify',
-        'ecc384_sign',
+        #'ecc384_sign',
         #'ecc384_verify',
         #'rsa2048_decrypt',
         #'rsa2048_encrypt',
