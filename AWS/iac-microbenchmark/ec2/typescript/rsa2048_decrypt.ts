@@ -19,10 +19,10 @@ async function main(): Promise<void> {
     const requestJson = JSON.parse(requestJsonRaw);
 
     // Get the KMS key ID from environment variables
-    const rsaKmsKeyId = process.env['RSA2048_KMS_KEY_ID'];
+    const rsaKmsKeyId = process.env['RSA2048_KMS_KEY_ARN'];
 
     if (!rsaKmsKeyId) {
-      throw new Error("RSA2048_KMS_KEY_ID environment variable is not set");
+      throw new Error("RSA2048_KMS_KEY_ARN environment variable is not set");
     }
 
     // Get the data from the input payload

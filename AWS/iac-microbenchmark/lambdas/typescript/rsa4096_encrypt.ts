@@ -8,7 +8,7 @@ const kmsClient = new KMSClient({});
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
 
   // Get the KMS key ID from environment variables 
-  const rsaKmsKeyId = process.env.RSA4096_KMS_KEY_ID;
+  const rsaKmsKeyId = process.env.RSA4096_KMS_KEY_ARN;
 
   if (!rsaKmsKeyId) {
     return {

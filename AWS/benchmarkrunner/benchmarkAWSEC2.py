@@ -360,7 +360,7 @@ def main():
         #'ecc384_sign',
         #'ecc384_verify',
         #'rsa2048_decrypt',
-        #'rsa2048_encrypt',
+        'rsa2048_encrypt',
         #'rsa3072_decrypt',
         #'rsa3072_encrypt',
         #'rsa4096_decrypt',

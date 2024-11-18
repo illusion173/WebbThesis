@@ -22,10 +22,10 @@ async function main(): Promise<void> {
     const message: string = requestJson.message;
 
     // Get the KMS key ID from environment variables
-    const rsaKmsKeyId = process.env['RSA3072_KMS_KEY_ID'];
+    const rsaKmsKeyId = process.env['RSA3072_KMS_KEY_ARN'];
 
     if (!rsaKmsKeyId) {
-      throw new Error("RSA3072_KMS_KEY_ID environment variable is not set");
+      throw new Error("RSA3072_KMS_KEY_ARN environment variable is not set");
     }
 
     // Generate a random AES key and IV

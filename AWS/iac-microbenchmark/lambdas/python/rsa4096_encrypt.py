@@ -12,7 +12,7 @@ kms_client = boto3.client('kms')
 def lambda_handler(event, context):
 
     # Get the KMS key ID from environment variables or directly
-    rsa_kms_key_id = os.environ['RSA4096_KMS_KEY_ID']
+    rsa_kms_key_id = os.environ['RSA4096_KMS_KEY_ARN']
     
     # Generate a random AES key
     aes_key = secrets.token_bytes(32)

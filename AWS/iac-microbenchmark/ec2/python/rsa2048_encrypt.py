@@ -21,7 +21,7 @@ def main():
     message = request_json.get('message')
 
     # Get the KMS key ID from environment variables
-    rsa_kms_key_id = os.environ['RSA2048_KMS_KEY_ID']
+    rsa_kms_key_id = os.environ['RSA2048_KMS_KEY_ARN']
 
     # Generate a random AES key and IV
     aes_key = secrets.token_bytes(32)

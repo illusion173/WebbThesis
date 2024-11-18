@@ -17,7 +17,7 @@ def main():
     request_json = json.loads(request_json_raw)
 
     # Get the KMS key ID from environment variables
-    rsa_kms_key_id = os.environ['RSA2048_KMS_KEY_ID']
+    rsa_kms_key_id = os.environ['RSA2048_KMS_KEY_ARN']
     
     # Get the data from the input payload
     encrypted_aes_key_b64 = request_json.get('encrypted_aes_key')

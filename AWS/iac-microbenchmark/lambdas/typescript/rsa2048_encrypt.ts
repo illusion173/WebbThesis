@@ -10,7 +10,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
   console.log(`Context: ${JSON.stringify(context, null, 2)}`);
 
   // Get the KMS key ID from environment variables 
-  const rsaKmsKeyId = process.env.RSA2048_KMS_KEY_ID;
+  const rsaKmsKeyId = process.env.RSA2048_KMS_KEY_ARN;
 
   if (!rsaKmsKeyId) {
     return {
