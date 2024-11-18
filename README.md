@@ -30,7 +30,7 @@ All OS - Ubuntu 22.04 LTS
 
 ### Azure Virtual Machines:
 - B2pls_v2 (2 vcpu, 4Gb mem)
-- B4ms (4 vcpu, 16Gb mem)
-- B8ms (8 vcpu, 32Gb mem)
+- B4ps_v2 (4 vcpu, 16Gb mem)
+- B8ps_v2 (8 vcpu, 32Gb mem)
 
 
