@@ -26,65 +26,67 @@ type ResponseStruct struct {
 }
 
 func main() {
-	// Retrieve JSON input from command-line argument
+	// Get the JSON input from command line argument
 	requestJSONRaw := os.Args[1]
-	var messageStruct MessageStruct
 
-	// Parse the JSON input
-	if err := json.Unmarshal([]byte(requestJSONRaw), &messageStruct); err != nil || messageStruct.Message == "" {
-		fmt.Println(`{"error": "Invalid input: missing or malformed message"}`)
+	var requestJSON map[string]string
+	if err := json.Unmarshal([]byte(requestJSONRaw), &requestJSON); err != nil {
+		fmt.Printf("Error unmarshalling JSON: %v\n", err)
 		return
 	}
 
-	// Get the KMS key ARN from environment variable
+	message, ok := requestJSON["message"]
+	if !ok {
+		fmt.Println("Error: message field is required")
+		return
+	}
+
 	shaKmsKeyID := os.Getenv("SHA384_KMS_KEY_ARN")
 	if shaKmsKeyID == "" {
-		fmt.Println(`{"error": "KMS key ARN environment variable not set"}`)
+		fmt.Println("Error: SHA384_KMS_KEY_ARN environment variable is not set")
 		return
 	}
 
-	// Convert the message to bytes
-	messageBytes := []byte(messageStruct.Message)
-
 	context := context.Background()
-	// Load AWS configuration
-	cfg, err := config.LoadDefaultConfig(context)
+	// Load the default AWS configuration
+	cfg, err := config.LoadDefaultConfig(context, config.WithRegion("us-east-1"))
 	if err != nil {
-		fmt.Println(`{"error": "Failed to load AWS config"}`)
+		fmt.Printf("unable to load SDK config, %v\n", err)
 		return
 	}
 
 	// Create a new KMS client
 	kmsClient := kms.NewFromConfig(cfg)
 
-	// Sign the message using KMS
-	signature, err := kmsSignMessage(context, kmsClient, shaKmsKeyID, messageBytes)
+	// Convert the message to bytes
+	messageBytes := []byte(message)
+
+	// Use KMS to generate HMAC for the message
+	input := &kms.GenerateMacInput{
+		KeyId:        aws.String(shaKmsKeyID),
+		Message:      messageBytes,
+		MacAlgorithm: types.MacAlgorithmSpecHmacSha384,
+	}
+
+	response, err := kmsClient.GenerateMac(context, input)
 	if err != nil {
-		fmt.Printf(`{"error": "Error signing message: %v"}`, err)
+		fmt.Printf("Error generating MAC: %v\n", err)
 		return
 	}
 
-	// Create a JSON response
-	response := ResponseStruct{Signature: signature}
-	responseJSON, _ := json.Marshal(response)
-	fmt.Println(string(responseJSON))
-}
+	// Base64 encode the signature for output
+	signature := base64.StdEncoding.EncodeToString(response.Mac)
 
-// Function to sign a message using AWS KMS
-func kmsSignMessage(ctx context.Context, kmsClient *kms.Client, keyID string, message []byte) (string, error) {
-	// Call KMS to generate MAC (HMAC) signature
-	macOutput, err := kmsClient.GenerateMac(ctx, &kms.GenerateMacInput{
-		KeyId:        aws.String(keyID),
-		Message:      message,
-		MacAlgorithm: types.MacAlgorithmSpecHmacSha384,
-	})
+	// Prepare the result
+	resultDict := map[string]string{
+		"signature": signature,
+	}
+
+	resultJSON, err := json.Marshal(resultDict)
 	if err != nil {
-		return "", fmt.Errorf("failed to generate MAC: %w", err)
+		fmt.Printf("Error marshalling result to JSON: %v\n", err)
+		return
 	}
 
-	// Base64 encode the generated MAC
-	if macOutput.Mac == nil {
-		return "", fmt.Errorf("no MAC hash returned")
-	}
-	return base64.StdEncoding.EncodeToString(macOutput.Mac), nil
+	fmt.Println(string(resultJSON))
 }
