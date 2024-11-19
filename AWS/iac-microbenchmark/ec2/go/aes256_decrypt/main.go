@@ -17,7 +17,7 @@ import (
 
 type EncryptedRequest struct {
 	Ciphertext   string `json:"encrypted_message"`
-	EncryptedKey string `json:"encrypted_data_key"`
+	EncryptedAesKey string `json:"encrypted_data_key"`
 	IV           string `json:"iv"`
 	Tag          string `json:"tag"`
 }
@@ -47,7 +47,7 @@ func main() {
 		fmt.Println(`{"error": "Failed to decode ciphertext"}`)
 		return
 	}
-	encryptedKey, err := base64.StdEncoding.DecodeString(encryptedRequest.EncryptedKey)
+	encrypted_aes_key, err := base64.StdEncoding.DecodeString(encryptedRequest.EncryptedAesKey)
 	if err != nil {
 		fmt.Println(`{"error": "Failed to decode encrypted key"}`)
 		return
@@ -85,7 +85,7 @@ func main() {
 
 	// Decrypt the data key using KMS
 	decryptedKeyOutput, err := kmsClient.Decrypt(ctx, &kms.DecryptInput{
-		CiphertextBlob: encryptedKey,
+		CiphertextBlob: encrypted_aes_key,
 		KeyId:          aws.String(kmsKeyID),
 	})
 	if err != nil {

@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Get JSON input from command line
     let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
-        return Err("Usage: ./rustexecutable '{\"encrypted_message\":\"your_ciphertext_here\", \"iv\":\"your_iv_here\", \"tag\":\"your_tag_here\", \"encrypted_key\":\"your_encrypted_key_here\"}'".into());
+        return Err("Usage: ./rustexecutable '{\"encrypted_message\":\"your_ciphertext_here\", \"iv\":\"your_iv_here\", \"tag\":\"your_tag_here\", \"encrypted_aes_key\":\"your_encrypted_aes_key_here\"}'".into());
     }
 
     let body_str = &args[1];

@@ -31,7 +31,7 @@ public class Rsa3072DecryptProgram {
             Rsa3072DecryptRequestMessage request = mapper.readValue(requestJsonString, Rsa3072DecryptRequestMessage.class);
             
             // Obtain Values, convert as needed.
-            byte[] encryptedAesKey = Base64.getDecoder().decode(request.getEncryptedKey());
+            byte[] encryptedAesKey = Base64.getDecoder().decode(request.getEncryptedAesKey());
             
             byte[] iv = Base64.getDecoder().decode(request.getIv());
             

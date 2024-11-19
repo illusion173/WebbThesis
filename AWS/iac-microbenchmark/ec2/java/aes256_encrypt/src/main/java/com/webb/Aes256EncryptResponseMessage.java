@@ -4,17 +4,17 @@ public class Aes256EncryptResponseMessage {
     private String ciphertext;
     private String iv;
     private String tag;
-    private String encrypted_key;
+    private String encrypted_aes_key;
 
     // Default constructor (required for Jackson)
     public Aes256EncryptResponseMessage() {}
 
     // Constructor with parameters for new fields
-    public Aes256EncryptResponseMessage(String ciphertext, String iv, String tag, String encrypted_key) {
+    public Aes256EncryptResponseMessage(String ciphertext, String iv, String tag, String encrypted_aes_key) {
         this.ciphertext = ciphertext;
         this.iv = iv;
         this.tag = tag;
-        this.encrypted_key = encrypted_key;
+        this.encrypted_aes_key = encrypted_aes_key;
     }
 
     // Getters and setters for the new fields
@@ -43,10 +43,10 @@ public class Aes256EncryptResponseMessage {
     }
 
     public String getEncrypted_key() {
-        return encrypted_key;
+        return encrypted_aes_key;
     }
 
-    public void setEncrypted_key(String encrypted_key) {
-        this.encrypted_key = encrypted_key;
+    public void setEncrypted_key(String encrypted_aes_key) {
+        this.encrypted_aes_key = encrypted_aes_key;
     }
 }

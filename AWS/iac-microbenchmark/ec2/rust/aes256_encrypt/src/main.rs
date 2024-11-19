@@ -14,7 +14,7 @@ struct EncryptedMessageStruct {
     ciphertext: String,
     iv: String,
     tag: String,
-    encrypted_key: String,
+    encrypted_data_key: String,
 }
 
 #[tokio::main]
@@ -101,7 +101,7 @@ async fn kms_encrypt_message(
         ciphertext: encode(&ciphertext),
         iv: encode(&iv),
         tag: encode(&tag),
-        encrypted_key: encode(&encrypted_data_key),
+        encrypted_data_key: encode(&encrypted_data_key),
     };
 
     Ok(encrypted_message_struct)

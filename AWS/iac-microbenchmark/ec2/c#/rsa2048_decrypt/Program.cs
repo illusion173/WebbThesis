@@ -48,7 +48,7 @@ namespace Program
                 {
                     PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
                 };
-                var requestModel = JsonSerializer.Deserialize<rsa2048_decryptRequest>(args[0]);
+                var requestModel = JsonSerializer.Deserialize<rsa2048_decryptRequest>(args[0], options);
                 if (string.IsNullOrEmpty(requestModel.CipherText) || string.IsNullOrEmpty(requestModel.Iv) || string.IsNullOrEmpty(requestModel.EncryptedAesKey))
                 {
                     Console.WriteLine("{\"Error\": \"Invalid JSON input. Ensure all fields are populated.\"}");

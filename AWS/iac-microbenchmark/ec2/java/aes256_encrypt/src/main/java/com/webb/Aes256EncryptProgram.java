@@ -95,14 +95,14 @@ public class Aes256EncryptProgram {
         String ivb64 = Base64.getEncoder().encodeToString(iv);
         String tagb64 = Base64.getEncoder().encodeToString(tag);
         String cipherTextb64 = Base64.getEncoder().encodeToString(encryptedData);
-        String encryptedKeyb64 = Base64.getEncoder().encodeToString(encryptedDataKeyBytes);
+        String encrypted_aes_keyb64 = Base64.getEncoder().encodeToString(encryptedDataKeyBytes);
         
         // Create a ResponseMessage object
         Aes256EncryptResponseMessage responseMessage = new Aes256EncryptResponseMessage(
         		cipherTextb64,
         		ivb64,
         		tagb64,
-        		encryptedKeyb64
+        		encrypted_aes_keyb64
         ); 
 
             // Write to stdout

@@ -32,7 +32,7 @@ public class Rsa4096DecryptProgram {
             Rsa4096DecryptRequestMessage request = mapper.readValue(requestJsonString, Rsa4096DecryptRequestMessage.class);
             
             // Obtain Values, convert as needed.
-            byte[] encryptedAesKey = Base64.getDecoder().decode(request.getEncryptedKey());
+            byte[] encryptedAesKey = Base64.getDecoder().decode(request.getEncryptedAesKey());
             
             byte[] iv = Base64.getDecoder().decode(request.getIv());
             

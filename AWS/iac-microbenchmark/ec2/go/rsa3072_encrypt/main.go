@@ -25,7 +25,7 @@ type RSA3072Request struct {
 type RSA3072Response struct {
 	Ciphertext   string `json:"ciphertext"`
 	Iv           string `json:"iv"`
-	EncryptedKey string `json:"encrypted_key"`
+	EncryptedAesKey string `json:"encrypted_aes_key"`
 }
 
 func main() {
@@ -120,6 +120,6 @@ func awsKmsRsaEncrypt(ctx context.Context, kmsClient *kms.Client, keyID, message
 	return &RSA3072Response{
 		Ciphertext:   encodedCiphertext,
 		Iv:           encodedIV,
-		EncryptedKey: encodedEncryptedAESKey,
+		EncryptedAesKey: encodedEncryptedAESKey,
 	}, nil
 }

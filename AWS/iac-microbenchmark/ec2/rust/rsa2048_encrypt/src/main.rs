@@ -15,7 +15,7 @@ struct RSA2048Request {
 struct RSA2048Response {
     ciphertext: String,
     iv: String,
-    encrypted_key: String,
+    encrypted_aes_key: String,
 }
 
 #[tokio::main]
@@ -68,17 +68,19 @@ async fn aws_kms_rsa_encrypt(
     let mut crypter = Crypter::new(cipher, Mode::Encrypt, &aes_buf, Some(&iv_buf))
         .map_err(|e| format!("Failed to create Crypter: {}", e))?;
 
-    // Do the physical encryption
+    // Allocate buffer for ciphertext
     let mut ciphertext = vec![0; message.len() + cipher.block_size()];
-    crypter
+    let mut count = crypter
         .update(message.as_bytes(), &mut ciphertext)
         .map_err(|e| format!("Failed to encrypt message: {}", e))?;
 
-    let count = crypter
-        .finalize(&mut ciphertext)
+    // Finalize encryption
+    count += crypter
+        .finalize(&mut ciphertext[count..])
         .map_err(|e| format!("Failed to finalize encryption: {}", e))?;
 
-    ciphertext.truncate(count);
+    // Trim the ciphertext buffer to the actual encrypted size
+    let final_ciphertext = &ciphertext[..count];
 
     // Encrypt the AES key using AWS KMS (RSA key encryption)
     let response = kms_client
@@ -97,7 +99,7 @@ async fn aws_kms_rsa_encrypt(
         .to_vec();
 
     // Step 5: Encode the ciphertext, IV, and encrypted AES key in base64
-    let encoded_ciphertext = encode(&ciphertext);
+    let encoded_ciphertext = encode(final_ciphertext);
     let encoded_iv = encode(&iv_buf);
     let encoded_encrypted_aes_key = encode(&encrypted_aes_key);
 
@@ -105,7 +107,7 @@ async fn aws_kms_rsa_encrypt(
     let rsa_response = RSA2048Response {
         ciphertext: encoded_ciphertext,
         iv: encoded_iv,
-        encrypted_key: encoded_encrypted_aes_key,
+        encrypted_aes_key: encoded_encrypted_aes_key,
     };
 
     Ok(rsa_response)

@@ -19,7 +19,7 @@ import (
 type RSA2048DecryptRequest struct {
 	Ciphertext   string `json:"ciphertext"`
 	Iv           string `json:"iv"`
-	EncryptedKey string `json:"encrypted_key"`
+	EncryptedAesKey string `json:"encrypted_aes_key"`
 }
 
 type RSA2048DecryptResponse struct {
@@ -73,9 +73,9 @@ func main() {
 
 func awsKmsRsaDecrypt(ctx context.Context, kmsClient *kms.Client, keyID string, request *RSA2048DecryptRequest) (string, error) {
 	// Step 1: Decode the base64-encoded AES key, IV, and ciphertext
-	encryptedAESKey, err := base64.StdEncoding.DecodeString(request.EncryptedKey)
+	encryptedAESKey, err := base64.StdEncoding.DecodeString(request.EncryptedAesKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to decode encrypted_key: %v", err)
+		return "", fmt.Errorf("failed to decode encrypted_aes_key: %v", err)
 	}
 
 	iv, err := base64.StdEncoding.DecodeString(request.Iv)

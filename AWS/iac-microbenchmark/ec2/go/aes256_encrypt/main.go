@@ -26,7 +26,7 @@ type MessageStruct struct {
 // Struct for the encrypted response output
 type EncryptedResponse struct {
 	Ciphertext   string `json:"ciphertext"`
-	EncryptedKey string `json:"encrypted_key"`
+	EncryptedAesKey string `json:"encrypted_aes_key"`
 	IV           string `json:"iv"`
 	Tag          string `json:"tag"`
 	Error        string `json:"error,omitempty"`
@@ -85,7 +85,7 @@ func main() {
 	// Prepare the response
 	response := EncryptedResponse{
 		Ciphertext:   base64.StdEncoding.EncodeToString(ciphertext),
-		EncryptedKey: base64.StdEncoding.EncodeToString(encryptedDataKey),
+		EncryptedAesKey: base64.StdEncoding.EncodeToString(encryptedDataKey),
 		IV:           base64.StdEncoding.EncodeToString(iv),
 		Tag:          base64.StdEncoding.EncodeToString(tag),
 	}

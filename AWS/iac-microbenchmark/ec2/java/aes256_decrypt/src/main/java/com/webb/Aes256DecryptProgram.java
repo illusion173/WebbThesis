@@ -29,17 +29,17 @@ public class Aes256DecryptProgram {
             Aes256DecryptRequestMessage requestMessage = mapper.readValue(requestJsonString, Aes256DecryptRequestMessage.class);   
 
             // Decrypt the encrypted data key using KMS
-            byte[] encryptedKeyBytes = Base64.getDecoder().decode(requestMessage.getEncryptedDataKey());
+            byte[] encrypted_aes_keyBytes = Base64.getDecoder().decode(requestMessage.getEncryptedDataKey());
             // Decode IV, tag, and ciphertext
             byte[] iv = Base64.getDecoder().decode(requestMessage.getIv());
             byte[] tag = Base64.getDecoder().decode(requestMessage.getTag());
             byte[] ciphertext = Base64.getDecoder().decode(requestMessage.getEncryptedMessage());
 
             // Decrypt the encrypted key using KMS
-            SdkBytes encryptedKey = SdkBytes.fromByteArray(encryptedKeyBytes);
+            SdkBytes encrypted_aes_key = SdkBytes.fromByteArray(encrypted_aes_keyBytes);
             DecryptRequest decryptRequest = DecryptRequest.builder()
                     .keyId(KMS_KEY_ARN)
-                    .ciphertextBlob(encryptedKey)
+                    .ciphertextBlob(encrypted_aes_key)
                     .build();
 
             kmsClient = KmsClient.builder()

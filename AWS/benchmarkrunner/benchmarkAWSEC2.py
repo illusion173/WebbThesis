@@ -45,7 +45,7 @@ def get_correct_answers(operations: list) -> dict:
 
     # Prepend the directory to each operation and store in the dictionary
     for operation in operations:
-        correct_answer_loc = f"../../TestArtifacts/correct/{operation}.json"
+        correct_answer_loc = f"../../TestArtifacts/AWS/correct/{operation}.json"
         with open(correct_answer_loc, 'r') as file:
             correct_answers[operation] = json.load(file)
 
@@ -55,7 +55,7 @@ def get_testcase_inputs(operations: list) -> dict:
     test_case_inputs = {}
 
     for operation in operations:
-        input_data_loc = f"../../TestArtifacts/inputs/{operation}.json"
+        input_data_loc = f"../../TestArtifacts/AWS/inputs/{operation}.json"
         try:
             # Open and load the JSON content
             with open(input_data_loc, 'r') as file:
@@ -312,6 +312,7 @@ def execute_tc(test_case: dict) -> list:
             print(test_case_output)
             print("")
         except json.JSONDecodeError:
+            print(stdout)
             print("Failed to decode JSON from stdout")
             print(f"Original: {stdout.decode()}")
             test_case_output = {}
@@ -344,12 +345,12 @@ def main():
     # use comments to select specific test cases
 
     languages = [
-        #'c#',
-        #'go',
-        #'java',
+        'c#',
+        'go',
+        'java',
         'python',
-        #'rust',
-        #'typescript',
+        'rust',
+        'typescript',
     ]
 
     operations = [
@@ -359,12 +360,12 @@ def main():
         #'ecc256_verify',
         #'ecc384_sign',
         #'ecc384_verify',
-        #'rsa2048_decrypt',
-        'rsa2048_encrypt',
-        #'rsa3072_decrypt',
-        #'rsa3072_encrypt',
-        #'rsa4096_decrypt',
-        #'rsa4096_encrypt',
+        #'rsa2048_decrypt', # works for all
+        #'rsa2048_encrypt', # works for all
+        #'rsa3072_decrypt', # works for all
+        #'rsa3072_encrypt', # works for all
+        #'rsa4096_decrypt', # works for all
+        #'rsa4096_encrypt', # works for all
         #'sha256', # works for all
         #'sha384', # works for all
     ]
@@ -372,7 +373,7 @@ def main():
     #for cold_start
     start_options = [
         "cold",
-        "warm"
+        #"warm"
     ]
 
     # Key is operation, value is json containing answers
@@ -384,7 +385,7 @@ def main():
     print("Succesful loading of operation inputs")
 
     test_cases = []
-    iterations = 3
+    iterations = 1
 
     # To save the results
     save_result_file_name = f"./{architecture}-{instance_type}-AWSEC2-Benchmarkresults.csv"

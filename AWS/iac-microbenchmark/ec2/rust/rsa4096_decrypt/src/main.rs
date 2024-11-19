@@ -1,5 +1,6 @@
 use aws_sdk_kms::{self as kms, primitives::Blob, Client};
 use base64::decode;
+use openssl::symm::{Cipher, Crypter, Mode};
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::error::Error;
@@ -8,7 +9,7 @@ use std::error::Error;
 struct RSA4096DecryptRequest {
     ciphertext: String,
     iv: String,
-    encrypted_key: String,
+    encrypted_aes_key: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -25,7 +26,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Get JSON input from command line
     let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
-        return Err("Usage: ./rustexecutable '{\"ciphertext\":\"your_ciphertext_here\", \"iv\":\"your_iv_here\", \"encrypted_key\":\"your_encrypted_key_here\"}'".into());
+        return Err("Usage: ./rustexecutable '{\"ciphertext\":\"your_ciphertext_here\", \"iv\":\"your_iv_here\", \"encrypted_aes_key\":\"your_encrypted_aes_key_here\"}'".into());
     }
 
     let body_str = &args[1];
@@ -41,7 +42,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     match aws_kms_rsa_decrypt(&kms_client, &rsa_kms_key_id, &request_struct).await {
         Ok(decrypted_message) => {
             // Print the decrypted message
-            println!("{}", decrypted_message);
+            let response_struct = RSA4096DecryptResponse {
+                message: decrypted_message,
+            };
+
+            let rsp_str = serde_json::to_string(&response_struct)?;
+            println!("{}", rsp_str);
             Ok(())
         }
         Err(e) => Err(format!("Error decrypting message: {}", e).into()),
@@ -54,8 +60,8 @@ async fn aws_kms_rsa_decrypt(
     request: &RSA4096DecryptRequest,
 ) -> Result<String, Box<dyn Error>> {
     // Step 1: Decode the base64-encoded AES key, IV, and ciphertext
-    let encrypted_aes_key = decode(&request.encrypted_key)
-        .map_err(|e| format!("Failed to decode encrypted_key: {}", e))?;
+    let encrypted_aes_key = decode(&request.encrypted_aes_key)
+        .map_err(|e| format!("Failed to decode encrypted_aes_key: {}", e))?;
 
     let iv = decode(&request.iv).map_err(|e| format!("Failed to decode IV: {}", e))?;
 
@@ -75,32 +81,18 @@ async fn aws_kms_rsa_decrypt(
     let decrypted_aes_key = response
         .plaintext()
         .expect("No Plaintext in KMS response")
-        .as_ref()
-        .to_vec();
+        .as_ref();
 
-    // Step 3: Decrypt the message using AES-256-CTR with OpenSSL
-    let cipher = openssl::symm::Cipher::aes_256_ctr();
-    let mut crypter = openssl::symm::Crypter::new(
-        cipher,
-        openssl::symm::Mode::Decrypt,
-        &decrypted_aes_key,
-        Some(&iv),
-    )
-    .map_err(|e| format!("Failed to create Crypter: {}", e))?;
+    // Decrypt the data using AES-CTR
+    let cipher = Cipher::aes_256_ctr();
+    let mut decryptor = Crypter::new(cipher, Mode::Decrypt, decrypted_aes_key, Some(&iv)).unwrap();
+    let mut plaintext = vec![0; ciphertext.len() + cipher.block_size()];
+    let mut count = decryptor.update(&ciphertext, &mut plaintext).unwrap();
+    count += decryptor.finalize(&mut plaintext[count..]).unwrap();
 
-    let mut decrypted_message = vec![0; ciphertext.len() + cipher.block_size()];
-    crypter
-        .update(&ciphertext, &mut decrypted_message)
-        .map_err(|e| format!("Failed to decrypt ciphertext: {}", e))?;
-
-    let count = crypter
-        .finalize(&mut decrypted_message)
-        .map_err(|e| format!("Failed to finalize decryption: {}", e))?;
-
-    decrypted_message.truncate(count);
-
+    plaintext.truncate(count);
     // Convert decrypted message to string
-    let decrypted_message_str = String::from_utf8(decrypted_message)
+    let decrypted_message_str = String::from_utf8(plaintext)
         .map_err(|e| format!("Failed to convert decrypted message to string: {}", e))?;
 
     Ok(decrypted_message_str)

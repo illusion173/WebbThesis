@@ -3,14 +3,14 @@ package com.webb;
 public class Rsa3072EncryptResponseMessage {
 	  	private String ciphertext;
 	    private String iv;
-	    private String encryptedKey;
+	    private String encrypted_aes_key;
 	    
 	    public  Rsa3072EncryptResponseMessage() {}
 	    
-	    public  Rsa3072EncryptResponseMessage(String ciphertext, String iv, String encryptedKey) {
+	    public  Rsa3072EncryptResponseMessage(String ciphertext, String iv, String encrypted_aes_key) {
 	        this.ciphertext = ciphertext;
 	        this.iv = iv;
-	        this.encryptedKey = encryptedKey;
+	        this.encrypted_aes_key = encrypted_aes_key;
 	    }
 	    
 	    
@@ -33,12 +33,12 @@ public class Rsa3072EncryptResponseMessage {
 	        this.iv = iv;
 	    }
 
-	    // Getter and Setter for encrypted_key
-	    public String getEncryptedKey() {
-	        return encryptedKey;
+	    // Getter and Setter for encrypted_aes_key
+	    public String getEncryptedAesKey() {
+	        return encrypted_aes_key;
 	    }
 
-	    public void setEncryptedKey(String encryptedKey) {
-	        this.encryptedKey = encryptedKey;
+	    public void setEncryptedAesKey(String encrypted_aes_key) {
+	        this.encrypted_aes_key = encrypted_aes_key;
 	    }
 }
