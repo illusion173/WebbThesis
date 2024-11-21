@@ -211,10 +211,6 @@ def execute_warmup(subprocess_input):
             shell=False
         )
         
-        while process.poll() is None:  # While the script is still running
-            # Update peak memory and CPU usage
-            time.sleep(0.01)
-
         return
     except Exception as e:
         print(f"Error occurred in warmup: {e}")
@@ -225,7 +221,6 @@ def execute_tc(test_case: dict) -> list:
     subprocess_input = test_case["subprocess_input"]
     test_case_results = []
 
-    # So input can be command, file loc, input
     # Retrieve how many times we need to run this test case
     num_iterations = test_case["iterations"]
 
@@ -305,7 +300,6 @@ def execute_tc(test_case: dict) -> list:
             test_case_output = json.loads(stdout.decode())
             print("TESTCASE OUTPUT:")
             print(test_case_output)
-            print("")
         except json.JSONDecodeError:
             print(stdout)
             print("Failed to decode JSON from stdout")
