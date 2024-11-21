@@ -9,6 +9,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kms.model.*;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class Ecc256VerifyProgram {
     private static final String KMS_KEY_ARN = System.getenv("ECC256_KMS_KEY_ARN");
@@ -26,28 +27,24 @@ public class Ecc256VerifyProgram {
         String requestJsonString = args[0];  // Get the message from the command line argument
 
         Ecc256VerifyRequestMessage request = mapper.readValue(requestJsonString, Ecc256VerifyRequestMessage.class); 
-        // convert message to bytes
-        byte[] signatureByteArr = Base64.getDecoder().decode(request.getSignature());
-        byte[] messageByteArr = Base64.getDecoder().decode(request.getMessage()); 
+        String signatureb64 = request.getSignature();
+        String message = request.getMessage();
         
+        byte[] signatureBytes = Base64.getDecoder().decode(signatureb64);
+ 
 			try {
 				
                 kmsClient = KmsClient.builder()
                         .region(Region.US_EAST_1)
                         .build();
                 
-            	// Convert message to SdkBytes
-                SdkBytes messageBytes = SdkBytes.fromByteArray(signatureByteArr);
-
-                // Convert the signature to SdkBytes
-                SdkBytes signatureBytes = SdkBytes.fromByteArray(messageByteArr);
 
                 // Verify the signature
                 VerifyRequest verifyRequest = VerifyRequest.builder()
                         .keyId(KMS_KEY_ARN)
-                        .message(messageBytes)
+                        .message(SdkBytes.fromUtf8String(message))
                         .messageType("RAW")
-                        .signature(signatureBytes)
+                        .signature(SdkBytes.fromByteArray(signatureBytes))
                         .signingAlgorithm(SigningAlgorithmSpec.ECDSA_SHA_256)  // Use ECDSA_SHA_256 for P-256 curve
                         .build();
 

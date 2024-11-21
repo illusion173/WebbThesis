@@ -170,12 +170,24 @@ def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct
         input = convert_dict_keys(input)
 
 
+    subprocess_input = []
+
+    if settings["command"] == "":
+        # if the file is only an executable, put in the file location.
+        subprocess_input.append(settings["file_loc"])
+
+    else:
+        # Python, JavaScript, Java
+        subprocess_input.extend(settings["command"].split())
+        subprocess_input.append(settings["file_loc"])
+
+    # Always add input to the end.
+    subprocess_input.append(json.dumps(input))
+
     # Build the test case
     test_case = {
         "id" : str(uuid.uuid4()), # generate a unique id for the test case
-        "command": settings["command"],
-        "file_loc": settings["file_loc"],
-        "operation_input": input,
+        "subprocess_input" : subprocess_input,
         "validation": correct_answer,
         "start_type": start_type,
         "iterations": iterations,
@@ -210,27 +222,10 @@ def execute_warmup(subprocess_input):
     
 
 def execute_tc(test_case: dict) -> list:
-    subprocess_input = []
+    subprocess_input = test_case["subprocess_input"]
     test_case_results = []
 
     # So input can be command, file loc, input
-    # or for executables file_loc, input
-    # This means that it is an executable
-    if test_case["command"] == "":
-        subprocess_input.append(test_case["file_loc"])
-    else:
-        # Python, JavaScript, Java
-        subprocess_input.extend(test_case["command"].split())
-
-        subprocess_input.append(test_case["file_loc"])
-
-    # Always add input to the end as an argument
-    op_input = test_case["operation_input"]
-
-
-    subprocess_input.append(json.dumps(op_input))
-
-
     # Retrieve how many times we need to run this test case
     num_iterations = test_case["iterations"]
 
@@ -354,26 +349,26 @@ def main():
     ]
 
     operations = [
-        #'aes256_decrypt', # works for all
-        #'aes256_encrypt', # works for all
-        #'ecc256_sign',
-        #'ecc256_verify',
-        #'ecc384_sign',
-        #'ecc384_verify',
-        #'rsa2048_decrypt', # works for all
-        #'rsa2048_encrypt', # works for all
-        #'rsa3072_decrypt', # works for all
-        #'rsa3072_encrypt', # works for all
-        #'rsa4096_decrypt', # works for all
-        #'rsa4096_encrypt', # works for all
-        #'sha256', # works for all
-        #'sha384', # works for all
+        'aes256_decrypt', # works for all
+        'aes256_encrypt', # works for all
+        'ecc256_sign', # works for all
+        'ecc256_verify', # works for all
+        'ecc384_sign', # works for all
+        'ecc384_verify', # works for all
+        'rsa2048_decrypt', # works for all
+        'rsa2048_encrypt', # works for all
+        'rsa3072_decrypt', # works for all
+        'rsa3072_encrypt', # works for all
+        'rsa4096_decrypt', # works for all
+        'rsa4096_encrypt', # works for all
+        'sha256', # works for all
+        'sha384', # works for all
     ]
 
     #for cold_start
     start_options = [
         "cold",
-        #"warm"
+        "warm"
     ]
 
     # Key is operation, value is json containing answers

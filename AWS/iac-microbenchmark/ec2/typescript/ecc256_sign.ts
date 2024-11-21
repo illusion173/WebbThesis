@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     const requestJson = JSON.parse(requestJsonRaw);
 
     // Extract the message from the parsed JSON
-    const message: string = requestJson.get('message');
+    const message: string = requestJson['message'];
 
     // Retrieve the KMS key ARN from environment variables
     const eccKmsKeyId = process.env['ECC256_KMS_KEY_ARN'];

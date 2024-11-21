@@ -17,8 +17,8 @@ async function main(): Promise<void> {
     const requestJson = JSON.parse(requestJsonRaw);
 
     // Extract the message and signature from the parsed JSON
-    const message: string = requestJson.get('message');
-    const signatureB64: string = requestJson.get('signature');
+    const message: string = requestJson.message;
+    const signatureB64: string = requestJson.signature;
 
     // Decode the base64-encoded signature
     const signature = base64.toByteArray(signatureB64);
