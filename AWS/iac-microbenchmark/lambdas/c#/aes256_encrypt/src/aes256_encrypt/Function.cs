@@ -69,8 +69,12 @@ namespace LambdaApiProxy
 
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
                 // Deserialize the incoming request body into the RequestModel struct
-                var requestModel = JsonSerializer.Deserialize<aes256_encryptRequest>(request.Body);
+                var requestModel = JsonSerializer.Deserialize<aes256_encryptRequest>(request.Body, options);
 
                 // Generate a new data key from KMS
                 var generateDataKeyRequest = new GenerateDataKeyRequest
@@ -84,7 +88,7 @@ namespace LambdaApiProxy
                 var encryptedDataKey = dataKeyResponse.CiphertextBlob.ToArray();
 
                 // Generate a secure random 16-byte IV for AES-GCM
-                int iv_size = 16;
+                int iv_size = 12;
 
                 byte[] iv = new byte[iv_size];
 

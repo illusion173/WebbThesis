@@ -1,8 +1,12 @@
-import * as AWS from 'aws-sdk';
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
+import { KMSClient, VerifyCommand } from '@aws-sdk/client-kms';
+import * as process from 'process';
+import * as base64 from 'base64-js';
 
-// Initialize the KMS client
-const kmsClient = new AWS.KMS();
+// Initialize the AWS KMS client with the specified region
+const kmsClient = new KMSClient({
+  region: 'us-east-1' // Specify the desired region
+});
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
   // Retrieve the original message and the base64 encoded signature from the event
@@ -15,15 +19,23 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
   // Decode the signature from base64
   const signature: Buffer = Buffer.from(signatureB64, 'base64');
 
+  if (!eccKmsKeyId) {
+    throw new Error("ECC384_KMS_KEY_ARN environment variable is not set");
+  }
+
   try {
+
+
     // Verify the signature using KMS
-    const response = await kmsClient.verify({
+    const verifyCommand = new VerifyCommand({
       KeyId: eccKmsKeyId,
       Message: Buffer.from(message, 'utf-8'),
       MessageType: 'RAW',
       Signature: signature,
-      SigningAlgorithm: 'ECDSA_SHA_384' // Correct algorithm for P-384 curve
-    }).promise();
+      SigningAlgorithm: 'ECDSA_SHA_384' // Use 'ECDSA_SHA_384' for P-384
+    });
+
+    const response = await kmsClient.send(verifyCommand);
 
     return {
       statusCode: 200,

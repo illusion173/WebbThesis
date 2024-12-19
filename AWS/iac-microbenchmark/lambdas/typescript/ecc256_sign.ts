@@ -1,8 +1,13 @@
-import * as AWS from 'aws-sdk';
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
+import { KMSClient, SignCommand } from '@aws-sdk/client-kms';
+import * as process from 'process';
+import * as base64 from 'base64-js';
 
-// Initialize the KMS client
-const kmsClient = new AWS.KMS();
+// Initialize the AWS KMS client with the specified region
+const kmsClient = new KMSClient({
+  region: 'us-east-1' // Specify the desired region
+});
+
 
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
 
@@ -11,18 +16,21 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
   const eccKmsKeyId: string = process.env.ECC256_KMS_KEY_ARN!;
 
   try {
+
+
     // Sign the message using KMS
-    const response = await kmsClient.sign({
+    const signCommand = new SignCommand({
       KeyId: eccKmsKeyId,
       Message: Buffer.from(message, 'utf-8'),
       MessageType: 'RAW',
       SigningAlgorithm: 'ECDSA_SHA_256' // Use 'ECDSA_SHA_384' for P-384
-    }).promise();
+    });
 
+    const response = await kmsClient.send(signCommand);
     const signature = response.Signature as Uint8Array;
 
     // Encode the signature to base64 for easier transport
-    const signatureB64 = Buffer.from(signature).toString('base64');
+    const signatureB64 = base64.fromByteArray(signature);
 
     return {
       statusCode: 200,

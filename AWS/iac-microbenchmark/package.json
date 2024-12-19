@@ -27,6 +27,7 @@
     "base-64": "^1.0.0",
     "constructs": "^10.0.0",
     "dotenv": "^16.4.5",
+    "package.json": "^2.0.1",
     "source-map-support": "^0.5.21"
   }
 }

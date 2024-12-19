@@ -14,7 +14,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import java.security.SecureRandom;
 import software.amazon.awssdk.services.kms.model.*;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Aes256EncryptProgram {
@@ -38,7 +37,8 @@ public class Aes256EncryptProgram {
         
         String message = request.getMessage();
         byte[] messageBytes = message.getBytes();
-			kmsClient = KmsClient.builder()
+        
+		kmsClient = KmsClient.builder()
 			        .region(Region.US_EAST_1)
 			        .build();
         
@@ -105,9 +105,9 @@ public class Aes256EncryptProgram {
         		encrypted_aes_keyb64
         ); 
 
-            // Write to stdout
-            OutputStream output = System.out;
-            mapper.writeValue(output, responseMessage);
+		// Write to stdout
+		OutputStream output = System.out;
+		mapper.writeValue(output, responseMessage);
     
     	} catch (Exception e) {
     	

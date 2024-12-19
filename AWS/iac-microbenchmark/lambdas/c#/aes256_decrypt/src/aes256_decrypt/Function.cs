@@ -57,7 +57,11 @@ namespace LambdaApiProxy
 
             try
             {
-                var requestModel = JsonSerializer.Deserialize<aes256_decryptRequest>(request.Body);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
+                var requestModel = JsonSerializer.Deserialize<aes256_decryptRequest>(request.Body, options);
 
                 // Decrypt the data key using KMS
                 var decryptRequest = new DecryptRequest

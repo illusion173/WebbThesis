@@ -108,7 +108,7 @@ func kmsSignMessage(ctx context.Context, kmsClient *kms.Client, keyID string, me
 	macOutput, err := kmsClient.GenerateMac(ctx, &kms.GenerateMacInput{
 		KeyId:        aws.String(keyID),
 		Message:      message,
-		MacAlgorithm: types.MacAlgorithmSpecHmacSha256,
+		MacAlgorithm: types.MacAlgorithmSpecHmacSha384,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to generate MAC: %w", err)

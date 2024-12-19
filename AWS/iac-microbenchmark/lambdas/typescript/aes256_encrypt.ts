@@ -43,8 +43,8 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     // Convert encryptedDataKey to a Buffer before encoding to base64
     const encryptedDataKeyBuffer = Buffer.from(encryptedDataKey);
 
-    // Generate a 16-byte IV for AES-GCM
-    const iv = randomBytes(16); // 16 bytes IV for GCM mode
+    // Generate a 12-byte IV for AES-GCM
+    const iv = randomBytes(12); // 12 bytes IV for GCM mode
 
     // Encrypt the message using AES-GCM
     const cipher = createCipheriv("aes-256-gcm", plaintextDataKey, iv);

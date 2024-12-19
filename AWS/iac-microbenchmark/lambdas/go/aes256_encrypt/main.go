@@ -134,7 +134,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 
 // AES-GCM encryption
 func encryptMessageWithAESGCM(key []byte, message []byte) ([]byte, []byte, []byte, error) {
-	iv_size_int := 16
+	iv_size_int := 12
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)
 	if err != nil {

@@ -8,7 +8,6 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kms.KmsClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kms.model.*;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Sha384Program {

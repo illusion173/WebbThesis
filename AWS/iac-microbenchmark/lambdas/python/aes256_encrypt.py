@@ -27,7 +27,7 @@ def lambda_handler(event, context):
     encrypted_data_key = response['CiphertextBlob']
 
     # Generate 16 secure random bytes
-    iv = secrets.token_bytes(16)  # 16 bytes for AES-GCM IV
+    iv = secrets.token_bytes(12)  # 12 bytes for AES-GCM IV
 
     cipher = Cipher(algorithms.AES(plaintext_data_key), modes.GCM(iv))
     encryptor = cipher.encryptor()

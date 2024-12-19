@@ -1,29 +1,33 @@
 package com.webb;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Aes256DecryptRequestMessage {
-    private String ciphertext;
+    @JsonProperty("encrypted_data_key")
+    private String encryptedDataKey;
+    @JsonProperty("encrypted_message")
+    private String encryptedMessage;
     private String iv;
     private String tag;
-    private String encrypted_key;
 
     // Default constructor (required for Jackson)
     public Aes256DecryptRequestMessage() {}
 
     // Constructor with parameters for new fields
-    public Aes256DecryptRequestMessage(String ciphertext, String iv, String tag, String encrypted_key) {
-        this.ciphertext = ciphertext;
+    public Aes256DecryptRequestMessage(String encryptedMessage, String iv, String tag, String encryptedDataKey) {
+        this.encryptedMessage = encryptedMessage;
         this.iv = iv;
         this.tag = tag;
-        this.encrypted_key = encrypted_key;
+        this.encryptedDataKey = encryptedDataKey;
     }
 
-    // Getters and setters for the new fields
-    public String getCiphertext() {
-        return ciphertext;
+    // Getters and setters
+    public String getEncryptedMessage() {
+        return encryptedMessage;
     }
 
-    public void setCiphertext(String ciphertext) {
-        this.ciphertext = ciphertext;
+    public void setEncryptedMessage(String encryptedMessage) {
+        this.encryptedMessage = encryptedMessage;
     }
 
     public String getIv() {
@@ -42,11 +46,11 @@ public class Aes256DecryptRequestMessage {
         this.tag = tag;
     }
 
-    public String getEncrypted_key() {
-        return encrypted_key;
+    public String getEncryptedDataKey() {
+        return encryptedDataKey;
     }
 
-    public void setEncrypted_key(String encrypted_key) {
-        this.encrypted_key = encrypted_key;
+    public void setEncryptedDataKey(String encryptedDataKey) {
+        this.encryptedDataKey = encryptedDataKey;
     }
 }

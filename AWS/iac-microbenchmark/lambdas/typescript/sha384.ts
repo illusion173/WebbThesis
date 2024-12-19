@@ -1,8 +1,11 @@
-import * as AWS from 'aws-sdk';
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
+import { KMSClient, GenerateMacCommand } from '@aws-sdk/client-kms';
+import * as process from 'process';
 
 // Initialize the AWS KMS client
-const kmsClient = new AWS.KMS();
+const kmsClient = new KMSClient({
+  region: 'us-east-1' // Specify the desired region
+});// Define the signing algorithm
 
 const SIGN_ALGORITHM = 'HMAC_SHA_384';
 
@@ -18,17 +21,28 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
   // Convert the message to a byte buffer
   const messageBytes = Buffer.from(message, 'utf-8');
 
+
+  // Check if the KMS key ARN is provided
+  if (!shaKmsKeyId) {
+    throw new Error("SHA384_KMS_KEY_ARN environment variable is not set");
+
+  }
+
   try {
-    // Use KMS to sign (HMAC) the message
-    const response = await kmsClient.sign({
+
+    // Create the command to generate the HMAC
+    const command = new GenerateMacCommand({
       KeyId: shaKmsKeyId,
       Message: messageBytes,
-      MessageType: 'RAW',
-      SigningAlgorithm: SIGN_ALGORITHM
-    }).promise();
+      MacAlgorithm: SIGN_ALGORITHM,
+    });
 
-    // Base64 encode the signature for output using Buffer
-    const signature = Buffer.from(response.Signature as Uint8Array).toString('base64');
+    // Use KMS to generate HMAC of the message
+    const response = await kmsClient.send(command);
+
+    // Base64 encode the signature for output
+    const signature = Buffer.from(response.Mac as Uint8Array).toString('base64');
+
 
     return {
       headers: {

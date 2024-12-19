@@ -169,7 +169,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 
 // AES-GCM decryption
 func decryptMessageWithAESGCM(key []byte, ciphertext []byte, iv []byte, tag []byte) ([]byte, error) {
-	iv_size_int := 16
+	iv_size_int := 12
 
 	// Create a new AES cipher block
 	block, err := aes.NewCipher(key)

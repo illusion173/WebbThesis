@@ -66,8 +66,12 @@ namespace LambdaApiProxy
 
             try
             {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
+                };
                 // Deserialize the incoming request body into the RequestModel struct
-                var requestModel = JsonSerializer.Deserialize<ecc256_signRequest>(request.Body);
+                var requestModel = JsonSerializer.Deserialize<ecc256_signRequest>(request.Body, options);
 
                 // Encode the message in UTF-8
                 var messageBytes = Encoding.UTF8.GetBytes(requestModel.Message);

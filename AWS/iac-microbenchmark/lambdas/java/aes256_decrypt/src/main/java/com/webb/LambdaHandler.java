@@ -1,6 +1,5 @@
 package com.webb;
 
-import java.util.Map;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -9,23 +8,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Base64;
 import java.util.HashMap;
 import java.nio.charset.StandardCharsets;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.kms.KmsClient;
 import software.amazon.awssdk.services.kms.model.DecryptRequest;
 import software.amazon.awssdk.services.kms.model.DecryptResponse;
 import software.amazon.awssdk.regions.Region;
-
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-import java.util.Base64;
 public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     // Create an instance of ObjectMapper for JSON parsing and serialization
@@ -52,53 +43,51 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             String body = request.getBody();
                     
             // Deserialize the request body into Sha256RequestMessage object
-
-            //
             Aes256DecryptRequestMessage requestMessage = objectMapper.readValue(body, Aes256DecryptRequestMessage.class);
 
-            // Decrypt the encrypted key using KMS
-            byte[] encryptedKeyBytes = Base64.getDecoder().decode(requestMessage.getEncrypted_key());
             // Decode IV, tag, and ciphertext
             byte[] iv = Base64.getDecoder().decode(requestMessage.getIv());
             byte[] tag = Base64.getDecoder().decode(requestMessage.getTag());
-            byte[] ciphertext = Base64.getDecoder().decode(requestMessage.getCiphertext());
-            byte[] ciphertextWithTag = new byte[ciphertext.length + tag.length];
+            byte[] ciphertext = Base64.getDecoder().decode(requestMessage.getEncryptedMessage());
+            
+            // Decrypt the encrypted data key using KMS 
+            byte[] encrypted_aes_keyBytes = Base64.getDecoder().decode(requestMessage.getEncryptedDataKey());
             
             try {
-            	 SdkBytes encryptedKey = SdkBytes.fromByteArray(encryptedKeyBytes);
 
-                 DecryptRequest decryptRequest = DecryptRequest.builder()
-                         .keyId(Aes256DecryptKmsKeyId)
-                         .ciphertextBlob(encryptedKey)
-                         .build();
-                 
-                 kmsClient = KmsClient.builder()
-                         .region(Region.US_EAST_1)
-                         .build();
-                 
-                 DecryptResponse decryptResponse = kmsClient.decrypt(decryptRequest);
-                 
-                 byte[] decryptKey = decryptResponse.plaintext().asByteArray();
-                 
 
-                 System.arraycopy(ciphertext, 0, ciphertextWithTag, 0, ciphertext.length);
-                 System.arraycopy(tag, 0, ciphertextWithTag, ciphertext.length, tag.length);
-                 
-                 
-                 // Perform AES-GCM decryption
-                 Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-                 
-                 SecretKeySpec keySpec = new SecretKeySpec(decryptKey, "AES");
-                 
-                 GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv); // 128-bit authentication tag
+                // Decrypt the encrypted key using KMS
+                SdkBytes encrypted_aes_key = SdkBytes.fromByteArray(encrypted_aes_keyBytes);
+                DecryptRequest decryptRequest = DecryptRequest.builder()
+                        .keyId(Aes256DecryptKmsKeyId)
+                        .ciphertextBlob(encrypted_aes_key)
+                        .build();
 
-                 cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
-                 
-                 cipher.updateAAD(new byte[0]); // Empty AAD for compatibility
-                 
-                 byte[] decryptedBytes = cipher.doFinal(ciphertextWithTag);
-                 
-                 String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
+                kmsClient = KmsClient.builder()
+                        .region(Region.US_EAST_1)
+                        .build();
+
+                DecryptResponse decryptResponse = kmsClient.decrypt(decryptRequest);
+                byte[] decryptKey = decryptResponse.plaintext().asByteArray();
+
+                // Rebuild the encrypted data (ciphertext + tag)
+                byte[] encryptedWithTag = new byte[ciphertext.length + tag.length];
+                System.arraycopy(ciphertext, 0, encryptedWithTag, 0, ciphertext.length);
+                System.arraycopy(tag, 0, encryptedWithTag, ciphertext.length, tag.length);
+
+                // Perform AES-GCM decryption
+                Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+                SecretKeySpec keySpec = new SecretKeySpec(decryptKey, "AES");
+                GCMParameterSpec gcmSpec = new GCMParameterSpec(128, iv); // 96-bit authentication tag
+
+                cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+                cipher.updateAAD(new byte[0]); // Empty AAD for compatibility
+
+                // Decrypt the ciphertext
+                byte[] decryptedBytes = cipher.doFinal(encryptedWithTag);
+
+                // Convert decrypted bytes to string
+                String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
 
                  
                  // Create a ResponseMessage object
