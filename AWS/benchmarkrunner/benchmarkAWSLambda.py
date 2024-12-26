@@ -192,7 +192,7 @@ def get_lambda_api_urls() -> dict[tuple[str,str,str,int],str]:
 def create_tc(start_option: str, operation: str, language: str, lambda_url: str, test_case_input: dict[str,str], correct_answer: dict[str,str], iterations: int, arch_dir: str, memory_size: int)-> dict:
 
     # Develop log stream name for filtering report in CloudWatch
-    log_stream_name = f"{memory_size}/{arch_dir}/{language}/{operation}/{start_option}"
+    log_stream_name = f"{arch_dir}/{language}/{operation}/{memory_size}/{start_option}"
 
     # Build the test case
     test_case = {
@@ -378,7 +378,6 @@ def main():
                         if test_case_lambda_api_url == None:
                             print("No API URL for operation?")
                             print(f"{key}")
-                            exit(1)
 
                         test_case_input = test_case_inputs[operation]
                         correct_answer_input = correct_answers[operation]
