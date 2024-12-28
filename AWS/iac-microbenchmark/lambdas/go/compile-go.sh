@@ -9,15 +9,14 @@ fi
 # Set architecture based on the argument
 if [ "$1" == "x86" ]; then
     ARCH="amd64"
+    COMPILE_DIR="x86"
 elif [ "$1" == "arm" ]; then
     ARCH="arm64"
+    COMPILE_DIR="arm"
 else
     echo "Invalid argument. Use 'x86' or 'arm'."
     exit 1
 fi
-
-# Create the destination directory if it doesn't exist
-mkdir -p "compiledgo/${ARCH}"
 
 # Loop through every child directory
 for dir in */; do
@@ -35,7 +34,7 @@ for dir in */; do
         zip "${dirname}.zip" bootstrap
 
         # Move the zip file to the parent directory's compiledgo folder for the specific architecture
-        mv "${dirname}.zip" "../compiledgo/${ARCH}/"
+        mv "${dirname}.zip" "../${COMPILE_DIR}/"
 
         # Clean up by removing the bootstrap file
         rm bootstrap

@@ -8,142 +8,103 @@ import pandas as pd
 
 # Initialize a boto3 client for CloudWatch Logs
 cloudwatch_logs_client = boto3.client('logs', region_name='us-east-1')  # Specify the correct region
-log_group_name = "WebbBenchmarkLambda"
 save_file_name = "AWSLambdaBenchmarkResults.csv"
 start_end_benchmark_times = []
 
-def save_testcase_results(lambda_reports: list, file_name: str) -> None:
-    """
-    Save the test case results to a CSV file using pandas.
-    """
-    # List to hold all rows of data
+def save_lambda_reports_to_csv(lambda_reports: dict, start_option: str)-> None:
+
     data_rows = []
-
-    # Lambda reports is a list of dictionaries.
-    # the key is the log stream name, the value is a list of dicts
-    # the values are the dictionaries containing each report of the benchmark
-    # the logstream name itself contains identifying information of the type of benchmark it was
-    # report is this
-    '''
-    report = {
-        "id": match.group("RequestId"),
-        "duration": float(match.group("Duration")),
-        "billedduration": float(match.group("BilledDuration")),
-        "memorysize": int(match.group("MemorySize")),
-        "maxmemoryused": int(match.group("MaxMemoryUsed")),
-        "initduration": float(match.group("InitDuration")) if match.group("InitDuration") else None,
-    }
-    '''
-
-    for item in lambda_reports:
-        for log_stream_name, reports in item.items():
-            values = log_stream_name.split("/")
-            memory_size, arch_dir, language, operation, start_option = values
-            for _, report in enumerate(reports):
-                data_row = {
-                    "architecture": arch_dir,
-                    "start_type": start_option,
-                    "operation": operation,
-                    "language": language,
-                    "memory_size" : memory_size
+    # essentially, key will be the cloudwatch log group, then a list of the reports (dictionaries)
+    for cloudwatch_log_group_name, reports in lambda_reports:
+        components = cloudwatch_log_group_name.split("/")
+        architecture =components[1]
+        # convert sharp to # for languages
+        language = components[2].replace("sharp", "#")
+        operation = components[3]
+        memory_size = components[4]
+        # Kind of redundant to do this but thats alright just specify
+        for report in reports:
+            data_row = {
+                "architecture": architecture,
+                "start_type" : start_option,
+                "operation" :operation,
+                "language": language,
+                "memory_size": memory_size,
+                "execution_time_ms" : report.get("Duration"),
+                "max_memory_usage_mb" : report.get("MaxMemoryUsed"),
+                "init_duration_ms" : report.get("InitDuration"),
+                "billed_duration_ms" : report.get("BilledDuration")
                 }
-                data_row.update(report)
-                data_rows.append(data_row)
-    
-    # convert to pd dataframe
+            data_rows.append(data_row)
+
     df = pd.DataFrame(data_rows)
-    
-    # Save DataFrame to a CSV file
-    try:
-        df.to_csv(file_name, index=False)
-        print(f"Results successfully saved to {file_name}")
-    except Exception as e:
-        print(f"Failed to save results: {e}")
 
 
-def parse_report_line(report_line):
+    # Write the DataFrame to a CSV file
+    csv_file_path = f"./lambdabenchmarks-{start_option}.csv"
+    df.to_csv(csv_file_path, index=False)  # Set index=False to avoid writing row indices
+
+def get_lambda_reports(start_end_benchmark_times: list[dict[str,list]]) -> dict[str,list]:
     """
-    Parses a Lambda REPORT line into a dictionary with numeric values.
+    Retrieves Lambda reports from CloudWatch log groups within specified time ranges.
 
-    Args:
-        report_line (str): The REPORT line to parse.
-
-    Returns:
-        dict: A dictionary containing the parsed values.
+    :param start_end_benchmark_times: List of dictionaries with log group as the key and [start_time, end_time] as the value.
+    :return: A dictionary with log group names as keys and a list of Lambda report dictionaries as values.
     """
-    report_pattern = re.compile(
-        r"RequestId:\s+(?P<RequestId>[\w-]+).*?"  # RequestId
-        r"Duration:\s+(?P<Duration>[\d.]+)\s+ms.*?"  # Duration
-        r"Billed Duration:\s+(?P<BilledDuration>[\d.]+)\s+ms.*?"  # Billed Duration
-        r"Memory Size:\s+(?P<MemorySize>[\d.]+)\s+MB.*?"  # Memory Size
-        r"Max Memory Used:\s+(?P<MaxMemoryUsed>[\d.]+)\s+MB.*?"  # Max Memory Used
-        r"(Init Duration:\s+(?P<InitDuration>[\d.]+)\s+ms)?"  # Init Duration (optional)
-    )
+    logs_client = boto3.client('logs')
+    lambda_reports = {}
 
-    match = report_pattern.search(report_line)
-    if not match:
-        raise ValueError(f"Invalid REPORT line format: {report_line}")
+    for benchmark in start_end_benchmark_times:
+        for log_group, times in benchmark.items():
+            start_time = times[0]
+            end_time = times[1]
 
-    parsed_data = {
-        "id": match.group("RequestId"),
-        "duration": float(match.group("Duration")),
-        "billedduration": float(match.group("BilledDuration")),
-        "maxmemoryused": int(match.group("MaxMemoryUsed")),
-        "initduration": float(match.group("InitDuration")) if match.group("InitDuration") else None,
-    }
+            # Convert formatted time to epoch milliseconds
+            start_epoch = int(datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp() * 1000)
+            end_epoch = int(datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp() * 1000)
 
-    return parsed_data
+            lambda_reports[log_group] = []
 
+            # Get log streams for the log group
+            log_streams = logs_client.describe_log_streams(
+                logGroupName=log_group,
+                orderBy='LastEventTime',
+                descending=True
+            )
 
-def get_lambda_reports(log_group_name, log_stream_names, start_time, end_time):
-    """
-    Fetches Lambda 'REPORT' log lines from specified CloudWatch log streams within a time range
-    and parses them into dictionaries.
+            for stream in log_streams['logStreams']:
+                log_stream_name = stream['logStreamName']
 
-    Args:
-        log_group_name (str): Name of the CloudWatch log group.
-        log_stream_names (list): List of log stream names within the log group.
-        start_time (str): Start time in ISO 8601 format ('YYYY-MM-DDTHH:MM:SS.sssZ').
-        end_time (str): End time in ISO 8601 format ('YYYY-MM-DDTHH:MM:SS.sssZ').
+                # Get log events from the log stream
+                events = logs_client.get_log_events(
+                    logGroupName=log_group,
+                    logStreamName=log_stream_name,
+                    startTime=start_epoch,
+                    endTime=end_epoch,
+                    startFromHead=True
+                )
 
-    Returns:
-        list: A list of parsed dictionaries containing 'REPORT' data.
-    """
-    # Convert ISO 8601 timestamps to milliseconds since epoch
-    def iso_to_epoch_millis(iso_time):
-        dt = datetime.strptime(iso_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-        return int(dt.timestamp() * 1000)
+                for event in events['events']:
+                    message = event['message']
 
-    logs_client = boto3.client("logs")
+                    # Check if the message contains a Lambda report
+                    if 'REPORT' in message:
+                        # Extract report details using regex
 
-    # Convert timestamps to epoch milliseconds
-    start_epoch = iso_to_epoch_millis(start_time)
-    end_epoch = iso_to_epoch_millis(end_time)
+                        match = re.search(
+                            r"REPORT\s+RequestId:\s+(?P<RequestId>\S+)\s+Duration:\s+(?P<Duration>\d+\.\d+)\s+ms\s+Billed Duration:\s+(?P<BilledDuration>\d+)\s+ms\s+Memory Size:\s+(?P<MemorySize>\d+)\s+MB\s+Max Memory Used:\s+(?P<MaxMemoryUsed>\d+)\s+MB(?:\s+Init Duration:\s+(?P<InitDuration>\d+\.\d+)\s+ms)?",
+                            message
+                        )
 
-    parsed_reports = []
-
-    # Iterate over the specified log streams
-    for log_stream_name in log_stream_names:
-        # Filter log events for each log stream
-        response = logs_client.filter_log_events(
-            logGroupName=log_group_name,
-            logStreamNames=[log_stream_name],
-            startTime=start_epoch,
-            endTime=end_epoch,
-            filterPattern="REPORT"
-        )
-
-        # Extract and parse the 'REPORT' log entries
-        for event in response.get("events", []):
-            message = event["message"]
-            try:
-                parsed_reports.append(parse_report_line(message))
-            except ValueError as e:
-                print(f"Skipping invalid REPORT line: {message}\nError: {e}")
-
-    return parsed_reports
-
-
+                        if match:
+                            report = {
+                                'Duration': float(match.group('Duration')),
+                                'InitDuration': float(match.group("InitDuration")),
+                                'BilledDuration': int(match.group('BilledDuration')),
+                                'MaxMemoryUsed': int(match.group('MaxMemoryUsed'))
+                            }
+                            lambda_reports[log_group].append(report)
+    return lambda_reports
 
 
 def get_correct_answers(operations: list[str]) -> dict:
@@ -168,9 +129,8 @@ def get_testcase_inputs(operations: list[str]) -> dict:
     return test_case_inputs
 
 # build the key lookup dictionary for getting lambda api urls.
-# Key is a tuple (arch, language, operation, memory_size)
 # value is string api_url
-def get_lambda_api_urls() -> dict[tuple[str,str,str,int],str]:
+def get_lambda_api_urls() -> dict[str,str]:
 
     # Initialize an empty dictionary to store API URLs
     lambda_api_urls = {}
@@ -178,22 +138,21 @@ def get_lambda_api_urls() -> dict[tuple[str,str,str,int],str]:
     # Read the JSON file
     with open("../iac-microbenchmark/lambda_benchmark_urls.json") as file:
         # Load the JSON content
-        data = json.load(file)
+        lambda_api_urls = json.load(file)
 
-    for entry in data:
-        # Use a tuple of (architecture, language, operation, memory_size) as the key
-        key = (entry['architecture'], entry['language'], entry['operation'], entry['memory_size'])
-        # Store the corresponding 'api_url' in the dictionary
-        lambda_api_urls[key] = entry['api_url']
+    if lambda_api_urls is None:
+        print("No Lambda api urls loaded?")
+        print("File should be in location ../iac-microbenchmark/lambda_benchmark_urls.json")
+        exit(1)
 
     return lambda_api_urls
 
-
 def create_tc(start_option: str, operation: str, language: str, lambda_url: str, test_case_input: dict[str,str], correct_answer: dict[str,str], iterations: int, arch_dir: str, memory_size: int)-> dict:
 
-    # Develop log stream name for filtering report in CloudWatch
-    log_stream_name = f"{arch_dir}/{language}/{operation}/{memory_size}/{start_option}"
+    # Clean in case of c# -> csharp
+    cleanedLang = operation.replace("#","sharp")
 
+    cloudwatch_group_name = f"/lambda/${arch_dir}/${cleanedLang}/${operation}/${memory_size}"
     # Build the test case
     test_case = {
         "operation_input": test_case_input,
@@ -203,7 +162,7 @@ def create_tc(start_option: str, operation: str, language: str, lambda_url: str,
         "operation" : operation,
         "language" : language,
         "lambda_url" : lambda_url,
-        "log_stream_name" :log_stream_name
+        "cloudwatch_log_group" :  cloudwatch_group_name
     }
 
     return test_case
@@ -229,6 +188,7 @@ def execute_tc(test_case: dict):
     lambda_url = test_case.get("lambda_url")
     payload_body = test_case.get("operation_input")
     iterations = test_case.get("iterations")
+    test_case_log_group = test_case.get("cloudwatch_log_group")
     
     if not lambda_url:
         raise ValueError("Missing 'lambda_url' in test case dictionary")
@@ -252,9 +212,6 @@ def execute_tc(test_case: dict):
     # Format the time as 'YYYY-MM-DDTHH:MM:SS.sssZ'
     start_formatted_time = current_utc_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
 
-    # We need a way to filter the warmup logs with the real execution logs, do it by time
-    test_case_log_stream = test_case.get("log_stream_name")
-
     for _ in range(0,iterations):
         try:
             # Perform an HTTP POST request
@@ -262,7 +219,7 @@ def execute_tc(test_case: dict):
 
             response.raise_for_status()  # Raise an error for any 4xx/5xx status codes
 
-            json_resp = response.json()
+            #json_resp = response.json()
 
         except requests.exceptions.RequestException as e:
                 print(f"HTTP Request failed: {e}")
@@ -277,22 +234,10 @@ def execute_tc(test_case: dict):
 
     start_end_benchmark_time = {}
 
-    # Key will be the log stream, values are the start and end times of executing the test cases
-    start_end_benchmark_time[test_case_log_stream] = [start_formatted_time, end_formatted_time]
+    # Key will be the log group, values are the start and end times of executing the test cases in str
+    start_end_benchmark_time[test_case_log_group] = [start_formatted_time, end_formatted_time]
 
     start_end_benchmark_times.append(start_end_benchmark_time)
-
-def save_filter_times()->None:
-
-    file_path = "lambda_filter_times.json"
-
-    # Write the list of JSON objects to the file
-    with open(file_path, 'w') as json_file:
-        json.dump(start_end_benchmark_times, json_file, indent=4)
-
-    print(f"Data successfully saved to {file_path}")
-
-    return None
 
 def main():
     print("Beginning Initialization of AWS Lambda Benchmark runner")
@@ -328,7 +273,8 @@ def main():
     'sha384',
     ]
 
-    #for cold_start
+    #Must comment out which one to test.
+    # comment out cold to do warm testing, vice versa.
     start_options = [
         "cold",
         "warm"
@@ -353,7 +299,6 @@ def main():
     print("Succesful loading of operation inputs")
 
     # Grab appropriate urls for lambda calls
-    # Key is a tuple (arch, language, operation, memory_size)
     # value is string api_url
     operation_urls = get_lambda_api_urls()
     print("Succesful Loading of AWS Lambda API GW URLs")
@@ -369,15 +314,23 @@ def main():
                     for architecture in architectures:  
 
                         # first we need to grab the api_url for the test case
-
-                        key = (architecture, language, operation, memory_size)
+                        # remember to clean the lang for c# -> csharp
+                        sanitizedLang = operation.replace("#","sharp")
+                        api_url_key = f"${architecture}-${sanitizedLang}-${operation}-${memory_size}"
 
                         # Retrieve the api url
-                        test_case_lambda_api_url = operation_urls.get(key)
+                        test_case_lambda_api_url = operation_urls.get(api_url_key)
 
                         if test_case_lambda_api_url == None:
-                            print("No API URL for operation?")
-                            print(f"{key}")
+                            print("")
+                            print("")
+                            print("")
+                            print("")
+                            print("ERROR!!")
+                            print("No API URL for operation error.")
+                            print("Check the following api url key in json:")
+                            print(f"{api_url_key}")
+                            exit(1)
 
                         test_case_input = test_case_inputs[operation]
                         correct_answer_input = correct_answers[operation]
@@ -418,20 +371,10 @@ def main():
     lambda_reports = []
 
     print("Begin Saving Results from benchmark.")
-    
-    # Grab the results from AWS cloudwatch here
-    for benchmark_time in start_end_benchmark_times:
-        for log_stream, times in benchmark_time.items():
-            start_time = times[0]
-            end_time = times[1]
 
-            # Obtain the physical result report
-            reports = get_lambda_reports(log_group_name,log_stream,start_time,end_time)
+    lambda_reports = get_lambda_reports(start_end_benchmark_times)
 
-            # Encompass report results
-            lambda_reports[log_stream] = reports
-
-    save_testcase_results(lambda_reports, save_file_name)
+    save_lambda_reports_to_csv(lambda_reports, start_options[0])
 
     print("Finished saving results from benchmark.")
 

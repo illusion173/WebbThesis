@@ -37,7 +37,10 @@ const LambdaStack = new IaCLambdas(app, 'IaCMKStack' + iacId, {
 // Create API here that will interact with the Lambdas
 const APIGWStack = new IaCAPIGw(app, 'IaCMKStack' + iacId, {
   iacId: iacId,
+  lambdaFunctions: LambdaStack.lambdaFunctions,
+  programmingLanguages: languages,
+  architectures: architectures,
+  operations: operations,
+  memorySizes: memory_sizes
 });
-
-new IaCExports(app, 'IaCMKStack' + iacId);
 

@@ -74,7 +74,7 @@ for dir in */; do
     rm -rf publish
     
     # Navigate back to the parent directory
-    cd ../../
+    cd ../../../
     
     echo "Finished processing $dir"
     echo

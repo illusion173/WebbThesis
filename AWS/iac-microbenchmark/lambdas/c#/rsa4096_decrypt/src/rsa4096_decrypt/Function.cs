@@ -74,7 +74,7 @@ namespace LambdaApiProxy
                     PropertyNameCaseInsensitive = true // Enable case-insensitive deserialization
                 };
                 // Deserialize the incoming request body into the RequestModel struct
-                var requestModel = JsonSerializer.Deserialize<rsa4096_decryptRequest>(request.body, options);
+                var requestModel = JsonSerializer.Deserialize<rsa4096_decryptRequest>(request.Body, options);
 
                 byte[] Iv = Convert.FromBase64String(requestModel.Iv);
 
