@@ -1,0 +1,9 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/ecc384_sign.deps.json
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/ecc384_sign.runtimeconfig.json
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/ecc384_sign.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/Amazon.Lambda.APIGatewayEvents.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/Amazon.Lambda.Core.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/Amazon.Lambda.Serialization.SystemTextJson.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/AWSSDK.Core.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/AWSSDK.KeyManagementService.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/publish/ecc384_sign.dll

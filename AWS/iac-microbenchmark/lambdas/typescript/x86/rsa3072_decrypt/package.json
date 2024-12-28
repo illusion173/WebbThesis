@@ -1,0 +1,23 @@
+{
+  "name": "BL-rsa3072_decrypt",
+  "version": "1.0.0",
+  "description": "typescript lambda function - operation rsa3072_decrypt",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
+    "package": "zip -r rsa3072_decrypt.zip dist/*",
+    "deploy": "npm run clean && npm run build && npm run package"
+  },
+  "dependencies": {
+  "@aws-sdk/client-kms": "^3.140.0", 
+  "base64-js": "^1.5.1",
+  "aws-sdk": "^2.1362.0" 
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/aws-lambda": "^8.10.110"
+  },
+  "author": "JeremiahWebb",
+  "license": "MIT"
+}

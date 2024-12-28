@@ -1,0 +1,9 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/ecc256_verify.deps.json
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/ecc256_verify.runtimeconfig.json
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/ecc256_verify.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/Amazon.Lambda.APIGatewayEvents.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/Amazon.Lambda.Core.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/Amazon.Lambda.Serialization.SystemTextJson.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/AWSSDK.Core.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/AWSSDK.KeyManagementService.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc256_verify/src/ecc256_verify/publish/ecc256_verify.dll

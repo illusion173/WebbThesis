@@ -1,0 +1,110 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "sha256/1.0.0": {
+        "dependencies": {
+          "AWSSDK.KeyManagementService": "3.7.400.33",
+          "Amazon.Lambda.APIGatewayEvents": "2.7.1",
+          "Amazon.Lambda.Core": "2.3.0",
+          "Amazon.Lambda.Serialization.SystemTextJson": "2.4.3"
+        },
+        "runtime": {
+          "sha256.dll": {}
+        }
+      },
+      "Amazon.Lambda.APIGatewayEvents/2.7.1": {
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.APIGatewayEvents.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.2.0.0"
+          }
+        }
+      },
+      "Amazon.Lambda.Core/2.3.0": {
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Amazon.Lambda.Serialization.SystemTextJson/2.4.3": {
+        "dependencies": {
+          "Amazon.Lambda.Core": "2.3.0"
+        },
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.Serialization.SystemTextJson.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "AWSSDK.Core/3.7.400.33": {
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.400.33"
+          }
+        }
+      },
+      "AWSSDK.KeyManagementService/3.7.400.33": {
+        "dependencies": {
+          "AWSSDK.Core": "3.7.400.33"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.KeyManagementService.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.400.33"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "sha256/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Amazon.Lambda.APIGatewayEvents/2.7.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ORuKOBjquor/clDL5ogeUoKEHt/iRmaC673gFpNzpwF5VkJ7LRvQc4MYnkeIexnXEwdS7yTkM4eSu9wzORi/wg==",
+      "path": "amazon.lambda.apigatewayevents/2.7.1",
+      "hashPath": "amazon.lambda.apigatewayevents.2.7.1.nupkg.sha512"
+    },
+    "Amazon.Lambda.Core/2.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GTZcqjNO87uaozSJpF8FxMuSgN5CX7GdXoLWp+rhF27MBmRtnTHCoGS69J0gSWnbsfVqh8DZIE5QOoP4BVxuOQ==",
+      "path": "amazon.lambda.core/2.3.0",
+      "hashPath": "amazon.lambda.core.2.3.0.nupkg.sha512"
+    },
+    "Amazon.Lambda.Serialization.SystemTextJson/2.4.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-z953iA/X1APxBeYblKASZnJYRe2dIqArP+MIsEq6cF/7EI+p+8Uzh01m/NgZgvAiimWOapGplioqPKDQN9Qubw==",
+      "path": "amazon.lambda.serialization.systemtextjson/2.4.3",
+      "hashPath": "amazon.lambda.serialization.systemtextjson.2.4.3.nupkg.sha512"
+    },
+    "AWSSDK.Core/3.7.400.33": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-PZMgJzl+ld73WXa+8FlBEMPF4q4r1Aqj76tnp1sKQGkWY1JLvchW50v1DLrUpkdzBuvVFi4EEMF/QlRGGUw17Q==",
+      "path": "awssdk.core/3.7.400.33",
+      "hashPath": "awssdk.core.3.7.400.33.nupkg.sha512"
+    },
+    "AWSSDK.KeyManagementService/3.7.400.33": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-k/9rbHSGvL7Q/dgbJyITT4dJqCN82gk4BlnHUv12ArVIUsESzk5B7brGXHbuDahFqxj3zXGXxGT3kzNClHSz+g==",
+      "path": "awssdk.keymanagementservice/3.7.400.33",
+      "hashPath": "awssdk.keymanagementservice.3.7.400.33.nupkg.sha512"
+    }
+  }
+}
