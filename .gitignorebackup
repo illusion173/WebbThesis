@@ -1,3 +1,10 @@
+### Jeremiah's gitignore ###
+
+bin/
+share/
+
+
+
 ### C ###
 # Prerequisites
 *.d
