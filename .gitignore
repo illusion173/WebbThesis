@@ -1,9 +1,7 @@
 ### Jeremiah's gitignore ###
 
-bin/
-share/
-
-
+bin
+share
 
 ### C ###
 # Prerequisites
