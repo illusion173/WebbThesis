@@ -33,13 +33,22 @@ for dir in */; do
         # Zip the bootstrap file with the directory name
         zip "${dirname}.zip" bootstrap
 
+        mkdir -p "../${COMPILE_DIR}/${dirname}/"
+
         # Move the zip file to the parent directory's compiledgo folder for the specific architecture
-        mv "${dirname}.zip" "../${COMPILE_DIR}/"
+        mv "${dirname}.zip" "../${COMPILE_DIR}/${dirname}/"
+
 
         # Clean up by removing the bootstrap file
         rm bootstrap
+        
 
         # Return to the parent directory
         cd ..
     fi
 done
+# gross fix for above loop
+rm -rf x86/x86/
+rm -rf x86/arm
+rm -rf arm/arm/
+rm -rf arm/x86
