@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# usage
+# ./script (linux-x64 or linux-arm64) (x86 or arm)
 # Assign the first argument to RUNTIME
 RUNTIME="$1"
 DESTINATION="$2"
@@ -30,6 +33,9 @@ DIRECTORIES_TO_PROCESS=(
 for dir in "${DIRECTORIES_TO_PROCESS[@]}"; do
     if [ -d "$dir" ]; then
         echo "Processing directory: $dir"
+
+        mkdir -p "$DESTINATION/$dir"
+
         cd "$dir/src/$dir"
 
         # Build the project
@@ -38,7 +44,11 @@ for dir in "${DIRECTORIES_TO_PROCESS[@]}"; do
         # Publish the project
         dotnet publish --configuration "Release" --framework "net8.0" /p:GenerateRuntimeConfigurationFiles=true --runtime "$RUNTIME" --self-contained False -o ./publish
 
-        TARGET_DIR="../../../../$DESTINATION"
+
+        #TARGET_DIR="../../../../$DESTINATION/$dir"
+
+        TARGET_DIR="../../../../$DESTINATION/$dir"
+        #mkdir -p TARGET_DIR
 
         cd publish
 

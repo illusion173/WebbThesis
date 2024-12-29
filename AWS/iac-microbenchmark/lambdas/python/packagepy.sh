@@ -41,6 +41,8 @@ for py_file in *.py; do
 
   # zip the py into it
   zip $dir_name.zip $dir_name.py
+  # remove the py inside the folder so the zip is the only thing in it.
+  rm $dir_name.py
 
   rm -rf package
 

@@ -57,18 +57,22 @@ for dir in */; do
     
     # Determine the target directory based on runtime
     if [ "$RUNTIME" == "linux-x64" ]; then
-        TARGET_DIR="../../../../x86"
+        TARGET_DIR="../../../../x86/${dir}"
+        echo "TARGET DIRRRR"
+        echo TARGET_DIR
     else
-        TARGET_DIR="../../../../arm"
+        TARGET_DIR="../../../../arm/${dir}"
     fi
     
     # Create the target directory if it doesn't exist
     mkdir -p "$TARGET_DIR"
     
     cd publish
+
     # Zip the publish directory
     zip -r "$TARGET_DIR/$dir.zip" .
     cd ..
+    
     
     # Remove the publish folder
     rm -rf publish
