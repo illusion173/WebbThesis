@@ -2,6 +2,8 @@
 
 bin
 share
+node_modules
+
 
 ### C ###
 # Prerequisites

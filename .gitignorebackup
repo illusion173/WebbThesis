@@ -1,8 +1,8 @@
 ### Jeremiah's gitignore ###
 
-bin/
-share/
-
+bin
+share
+node_modules
 
 
 ### C ###
