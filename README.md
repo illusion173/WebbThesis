@@ -6,7 +6,8 @@ A Multi-Language Study on FaaS and IaaS Platforms by Jeremiah Webb @ Embry-Riddl
 # Chosen benchmark configurations
 (In MB)
 AWS Lambda: 128, 512, 1024, 1769, 3008 \
-(Currently set quota, seehttps://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
+(Currently set quota, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html) \ 
+
 Azure Functions: Not available, dynamic
 
 All OS - Ubuntu 22.04 LTS

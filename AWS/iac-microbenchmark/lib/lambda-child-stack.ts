@@ -61,6 +61,7 @@ export class ChildStackLambdas extends cdk.Stack {
             environment: kmsKeyEnvs[operation],
             // ten minutes
             timeout: cdk.Duration.seconds(600)
+
           });
 
           // Store the function in the dictionary

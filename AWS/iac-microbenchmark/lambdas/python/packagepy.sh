@@ -3,7 +3,9 @@
 ARCH_DIR="x86"
 #ARCH_DIR="arm"
 # The location of the requirements for dependencies.
-REQTXTLOC="../../../../../../requirements.txt"
+#REQTXTLOC="specific_requirements_for_lambda.txt"
+REQTXTLOC="../../specific_requirements_for_lambda.txt"
+#REQTXTLOC="../../../../../../requirements.txt"
 # Loop through all .py files in the current directory
 for py_file in *.py; do
 
@@ -36,11 +38,11 @@ for py_file in *.py; do
   #
   cd package
   # zip everything inside of it.
-  zip -r ../$dir_name.zip .
+  zip -9 -r ../$dir_name.zip .
   cd ..
 
   # zip the py into it
-  zip $dir_name.zip $dir_name.py
+  zip -9 $dir_name.zip $dir_name.py
   # remove the py inside the folder so the zip is the only thing in it.
   rm $dir_name.py
 

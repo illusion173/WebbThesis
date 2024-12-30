@@ -24,6 +24,7 @@ export class ChildStackAPIGW extends cdk.Stack {
     this.createdMethods = []
 
     const { iacId, filteredBenchmarkLambdas, baseAPIUrl, benchmarkRESAPIId, benchmarkRESTAPIRootResourceId } = props;
+
     const benchmarkRestAPI = apigateway.RestApi.fromRestApiAttributes(this, `IacBenchmark-API-${iacId}`, {
       restApiId: benchmarkRESAPIId,
       rootResourceId: benchmarkRESTAPIRootResourceId,

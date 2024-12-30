@@ -23,7 +23,9 @@ export class IaCIam extends cdk.Stack {
         "logs:PutLogEvents",
       ],
       resources: ["*"],
-    });
+    }
+
+    );
 
     const enableKeyAccessPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
