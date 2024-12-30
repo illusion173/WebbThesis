@@ -16,18 +16,21 @@ interface MainStackLambdasProps extends cdk.StackProps {
 }
 
 export class IacMainStackLambdas extends cdk.Stack {
-  public readonly BenchmarkLambdas: { [key: string]: { [key: string]: lambda.Function } };
+  public readonly BenchmarkLambdas: {
+    [key: string]: { [key: string]: { [key: string]: lambda.Function } }
+  };
 
   constructor(scope: Construct, id: string, props: MainStackLambdasProps) {
 
     super(scope, id, props);
 
     const { iacId, BenchmarkLambdaRole, languages, architectures, operations, memorySizes, kmsKeyEnvs } = props;
-    // Categorize by language, then inside the itll be {lambdakey, lambdafunction}
-    // lambda key will be 
-    // ${architecture}-${sanitizedLang}-${operation}-${memory_size}"
+    // Categorize by language and architecture, then inside the itll be {lambdakey, lambdafunction}
+    // lambda key will be then something like python/arm for lookup
     // where sanitizedLang will be c# -> csharp
-    let createdBenchmarkLambdas: { [key: string]: { [key: string]: lambda.Function } } = {};
+    let createdBenchmarkLambdas: {
+      [key: string]: { [key: string]: { [key: string]: lambda.Function } }
+    } = {};
 
     // So we will create a child stack per language.
     for (const language of languages) {
@@ -49,8 +52,6 @@ export class IacMainStackLambdas extends cdk.Stack {
       createdBenchmarkLambdas = { ...createdBenchmarkLambdas, ...createdLambdasFromChild };
     }
     this.BenchmarkLambdas = createdBenchmarkLambdas;
-
-    console.log(this.BenchmarkLambdas);
 
   }
 }

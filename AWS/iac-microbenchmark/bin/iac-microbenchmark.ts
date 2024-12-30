@@ -41,8 +41,6 @@ new IacMainStackAPIGw(app, "IaCBenchmark-Parent-APIGW-" + iacId, {
   BenchmarkLambdas: lambdaFunctions,
   languages: languages,
   architectures: architectures,
-  operations: operations,
-  memorySizes: memory_sizes,
 })
 
 

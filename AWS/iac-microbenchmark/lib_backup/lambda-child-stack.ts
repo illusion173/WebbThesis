@@ -16,7 +16,12 @@ interface ChildStackLambdasProps extends cdk.StackProps {
 
 export class ChildStackLambdas extends cdk.Stack {
 
-  public readonly createdChildLambdas: { [key: string]: { [key: string]: lambda.Function } };
+  // Enables lookup via like this createdChildLambdas[language][architcture] = {functionkey, lambda function to be used}
+  // (function key is `${architecture}-${sanitizedLang}-${operation}-${memorySize}`)
+
+  public readonly createdChildLambdas: {
+    [key: string]: { [key: string]: { [key: string]: lambda.Function } }
+  };
 
   constructor(scope: Construct, id: string, props: ChildStackLambdasProps) {
 
@@ -30,6 +35,10 @@ export class ChildStackLambdas extends cdk.Stack {
     this.createdChildLambdas[language] = {};
 
     for (const architecture of architectures) {
+
+
+
+      this.createdChildLambdas[language][architecture] = {};
       const archType = architecture === 'x86' ? lambda.Architecture.X86_64 : lambda.Architecture.ARM_64;
 
       for (const operation of operations) {
@@ -55,7 +64,7 @@ export class ChildStackLambdas extends cdk.Stack {
           });
 
           // Store the function in the dictionary
-          this.createdChildLambdas[language][functionKey] = lambdaFunction;
+          this.createdChildLambdas[language][architecture][functionKey] = lambdaFunction;
         }
       }
     }
