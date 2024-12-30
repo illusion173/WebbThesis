@@ -33,11 +33,10 @@ export const operations: string[] = [
 // All in MB
 export const memory_sizes: number[] = [
   128,
-  256,
   512,
   1024,
-  1536,
-  2048
+  1769,
+  10240
 ]
 // Kind of gross, but will work for referencing kms key arns based on operation
 // Used to set the env vars for the lambda functions.

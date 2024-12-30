@@ -2,11 +2,10 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { IaCIam } from "../lib/iam";
-import { IaCAPIGw } from "../lib/api_gw";
-import { IaCLambdas } from "../lib/lambdas"
-import { IaCExports } from "../lib/iac-exports"
+import { IacMainStackLambdas } from "../lib/lambda-main-stack"
+import { IacMainStackAPIGw } from "../lib/apigw-main-stack"
 
-// USE THIS TYPESCRIPT FILE TO MANAGE LAMBDAS AND KMS ARNS
+// USE THE TYPESCRIPT FILE iac-inputs.ts TO MANAGE POTENTIAL LAMBDAS AND KMS ARNS
 import { languages, architectures, operations, memory_sizes, kmsKeyArns, operationKeyEnvs } from "./iac-inputs"
 
 // Assign a random id int for tracking in AWS console.
@@ -17,30 +16,33 @@ const kmsKeyARNList = Object.values(kmsKeyArns);
 
 const app = new cdk.App();
 
-const IamStack = new IaCIam(app, 'IaCMKStack' + iacId, {
+const IamStack = new IaCIam(app, 'IaCBenchMark-IAM-' + iacId, {
   iacId: iacId,
   kmsKeyArns: kmsKeyARNList,
 });
 
-// Create Lambdas here
-const LambdaStack = new IaCLambdas(app, 'IaCMKStack' + iacId, {
+// Grab role for lambdas.
+const lambdaBenchmarkRole = IamStack.BenchmarkLambdaRole;
+
+const lambdaFunctionsStack = new IacMainStackLambdas(app, 'IaCBenchMark-Parent-Lambdas-' + iacId, {
   iacId: iacId,
-  programmingLanguages: languages,
+  BenchmarkLambdaRole: lambdaBenchmarkRole,
+  languages: languages,
   architectures: architectures,
   operations: operations,
   memorySizes: memory_sizes,
-  benchmarkLambdaRole: IamStack.BenchmarkLambdaRole,
-  operationKeyEnvs: operationKeyEnvs
-
+  kmsKeyEnvs: operationKeyEnvs,
 });
 
-// Create API here that will interact with the Lambdas
-const APIGWStack = new IaCAPIGw(app, 'IaCMKStack' + iacId, {
+const lambdaFunctions = lambdaFunctionsStack.BenchmarkLambdas;
+
+new IacMainStackAPIGw(app, "IaCBenchmark-Parent-APIGW-" + iacId, {
   iacId: iacId,
-  lambdaFunctions: LambdaStack.lambdaFunctions,
-  programmingLanguages: languages,
+  BenchmarkLambdas: lambdaFunctions,
+  languages: languages,
   architectures: architectures,
   operations: operations,
-  memorySizes: memory_sizes
-});
+  memorySizes: memory_sizes,
+})
+
 
