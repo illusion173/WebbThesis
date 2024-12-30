@@ -1,11 +1,11 @@
 # WebbThesis
 Code and Data Repository for thesis:
-
+Comparative Performance Analysis of Cryptographic Workloads Across Cloud Providers: A Multi-Language Study on FaaS and IaaS Platforms by Jeremiah Webb @ Embry-Riddle Aeronautical University 
 
 # Chosen benchmark configurations
-
 (In MB)
-AWS Lambda: 128, 512, 1024, 1769, 10240
+AWS Lambda: 128, 512, 1024, 1769, 3008 
+(Currently set quota, see https://aws.amazon.com/about-aws/whats-new/2020/12/aws-lambda-supports-10gb-memory-6-vcpu-cores-lambda-functions/)
 Azure Functions: Not available, dynamic
 
 All OS - Ubuntu 22.04 LTS

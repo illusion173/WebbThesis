@@ -86,12 +86,21 @@ export class IacMainStackAPIGw extends cdk.Stack {
 
 
     // output the urls via cf outputs check generate_urls.js for how the information is grabbed.
+    // Convert to a json string
+    const aggregatedApiUrls = JSON.stringify(createdAPIUrls);
+
+    new cdk.CfnOutput(this, 'AggregatedAPIUrls', {
+      value: aggregatedApiUrls,
+      description: 'All API endpoints aggregated into a single output json string',
+    });
+    /*
     for (const [key, url] of Object.entries(createdAPIUrls)) {
       new cdk.CfnOutput(this, `${key}`, {
         value: url,
         description: `API endpoint for ${key}`,
       });
     }
+    */
 
     // Deploy the API!
     new DeployStack(this, `IaCBenchMark-APIGW-Deployment-${iacId}`, {
