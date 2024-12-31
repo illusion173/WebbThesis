@@ -2,18 +2,17 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-interface IAMStackProps extends cdk.StackProps {
+interface IAMStackProps extends cdk.NestedStackProps {
   kmsKeyArns: string[],
-  iacId: number
 }
 
-export class IaCIam extends cdk.Stack {
+export class BKIAMStack extends cdk.NestedStack {
   public readonly BenchmarkLambdaRole: iam.Role;
 
   constructor(scope: Construct, id: string, props: IAMStackProps) {
     super(scope, id, props);
 
-    const { kmsKeyArns, iacId } = props;
+    const { kmsKeyArns } = props;
 
     const logLambdaPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -41,7 +40,7 @@ export class IaCIam extends cdk.Stack {
       resources: kmsKeyArns
     });
 
-    const lambdaRoleName: string = "benchmarkLambdaRole-" + iacId;
+    const lambdaRoleName: string = "BKLambdaRole";
 
     const BenchmarkLambdaRole = new iam.Role(this, lambdaRoleName, {
       assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),

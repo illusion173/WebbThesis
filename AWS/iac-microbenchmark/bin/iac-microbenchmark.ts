@@ -1,13 +1,25 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { IaCIam } from "../lib/iam";
-import { IacMainStackLambdas } from "../lib/lambda-main-stack"
-import { IacMainStackAPIGw } from "../lib/apigw-main-stack"
-
+import { BKRootStack } from "../lib/rootstack"
 // USE THE TYPESCRIPT FILE iac-inputs.ts TO MANAGE POTENTIAL LAMBDAS AND KMS ARNS
 import { languages, architectures, operations, memory_sizes, kmsKeyArns, operationKeyEnvs } from "./iac-inputs"
 
+const app = new cdk.App();
+
+
+// Declare new root stack the "main" of this 
+new BKRootStack(app, `BK-Root`, {
+  languages: languages,
+  architectures: architectures,
+  operations: operations,
+  memorySizes: memory_sizes,
+  kmsKeyEnvs: operationKeyEnvs,
+  kmsKeyArns: kmsKeyArns,
+
+});
+
+/*
 // Assign a random id int for tracking in AWS console.
 const iacId = Math.floor(Math.random() * 9999) + 1;
 
@@ -43,4 +55,4 @@ new IacMainStackAPIGw(app, "IaCBenchmark-Parent-APIGW-" + iacId, {
   architectures: architectures,
 })
 
-
+*/
