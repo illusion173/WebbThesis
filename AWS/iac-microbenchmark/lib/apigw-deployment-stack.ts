@@ -5,7 +5,9 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 interface APIGWDeploymentStackAPIGWProps extends cdk.StackProps {
   readonly restApiId: string,
   readonly benchmarkMethods: apigateway.Method[],
-  iacId: number
+  iacId: string,
+  architecture: string,
+  language: string,
 }
 
 export class DeployStack extends cdk.Stack {
@@ -14,19 +16,17 @@ export class DeployStack extends cdk.Stack {
 
     super(scope, id, props);
 
-    const { restApiId, benchmarkMethods, iacId } = props;
+    const { restApiId, benchmarkMethods, iacId, architecture, language } = props;
 
-    console.log(typeof (benchmarkMethods));
-
-    const deployment = new apigateway.Deployment(this, 'APIGWDeployment', {
-      api: apigateway.RestApi.fromRestApiId(this, `IacBenchmark-API-${iacId}`, restApiId),
+    const deployment = new apigateway.Deployment(this, `APIGWDeploymentFor-${architecture}-${language}-${iacId}`, {
+      api: apigateway.RestApi.fromRestApiId(this, `IacBenchmark-API-${architecture}-${language}-${iacId}`, restApiId),
     })
-
 
     for (const method of benchmarkMethods) {
       deployment.node.addDependency(method);
     }
 
-    new apigateway.Stage(this, 'ProdStage', { deployment: deployment })
+    //const newStage= new apigateway.Stage(this, `prodStage-${architecture}-${language}-${iacId}`, { deployment: deployment })
   }
+
 }
