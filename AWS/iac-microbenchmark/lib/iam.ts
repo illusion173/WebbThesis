@@ -2,12 +2,13 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-interface IAMStackProps extends cdk.NestedStackProps {
+interface IAMStackProps extends cdk.StackProps {
   kmsKeyArns: string[],
 }
 
-export class BKIAMStack extends cdk.NestedStack {
-  public readonly BenchmarkLambdaRole: iam.Role;
+export class BKIAMStack extends cdk.Stack {
+  public BenchmarkLambdaRole: iam.Role;
+  public existingAWSUserAcc: iam.IUser;
 
   constructor(scope: Construct, id: string, props: IAMStackProps) {
     super(scope, id, props);
@@ -23,7 +24,6 @@ export class BKIAMStack extends cdk.NestedStack {
       ],
       resources: ["*"],
     }
-
     );
 
     const enableKeyAccessPolicy = new iam.PolicyStatement({
@@ -50,6 +50,8 @@ export class BKIAMStack extends cdk.NestedStack {
     BenchmarkLambdaRole.addToPolicy(enableKeyAccessPolicy);
 
     this.BenchmarkLambdaRole = BenchmarkLambdaRole;
+
+    this.existingAWSUserAcc = iam.User.fromUserName(this, 'ExistingAWSUser', 'illusion173');
 
   }
 }
