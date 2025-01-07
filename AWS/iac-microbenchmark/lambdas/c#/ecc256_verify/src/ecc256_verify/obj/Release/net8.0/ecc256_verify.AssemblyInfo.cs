@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ecc256_verify")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b963d6cc4ca2f77f3e18a14f0eb4fc88c34faaa9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+94e08d0b334098c0f1f35e02ddb0354db26e349c")]
 [assembly: System.Reflection.AssemblyProductAttribute("ecc256_verify")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ecc256_verify")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

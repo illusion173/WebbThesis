@@ -24,7 +24,7 @@ def delete_all_log_groups():
 
                 # Delete the log group
                 client.delete_log_group(logGroupName=log_group_name)
-                time.sleep(1)
+                time.sleep(30)
 
         print("All log groups have been deleted.")
 
@@ -74,6 +74,7 @@ def wait_for_stack_deletion(stack_name):
                 break
 
 if __name__ == "__main__":
+
     # DELETE ALL STACKS IN ACCOUNT
     delete_all_stacks()
     # DELETE ALL CLOUDWATCH GROUPS IN ACCOUNT!
