@@ -8,8 +8,8 @@ A Multi-Language Study on FaaS and IaaS Platforms by Jeremiah Webb @ Embry-Riddl
 - Python3.11
 - Rust 1.83.0
 - Go 1.23.0
-- tsc 5.7.2 (Node 23.4.0)
-- Dotnet v8
+- TypeScript 5.7.2 (Node 23.4.0)
+- C# (Dotnet v8)
 
 
 ## Cryptographic Workloads: 
