@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("rsa2048_decrypt")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+94e08d0b334098c0f1f35e02ddb0354db26e349c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ca0847cc344ac92ab44632d9374af36c6e944c4")]
 [assembly: System.Reflection.AssemblyProductAttribute("rsa2048_decrypt")]
 [assembly: System.Reflection.AssemblyTitleAttribute("rsa2048_decrypt")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

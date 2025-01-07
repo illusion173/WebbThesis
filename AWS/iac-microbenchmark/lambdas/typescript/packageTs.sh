@@ -72,8 +72,11 @@ EOF
 }
 EOF
 
+
+
   # Install dependencies and deploy
   npm run deploy
+  find . -mindepth 1 ! -name "${dir_name}.zip" -exec rm -rf {} +
   cd ../..
 
 done

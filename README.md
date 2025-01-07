@@ -14,19 +14,17 @@ A Multi-Language Study on FaaS and IaaS Platforms by Jeremiah Webb @ Embry-Riddl
 
 ## Cryptographic Workloads: 
 - SHA256 Hash Generation
-- SHA384 Hash generation
+- SHA384 Hash Generation
 - AES256 Encrypt
 - AES256 Decrypt
 - ECC (256, 384) Sign
-- ECc (256, 384) Verify
+- ECC (256, 384) Verify
 - RSA (2048, 3072, 4096) Encrypt
 - RSA (2048, 3072, 4096) Decrypt
 
 ## Function-as-a-Service (FaaS) configurations
 
-(In MB)
-
-AWS Lambda: 128, 512, 1024, 1769, 3008 \
+AWS Lambda: 128, 512, 1024, 1769, 3008 (In MB)
 
 (Currently set quota, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 

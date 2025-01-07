@@ -1,0 +1,9 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/rsa2048_decrypt.deps.json
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/rsa2048_decrypt.runtimeconfig.json
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/rsa2048_decrypt.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/Amazon.Lambda.APIGatewayEvents.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/Amazon.Lambda.Core.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/Amazon.Lambda.Serialization.SystemTextJson.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/AWSSDK.Core.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/AWSSDK.KeyManagementService.dll
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/rsa2048_decrypt/src/rsa2048_decrypt/publish/rsa2048_decrypt.dll

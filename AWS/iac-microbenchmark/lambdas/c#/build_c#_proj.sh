@@ -50,7 +50,7 @@ for dir in */; do
     cd "$dir/src/$dir"
     
     # Build the project
-    dotnet build -c Release
+    dotnet build -c Release -r $RUNTIME
     
     # Publish the project
     dotnet publish --configuration "Release" --framework "net8.0" /p:GenerateRuntimeConfigurationFiles=true --runtime "$RUNTIME" --self-contained False -o ./publish
