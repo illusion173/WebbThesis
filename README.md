@@ -4,12 +4,37 @@ Comparative Performance Analysis of Cryptographic Workloads Across Cloud Provide
 A Multi-Language Study on FaaS and IaaS Platforms by Jeremiah Webb @ Embry-Riddle Aeronautical University 
 
 # Chosen benchmark configurations
+## Languages Tested
+- Python3.11
+- Rust 1.83.0
+- Go 1.23.0
+- tsc 5.7.2 (Node 23.4.0)
+- Dotnet v8
+
+
+## Cryptographic Workloads: 
+- SHA256 Hash Generation
+- SHA384 Hash generation
+- AES256 Encrypt
+- AES256 Decrypt
+- ECC (256, 384) Sign
+- ECc (256, 384) Verify
+- RSA (2048, 3072, 4096) Encrypt
+- RSA (2048, 3072, 4096) Decrypt
+
+## Function-as-a-Service (FaaS) configurations
+
 (In MB)
+
 AWS Lambda: 128, 512, 1024, 1769, 3008 \
-(Currently set quota, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html) \ 
+
+(Currently set quota, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html)
 
 Azure Functions: Not available, dynamic
 
+All in x86 and Arm64 bit
+
+## Infrastruction-as-a-Service (IaaS) configurations
 All OS - Ubuntu 22.04 LTS
 (All Burstable machines)
 

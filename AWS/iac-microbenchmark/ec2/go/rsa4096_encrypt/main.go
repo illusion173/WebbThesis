@@ -23,8 +23,8 @@ type RSA4096Request struct {
 }
 
 type RSA4096Response struct {
-	Ciphertext   string `json:"ciphertext"`
-	Iv           string `json:"iv"`
+	Ciphertext      string `json:"ciphertext"`
+	Iv              string `json:"iv"`
 	EncryptedAesKey string `json:"encrypted_aes_key"`
 }
 
@@ -118,8 +118,8 @@ func awsKmsRsaEncrypt(ctx context.Context, kmsClient *kms.Client, keyID, message
 
 	// Build the response
 	return &RSA4096Response{
-		Ciphertext:   encodedCiphertext,
-		Iv:           encodedIV,
+		Ciphertext:      encodedCiphertext,
+		Iv:              encodedIV,
 		EncryptedAesKey: encodedEncryptedAESKey,
 	}, nil
 }
