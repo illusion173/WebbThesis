@@ -213,6 +213,8 @@ def execute_tc(test_case: dict):
     # Need to fix this later, this is to fix serialization issues
     if test_case_langauge == "c#":
         input = convert_dict_keys(payload_body)
+        payload_body = input
+        print(payload_body)
 
 
     #print(payload_body)
@@ -262,34 +264,34 @@ def main():
     print("Beginning Initialization of AWS Lambda Benchmark runner")
 
     architectures = [
-        "x86",
+        #"x86",
         "arm"
     ]
 
     languages = [
         #'c#',
-        'go',
+        #'go',
         #'java',
-        #python',
+        # python',
         #'rust',
-        #'typescript',
+        'typescript',
     ]
 
     operations = [
         'aes256_decrypt',
-    'aes256_encrypt',
-        'ecc256_sign',
-        'ecc256_verify',
-        'ecc384_sign',
-        'ecc384_verify',
-        'rsa2048_decrypt',
-        'rsa2048_encrypt',
-        'rsa3072_decrypt',
-        'rsa3072_encrypt',
-        'rsa4096_decrypt',
-        'rsa4096_encrypt',
-    'sha256',
-    'sha384',
+        'aes256_encrypt',
+        #'ecc256_sign',
+        #'ecc256_verify',
+        #'ecc384_sign',
+        #'ecc384_verify',
+        #'rsa2048_decrypt',
+        #'rsa2048_encrypt',
+        #'rsa3072_decrypt',
+        #'rsa3072_encrypt',
+        #'rsa4096_decrypt',
+        #'rsa4096_encrypt',
+        #'sha256',
+        #'sha384',
     ]
 
     #Must comment out which one to test.
@@ -301,10 +303,10 @@ def main():
 
     # All in MB
     memory_sizes = [
-        128,
-        512,
-        1024,
-        1769,
+        # 128,
+        # 512,
+        # 1024,
+        # 1769,
         3008
     ]
 

@@ -1,16 +1,20 @@
 package com.webb;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Rsa4096DecryptRequestMessage {
 	  	private String ciphertext;
 	    private String iv;
-	    private String encryptedKey;
+
+	    @JsonProperty("encrypted_aes_key")
+	    private String encrypted_aes_key;
 	    
 	    public  Rsa4096DecryptRequestMessage() {}
 	    
-	    public  Rsa4096DecryptRequestMessage(String ciphertext, String iv, String encryptedKey) {
+	    public  Rsa4096DecryptRequestMessage(String ciphertext, String iv, String encrypted_aes_key) {
 	        this.ciphertext = ciphertext;
 	        this.iv = iv;
-	        this.encryptedKey = encryptedKey;
+	        this.encrypted_aes_key = encrypted_aes_key;
 	    }
 	    
 	    
@@ -33,12 +37,12 @@ public class Rsa4096DecryptRequestMessage {
 	        this.iv = iv;
 	    }
 
-	    // Getter and Setter for encrypted_key
-	    public String getEncryptedKey() {
-	        return encryptedKey;
+	    // Getter and Setter for encrypted_aes_key
+	    public String getEncryptedAesKey() {
+	        return encrypted_aes_key;
 	    }
 
-	    public void setEncryptedKey(String encryptedKey) {
-	        this.encryptedKey = encryptedKey;
+	    public void setEncryptedAesKey(String encrypted_aes_key) {
+	        this.encrypted_aes_key = encrypted_aes_key;
 	    }
 }

@@ -83,7 +83,7 @@ namespace LambdaApiProxy
                 // Create the request for verifying the signature
                 var verifyRequest = new VerifyRequest
                 {
-                    KeyId = KMSKEYARNNAME,
+                    KeyId = KMSKEYARNVALUE,
                     Message = new MemoryStream(messageBytes),
                     MessageType = MessageType.RAW,
                     Signature = new MemoryStream(signatureBytes),

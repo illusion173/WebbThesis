@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("aes256_encrypt")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+69a9035b5f9b526571271914d3d3b36ec8775440")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e11a634f0826abc03bf7bb6517aa6d4fa71a333")]
 [assembly: System.Reflection.AssemblyProductAttribute("aes256_encrypt")]
 [assembly: System.Reflection.AssemblyTitleAttribute("aes256_encrypt")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

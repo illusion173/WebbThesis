@@ -46,6 +46,7 @@ export class BKLambdaBuildStack extends cdk.Stack {
         'kms:DescribeKey',
         'kms:Sign',
         'kms:Verify',
+        'kms:GenerateMac'
       ],
       resources: kmsKeyARNList
     });

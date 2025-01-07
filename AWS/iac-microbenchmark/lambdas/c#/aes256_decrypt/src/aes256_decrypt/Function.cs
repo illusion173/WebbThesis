@@ -75,9 +75,10 @@ namespace LambdaApiProxy
                 // Decode IV, Tag, and EncryptedMessage from base64
                 byte[] iv = Convert.FromBase64String(requestModel.Iv);
                 byte[] encryptedMessage = Convert.FromBase64String(requestModel.EncryptedMessage);
+                byte[] tag = Convert.FromBase64String(requestModel.Tag);
 
                 // Decrypt message
-                string decryptedMessage = AESCTRDecrypt(encryptedMessage, plaintextDataKey, iv);
+                string decryptedMessage = AESGCMDecrypt(encryptedMessage, plaintextDataKey, iv, tag);
 
                 // Prepare the response
                 var responseModel = new aes256_decryptResponse { Message = decryptedMessage };
@@ -95,44 +96,19 @@ namespace LambdaApiProxy
             }
         }
 
-        // AES-CTR decryption logic
-        public static string AESCTRDecrypt(byte[] ciphertext, byte[] key, byte[] iv)
+        public static string AESGCMDecrypt(byte[] ciphertext, byte[] key, byte[] iv, byte[] tag)
         {
-            using (Aes aes = Aes.Create())
+
+            var decryptedMessageBytes = new byte[ciphertext.Length];
+            int tag_size = 16;
+            // Decrypt the message using AES-GCM
+            using (var aesGcm = new AesGcm(key, tag_size))
             {
-                aes.Key = key;
-                aes.Mode = CipherMode.ECB; // Workaround for CTR mode
-                aes.Padding = PaddingMode.None;
-
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    int blockSize = aes.BlockSize / 8;
-                    byte[] counter = new byte[blockSize];
-                    Buffer.BlockCopy(iv, 0, counter, 0, blockSize);
-
-                    for (int i = 0; i < ciphertext.Length; i++)
-                    {
-                        if (i % blockSize == 0 && i != 0)
-                        {
-                            IncrementCounter(counter);
-                        }
-
-                        byte decryptedByte = (byte)(ciphertext[i] ^ counter[i % blockSize]);
-                        ms.WriteByte(decryptedByte);
-                    }
-
-                    return Encoding.UTF8.GetString(ms.ToArray());
-                }
+                aesGcm.Decrypt(iv, ciphertext, tag, decryptedMessageBytes);
             }
+            return Encoding.UTF8.GetString(decryptedMessageBytes);
+
         }
 
-        private static void IncrementCounter(byte[] counter)
-        {
-            for (int i = counter.Length - 1; i >= 0; i--)
-            {
-                if (++counter[i] != 0)
-                    break;
-            }
-        }
     }
 }

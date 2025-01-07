@@ -86,43 +86,10 @@ namespace LambdaApiProxy
                 var dataKeyResponse = await kmsClient.GenerateDataKeyAsync(generateDataKeyRequest);
                 var plaintextDataKey = dataKeyResponse.Plaintext.ToArray();
                 var encryptedDataKey = dataKeyResponse.CiphertextBlob.ToArray();
+                var message = Encoding.UTF8.GetBytes(requestModel.Message);
 
-                // Generate a secure random 16-byte IV for AES-GCM
-                int iv_size = 12;
-
-                byte[] iv = new byte[iv_size];
-
-                using (var rng = RandomNumberGenerator.Create())
-                {
-                    rng.GetBytes(iv);
-                }
-
-                byte[] encryptedMessage;
-
-                byte[] tag;
-
-                int tag_size = 16;
-
-                using (var aesGcm = new AesGcm(plaintextDataKey, tag_size))
-                {
-                    var messageBytes = Encoding.UTF8.GetBytes(requestModel.Message);
-
-                    encryptedMessage = new byte[messageBytes.Length];
-
-                    tag = new byte[tag_size];
-
-                    // Encrypt the message
-                    aesGcm.Encrypt(iv, messageBytes, encryptedMessage, tag);
-                }
-
-                // Create a response model with a message
-                var responseModel = new aes256_encryptResponse
-                {
-                    EncryptedDataKey = Convert.ToBase64String(encryptedDataKey),
-                    Iv = Convert.ToBase64String(iv),
-                    Tag = Convert.ToBase64String(tag),
-                    EncryptedMessage = Convert.ToBase64String(encryptedMessage),
-                };
+                // Do physical Encryption here, create response
+                var responseModel = AESGCMEncrypt(plaintextDataKey, message, encryptedDataKey);
 
                 // Serialize the response model into a JSON string
                 var responseBody = JsonSerializer.Serialize(responseModel);
@@ -148,94 +115,47 @@ namespace LambdaApiProxy
                 return APIGWResponse;
             }
         }
-        public static byte[] AESCTREncrypt(string plaintext, byte[] key, byte[] iv)
+
+        public static LambdaApiProxy.aes256_encryptResponse AESGCMEncrypt(byte[] plaintextDataKey, byte[] message, byte[] encryptedDataKey)
         {
-            using (Aes aes = Aes.Create())
+            // Generate a secure random 12-byte IV for AES-GCM
+            int iv_size = 12;
+
+            byte[] iv = new byte[iv_size];
+
+            using (var rng = RandomNumberGenerator.Create())
             {
-                aes.Key = key;
-                aes.IV = iv;
-
-                // Set the mode to CTR (Counter Mode)
-                aes.Mode = CipherMode.ECB; // ECB mode as a workaround, we will handle counter ourselves
-                aes.Padding = PaddingMode.None; // No padding, we will handle the block size
-
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                    {
-                        // Convert plaintext to byte array
-                        byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(plaintext);
-
-                        // AES block size
-                        int blockSize = aes.BlockSize / 8; // BlockSize is in bits, convert to bytes
-
-                        // Counter initialization
-                        byte[] counter = new byte[blockSize];
-                        Buffer.BlockCopy(iv, 0, counter, 0, blockSize);
-
-                        // Encrypt using CTR mode
-                        for (int i = 0; i < inputBytes.Length; i++)
-                        {
-                            if (i % blockSize == 0 && i != 0) // Increment counter after each block
-                            {
-                                IncrementCounter(counter);
-                            }
-
-                            byte[] block = new byte[1] { inputBytes[i] };
-                            cs.Write(block, 0, block.Length);
-                            cs.WriteByte((byte)(block[0] ^ counter[i % blockSize])); // XOR with the counter
-                        }
-                    }
-
-                    return ms.ToArray();
-                }
+                rng.GetBytes(iv);
             }
-        }
 
-        public static string AESCTRDecrypt(byte[] ciphertext, byte[] key, byte[] iv)
-        {
-            using (Aes aes = Aes.Create())
+            byte[] encryptedMessage;
+
+            byte[] tag;
+
+            int tag_size = 16;
+
+            using (var aesGcm = new AesGcm(plaintextDataKey, tag_size))
             {
-                aes.Key = key;
 
-                // Set the mode to ECB
-                aes.Mode = CipherMode.ECB; // ECB mode as a workaround, we will handle counter ourselves
-                aes.Padding = PaddingMode.None; // No padding, we will handle the block size
+                encryptedMessage = new byte[message.Length];
 
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    // AES block size
-                    int blockSize = aes.BlockSize / 8; // BlockSize is in bits, convert to bytes
+                tag = new byte[tag_size];
 
-                    // Counter initialization
-                    byte[] counter = new byte[blockSize];
-                    Buffer.BlockCopy(iv, 0, counter, 0, blockSize);
-
-                    // Decrypt using CTR mode
-                    for (int i = 0; i < ciphertext.Length; i++)
-                    {
-                        if (i % blockSize == 0 && i != 0) // Increment counter after each block
-                        {
-                            IncrementCounter(counter);
-                        }
-
-                        byte[] block = new byte[1] { ciphertext[i] };
-                        byte decryptedByte = (byte)(block[0] ^ counter[i % blockSize]); // XOR with the counter
-                        ms.WriteByte(decryptedByte);
-                    }
-
-                    return System.Text.Encoding.UTF8.GetString(ms.ToArray());
-                }
+                // Encrypt the message
+                aesGcm.Encrypt(iv, message, encryptedMessage, tag);
             }
-        }
 
-        private static void IncrementCounter(byte[] counter)
-        {
-            for (int i = counter.Length - 1; i >= 0; i--)
+            // Create a response model with a message
+            var responseModel = new aes256_encryptResponse
             {
-                if (++counter[i] != 0)
-                    break; // If no overflow, we are done
-            }
+                EncryptedDataKey = Convert.ToBase64String(encryptedDataKey),
+                Iv = Convert.ToBase64String(iv),
+                Tag = Convert.ToBase64String(tag),
+                EncryptedMessage = Convert.ToBase64String(encryptedMessage),
+            };
+
+            return responseModel;
+
         }
     }
 }

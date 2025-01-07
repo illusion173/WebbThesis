@@ -3,7 +3,6 @@
 ARCH_DIR="x86"
 #ARCH_DIR="arm"
 
-
 for ts_file in *.ts; do
   dir_name="${ts_file%.ts}"
 
@@ -30,17 +29,17 @@ for ts_file in *.ts; do
   "name": "BL-${dir_name}",
   "version": "1.0.0",
   "description": "typescript lambda function - operation ${dir_name}",
-  "main": "dist/index.js",
+  "main": "dist/${dir_name}.js",
   "scripts": {
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
-    "package": "zip -r ${dir_name}.zip dist/*",
-    "deploy": "npm run clean && npm run build && npm run package"
+    "package": "zip -r ${dir_name}.zip dist/* node_modules/*",
+    "deploy": "npm run clean && npm install && npm run build && npm run package"
   },
   "dependencies": {
-  "@aws-sdk/client-kms": "^3.140.0", 
-  "base64-js": "^1.5.1",
-  "aws-sdk": "^2.1362.0" 
+    "@aws-sdk/client-kms": "^3.140.0", 
+    "base64-js": "^1.5.1",
+    "aws-sdk": "^2.1362.0" 
   },
   "devDependencies": {
     "typescript": "^5.0.0",
@@ -50,7 +49,6 @@ for ts_file in *.ts; do
   "license": "MIT"
 }
 EOF
-
 
   cat > tsconfig.json <<EOF
 {
@@ -74,6 +72,7 @@ EOF
 }
 EOF
 
+  # Install dependencies and deploy
   npm run deploy
   cd ../..
 

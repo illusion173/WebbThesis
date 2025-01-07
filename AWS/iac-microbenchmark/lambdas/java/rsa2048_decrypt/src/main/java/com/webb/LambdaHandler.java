@@ -49,7 +49,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent
             Rsa2048DecryptRequestMessage requestMessage = objectMapper.readValue(body, Rsa2048DecryptRequestMessage.class);
 
             // Obtain Values, convert as needed.
-            byte[] encryptedAesKey = Base64.getDecoder().decode(requestMessage.getEncryptedKey());
+            byte[] encryptedAesKey = Base64.getDecoder().decode(requestMessage.getEncryptedAesKey());
             
             byte[] iv = Base64.getDecoder().decode(requestMessage.getIv());
             
