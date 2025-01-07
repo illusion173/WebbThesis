@@ -29,7 +29,7 @@ type MessageStruct struct {
 // Response structure for returning encrypted content
 type EncryptedResponse struct {
 	Ciphertext   string `json:"ciphertext"`
-	EncryptedKey string `json:"encrypted_key"`
+	EncryptedKey string `json:"encrypted_aes_key"`
 	IV           string `json:"iv"`
 	Tag          string `json:"tag"`
 	Error        string `json:"error,omitempty"`

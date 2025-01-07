@@ -19,8 +19,8 @@ import (
 
 // EncryptedRequest structure for parsing the encrypted JSON body
 type EncryptedRequest struct {
-	Ciphertext   string `json:"ciphertext"`
-	EncryptedKey string `json:"encrypted_key"`
+	Ciphertext   string `json:"encrpyted_message"`
+	EncryptedKey string `json:"encrypted_data_key"`
 	IV           string `json:"iv"`
 	Tag          string `json:"tag"`
 }

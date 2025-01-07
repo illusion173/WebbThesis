@@ -1,6 +1,6 @@
 use aws_sdk_kms::{self as kms, primitives::Blob, Client};
-use base64::{decode, encode};
-use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
+use base64::decode;
+use lambda_http::{run, service_fn, tracing, Body, Error, Request, Response};
 use openssl::symm::{Cipher, Crypter, Mode};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -10,7 +10,7 @@ use std::env; // OpenSSL for decryption
 struct RSA3072DecryptRequest {
     ciphertext: String,
     iv: String,
-    encrypted_key: String,
+    encrypted_aes_key: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -71,7 +71,7 @@ async fn aws_kms_rsa_decrypt(
     request: RSA3072DecryptRequest,
 ) -> Result<String, Error> {
     // Step 1: Decode the base64-encoded AES key, IV, and ciphertext
-    let encrypted_aes_key = decode(&request.encrypted_key)
+    let encrypted_aes_key = decode(&request.encrypted_aes_key)
         .map_err(|e| Error::from(format!("Failed to decode encrypted_key: {}", e)))?;
     let iv = decode(&request.iv).map_err(|e| Error::from(format!("Failed to decode IV: {}", e)))?;
     let ciphertext = decode(&request.ciphertext)

@@ -1,6 +1,5 @@
 use aws_sdk_kms::{self as kms, primitives::Blob, Client};
-use base64::encode;
-use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
+use lambda_http::{run, service_fn, tracing, Body, Error, Request, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::env;

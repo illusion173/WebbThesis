@@ -32,7 +32,7 @@ for py_file in *.py; do
   mkdir -p package
 
   # download and install the required libraries.
-  pip install -r $REQTXTLOC --target=./package
+  pip install -r $REQTXTLOC --platform manylinux2014_aarch64 --only-binary=:all: --target=./package
 
   # move to the root of where the packages live
   #

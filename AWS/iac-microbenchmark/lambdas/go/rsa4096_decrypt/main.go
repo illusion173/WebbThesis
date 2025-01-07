@@ -21,7 +21,7 @@ import (
 type RSA4096DecryptRequest struct {
 	Ciphertext   string `json:"ciphertext"`
 	Iv           string `json:"iv"`
-	EncryptedKey string `json:"encrypted_key"`
+	EncryptedKey string `json:"encrypted_aes_key"`
 }
 
 type RSA4096DecryptResponse struct {

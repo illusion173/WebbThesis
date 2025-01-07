@@ -122,9 +122,10 @@ def get_testcase_inputs(operations: list[str]) -> dict:
     test_case_inputs = {}
 
     for operation in operations:
-        input_data_loc = f"../../TestArtifacts/inputs/{operation}.json"
+
+        input_data_loc = f"../../TestArtifacts/AWS/inputs/{operation}.json"
         with open(input_data_loc, 'r') as file:
-            test_case_inputs[operation] = file.read()
+            test_case_inputs[operation] = json.load(file)
 
     return test_case_inputs
 
@@ -136,7 +137,7 @@ def get_lambda_api_urls() -> dict[str,str]:
     lambda_api_urls = {}
 
     # Read the JSON file
-    with open("../iac-microbenchmark/lambda_benchmark_urls.json") as file:
+    with open("./lambda_benchmark_urls.json") as file:
         # Load the JSON content
         lambda_api_urls = json.load(file)
 
@@ -162,7 +163,9 @@ def create_tc(start_option: str, operation: str, language: str, lambda_url: str,
         "operation" : operation,
         "language" : language,
         "lambda_url" : lambda_url,
-        "cloudwatch_log_group" :  cloudwatch_group_name
+        "cloudwatch_log_group" :  cloudwatch_group_name,
+        "architecture": arch_dir,
+        "memory": memory_size
     }
 
     return test_case
@@ -189,6 +192,7 @@ def execute_tc(test_case: dict):
     payload_body = test_case.get("operation_input")
     iterations = test_case.get("iterations")
     test_case_log_group = test_case.get("cloudwatch_log_group")
+    test_case_langauge = test_case.get("language")
     
     if not lambda_url:
         raise ValueError("Missing 'lambda_url' in test case dictionary")
@@ -206,6 +210,12 @@ def execute_tc(test_case: dict):
         for _ in range(0,10):
             execute_warmup(lambda_url,payload_body)    
 
+    # Need to fix this later, this is to fix serialization issues
+    if test_case_langauge == "c#":
+        input = convert_dict_keys(payload_body)
+
+
+    #print(payload_body)
     # Get the current UTC time
     current_utc_time = datetime.now(timezone.utc)
 
@@ -239,6 +249,15 @@ def execute_tc(test_case: dict):
 
     start_end_benchmark_times.append(start_end_benchmark_time)
 
+def convert_dict_keys(input_dict):
+    # Create a new dictionary with transformed keys
+    return {to_pascal_case(key): value for key, value in input_dict.items()}
+
+def to_pascal_case(snake_str):
+    # Convert snake_case to PascalCase
+    components = snake_str.split('_')
+    return ''.join(x.title() for x in components)
+
 def main():
     print("Beginning Initialization of AWS Lambda Benchmark runner")
 
@@ -248,27 +267,27 @@ def main():
     ]
 
     languages = [
-        'c#',
+        #'c#',
         'go',
-        'java',
-        'python',
-        'rust',
-        'typescript',
+        #'java',
+        #python',
+        #'rust',
+        #'typescript',
     ]
 
     operations = [
-    'aes256_decrypt',
+        'aes256_decrypt',
     'aes256_encrypt',
-    'ecc256_sign',
-    'ecc256_verify',
-    'ecc384_sign',
-    'ecc384_verify',
-    'rsa2048_decrypt',
-    'rsa2048_encrypt',
-    'rsa3072_decrypt',
-    'rsa3072_encrypt',
-    'rsa4096_decrypt',
-    'rsa4096_encrypt',
+        'ecc256_sign',
+        'ecc256_verify',
+        'ecc384_sign',
+        'ecc384_verify',
+        'rsa2048_decrypt',
+        'rsa2048_encrypt',
+        'rsa3072_decrypt',
+        'rsa3072_encrypt',
+        'rsa4096_decrypt',
+        'rsa4096_encrypt',
     'sha256',
     'sha384',
     ]
@@ -277,21 +296,21 @@ def main():
     # comment out cold to do warm testing, vice versa.
     start_options = [
         "cold",
-        "warm"
+        #"warm"
     ]
 
     # All in MB
     memory_sizes = [
         128,
-        256,
         512,
         1024,
-        1536,
-        2048
+        1769,
+        3008
     ]
 
     # Key is operation, value is json containing answers
-    correct_answers = get_correct_answers(operations)
+    #correct_answers = get_correct_answers(operations)
+    correct_answers = {}
     print("Succesful loading of correct answers")
 
     # Key is operation, value is json containing inputs
@@ -304,7 +323,7 @@ def main():
     print("Succesful Loading of AWS Lambda API GW URLs")
 
     test_cases = []
-    iterations = 50
+    iterations = 1
 
     # First we need to create the testcases themselves
     for language in languages:
@@ -315,8 +334,8 @@ def main():
 
                         # first we need to grab the api_url for the test case
                         # remember to clean the lang for c# -> csharp
-                        sanitizedLang = operation.replace("#","sharp")
-                        api_url_key = f"${architecture}-${sanitizedLang}-${operation}-${memory_size}"
+                        sanitizedLang = language.replace("#","sharp")
+                        api_url_key = f"{architecture}-{sanitizedLang}-{operation}-{memory_size}"
 
                         # Retrieve the api url
                         test_case_lambda_api_url = operation_urls.get(api_url_key)
@@ -333,7 +352,7 @@ def main():
                             exit(1)
 
                         test_case_input = test_case_inputs[operation]
-                        correct_answer_input = correct_answers[operation]
+                        correct_answer_input  = correct_answers.get(operation, "")
 
                         # Then Create the test case
                         new_test_case = create_tc(start_option,operation,language,test_case_lambda_api_url,test_case_input,correct_answer_input,iterations,architecture,memory_size)
@@ -348,9 +367,20 @@ def main():
 
         print("---------------------------------------")
         print(f"Executing Test Case")
-        print(f">Operation: {test_case["operation"]}")
-        print(f">Language: {test_case["language"]}")
-        print(f">Start Type: {test_case["start_type"]}")
+        #print(f">Operation: {test_case["operation"]}
+        print(f"Operation")
+        test_case_op = test_case["operation"]
+        test_case_lang = test_case["language"]
+        test_case_start = test_case["start_type"]
+        test_case_arch = test_case["architecture"]
+        test_case_mem = test_case["memory"]
+
+        print(f">Operation: {test_case_op}")
+        print(f">Language: {test_case_lang}")
+        print(f">Start Type: {test_case_start}")
+        print(f">Architecture:{test_case_arch} ")
+        print(f">Memory Size: {test_case_mem}")
+
 
         # Execute Test Case
         execute_tc(test_case)

@@ -1,6 +1,6 @@
 use aws_sdk_kms::{self as kms, primitives::Blob};
-use base64::{decode, encode};
-use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
+use base64::decode;
+use lambda_http::{run, service_fn, tracing, Body, Error, Request, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::env;
@@ -12,10 +12,10 @@ struct MessageStruct {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct EncryptedMessageStruct {
-    ciphertext: String,
+    encrypted_message: String,
     iv: String,
     tag: String,
-    encrypted_key: String,
+    encrypted_data_key: String,
 }
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -77,7 +77,7 @@ async fn kms_decrypt_message(
     encrypted_message: EncryptedMessageStruct,
 ) -> Result<MessageStruct, Error> {
     // Decrypt the data key using KMS
-    let encryption_key_decoded = decode(&encrypted_message.encrypted_key)
+    let encryption_key_decoded = decode(&encrypted_message.encrypted_data_key)
         .map(Blob::new)
         .map_err(|_| Error::from("Failed to decode encrypted key"))?;
 
@@ -100,7 +100,7 @@ async fn kms_decrypt_message(
 
     let tag = decode(&encrypted_message.tag).map_err(|_| Error::from("Failed to decode tag"))?;
 
-    let ciphertext = decode(&encrypted_message.ciphertext)
+    let ciphertext = decode(&encrypted_message.encrypted_message)
         .map_err(|_| Error::from("Failed to decode ciphertext"))?;
 
     // AES-GCM decryption

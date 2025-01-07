@@ -2,7 +2,6 @@ import boto3
 import base64
 import json
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
 
 def lambda_handler(event, context):
     # Initialize KMS client

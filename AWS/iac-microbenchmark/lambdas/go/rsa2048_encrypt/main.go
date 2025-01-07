@@ -27,7 +27,7 @@ type RSA2048Request struct {
 type RSA2048Response struct {
 	Ciphertext   string `json:"ciphertext"`
 	Iv           string `json:"iv"`
-	EncryptedKey string `json:"encrypted_key"`
+	EncryptedKey string `json:"encrypted_aes_key"`
 }
 
 func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

@@ -39,6 +39,8 @@ def lambda_handler(event, context):
         print(f"Error encrypting AES key: {e}")
         return {
             'statusCode': 500,
+            'headers' : {"Access-Control-Allow-Origin": "*",
+                     "content-type": "application/json"},
             'body': json.dumps('Encryption failed')
         }
 

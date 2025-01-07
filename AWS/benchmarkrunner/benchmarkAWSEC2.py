@@ -169,7 +169,6 @@ def create_tc(arch_dir: str, language: str, operation: str, input: dict, correct
     if language == "c#":
         input = convert_dict_keys(input)
 
-
     subprocess_input = []
 
     if settings["command"] == "":
@@ -205,8 +204,7 @@ def execute_warmup(subprocess_input):
         # Use subprocess to run the executable
         process = subprocess.Popen(
             subprocess_input,
-            stdin=subprocess.PIPE, 
-            stdout=subprocess.PIPE, 
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
             stderr=subprocess.PIPE,
             shell=False
         )
@@ -334,12 +332,12 @@ def main():
     # use comments to select specific test cases
 
     languages = [
-        'c#',
+        #'c#',
         'go',
-        'java',
-        'python',
-        'rust',
-        'typescript',
+        #'java',
+        #'python',
+        #'rust',
+        #'typescript',
     ]
 
     operations = [

@@ -21,7 +21,7 @@ import (
 type RSA2048DecryptRequest struct {
 	Ciphertext   string `json:"ciphertext"`
 	Iv           string `json:"iv"`
-	EncryptedKey string `json:"encrypted_key"`
+	EncryptedKey string `json:"encrypted__aes_key"`
 }
 
 type RSA2048DecryptResponse struct {

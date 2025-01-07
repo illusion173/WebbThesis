@@ -1,6 +1,6 @@
 use aws_sdk_kms::{self as kms, primitives::Blob, Client};
 use base64::encode;
-use lambda_http::{run, service_fn, tracing, Body, Error, Request, RequestExt, Response};
+use lambda_http::{run, service_fn, tracing, Body, Error, Request, Response};
 use openssl::rand::rand_bytes;
 use openssl::symm::{Cipher, Crypter, Mode};
 use serde::{Deserialize, Serialize};
