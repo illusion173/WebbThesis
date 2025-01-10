@@ -13,10 +13,21 @@ def lambda_handler(event, context):
 
     # Get the KMS key ARN from environment variables
     kms_key_id = os.environ['AES_KMS_KEY_ARN']
-    
+
+    body = json.loads(event["body"])
+
     # Extract the message from the API Gateway event
-    message = event.get('message')
-    
+    # the json is initially a physical string
+    message = body.get('message')
+
+    if not message:
+        return {
+            'statusCode': 400,
+            'headers' : {"Access-Control-Allow-Origin": "*",
+                     "content-type": "application/json"},
+            'body': json.dumps({'error': 'Message not provided.'})
+        }
+
     # Create a new data key for AES-256-GCM encryption
     response = kms_client.generate_data_key(
         KeyId=kms_key_id,
@@ -26,7 +37,7 @@ def lambda_handler(event, context):
     plaintext_data_key = response['Plaintext']
     encrypted_data_key = response['CiphertextBlob']
 
-    # Generate 16 secure random bytes
+    # Generate 12 secure random bytes
     iv = secrets.token_bytes(12)  # 12 bytes for AES-GCM IV
 
     cipher = Cipher(algorithms.AES(plaintext_data_key), modes.GCM(iv))

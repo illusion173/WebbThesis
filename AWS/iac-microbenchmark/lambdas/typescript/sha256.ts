@@ -1,4 +1,4 @@
-import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
+import { Context } from 'aws-lambda';
 import { KMSClient, GenerateMacCommand } from '@aws-sdk/client-kms';
 import * as process from 'process';
 
@@ -9,7 +9,7 @@ const kmsClient = new KMSClient({
 
 const SIGN_ALGORITHM = 'HMAC_SHA_256';
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: any, context: Context): Promise<any> => {
 
   // Extract the message from the event body, assuming it's passed as a JSON string
   const body = event.body ? JSON.parse(event.body) : {};

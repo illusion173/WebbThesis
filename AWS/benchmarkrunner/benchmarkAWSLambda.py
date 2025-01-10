@@ -15,13 +15,18 @@ def save_lambda_reports_to_csv(lambda_reports: dict, start_option: str)-> None:
 
     data_rows = []
     # essentially, key will be the cloudwatch log group, then a list of the reports (dictionaries)
-    for cloudwatch_log_group_name, reports in lambda_reports:
-        components = cloudwatch_log_group_name.split("/")
-        architecture =components[1]
+    for cloudwatch_log_group_name, reports in lambda_reports.items():
+        # /aws/lambda/ Remove this part
+        main_info_string = cloudwatch_log_group_name.replace("/aws/lambda/", "")
+
+        main_components_info = main_info_string.split("-")
+
+        architecture = main_components_info[0]
+
         # convert sharp to # for languages
-        language = components[2].replace("sharp", "#")
-        operation = components[3]
-        memory_size = components[4]
+        language = main_components_info[1].replace("sharp", "#")
+        operation = main_components_info[2]
+        memory_size = main_components_info[3]
         # Kind of redundant to do this but thats alright just specify
         for report in reports:
             data_row = {
@@ -41,10 +46,10 @@ def save_lambda_reports_to_csv(lambda_reports: dict, start_option: str)-> None:
 
 
     # Write the DataFrame to a CSV file
-    csv_file_path = f"./lambdabenchmarks-{start_option}.csv"
-    df.to_csv(csv_file_path, index=False)  # Set index=False to avoid writing row indices
+    csv_file_path = f"./Lambda-Benchmark-Results-x86-{start_option}-rust-python-typescript.csv"
+    df.to_csv(csv_file_path, index=False, mode='a')  # Set index=False to avoid writing row indices
 
-def get_lambda_reports(start_end_benchmark_times: list[dict[str,list]]) -> dict[str,list]:
+def get_lambda_reports(start_end_benchmark_times: list[dict[str, list]]) -> dict[str, list]:
     """
     Retrieves Lambda reports from CloudWatch log groups within specified time ranges.
 
@@ -54,58 +59,63 @@ def get_lambda_reports(start_end_benchmark_times: list[dict[str,list]]) -> dict[
     logs_client = boto3.client('logs')
     lambda_reports = {}
 
+    # Regex to extract fields from the Lambda REPORT log lines
+    report_regex = re.compile(
+        r"REPORT RequestId: (?P<RequestId>[a-z0-9\-]+)\s+"
+        r"Duration: (?P<Duration>[\d.]+) ms\s+"
+        r"Billed Duration: (?P<BilledDuration>\d+) ms\s+"
+        r"Memory Size: (?P<MemorySize>\d+) MB\s+"
+        r"Max Memory Used: (?P<MaxMemoryUsed>\d+) MB\s+"
+        r"(Init Duration: (?P<InitDuration>[\d.]+) ms\s+)?"
+    )
+
     for benchmark in start_end_benchmark_times:
         for log_group, times in benchmark.items():
             start_time = times[0]
             end_time = times[1]
-
-            # Convert formatted time to epoch milliseconds
-            start_epoch = int(datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp() * 1000)
-            end_epoch = int(datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp() * 1000)
-
-            lambda_reports[log_group] = []
+            reports_for_log_group = []
 
             # Get log streams for the log group
             log_streams = logs_client.describe_log_streams(
                 logGroupName=log_group,
                 orderBy='LastEventTime',
                 descending=True
-            )
+            ).get('logStreams', [])
 
-            for stream in log_streams['logStreams']:
+            for stream in log_streams:
                 log_stream_name = stream['logStreamName']
 
-                # Get log events from the log stream
+                # Get log events for the log stream within the time range
                 events = logs_client.get_log_events(
                     logGroupName=log_group,
                     logStreamName=log_stream_name,
-                    startTime=start_epoch,
-                    endTime=end_epoch,
+                    startTime=start_time,
+                    endTime=end_time,
                     startFromHead=True
-                )
+                ).get('events', [])
 
-                for event in events['events']:
+                for event in events:
                     message = event['message']
+                    match = report_regex.search(message)
 
-                    # Check if the message contains a Lambda report
-                    if 'REPORT' in message:
-                        # Extract report details using regex
+                    if match:
+                        report = {}
+                        # Extract fields and add to the reports list
+                        groupedReport = match.groupdict()
+                        # Convert numeric fields to appropriate types
+                        report['Duration'] = float(groupedReport['Duration'])
+                        report['BilledDuration'] = int(groupedReport['BilledDuration'])
+                        report['MemorySize'] = int(groupedReport['MemorySize'])
+                        report['MaxMemoryUsed'] = int(groupedReport['MaxMemoryUsed'])
+                        if groupedReport['InitDuration'] is not None:
+                            report['InitDuration'] = float(groupedReport['InitDuration'])
+                        else:
+                            report['InitDuration'] = float(0.0)
+                        reports_for_log_group.append(report)
 
-                        match = re.search(
-                            r"REPORT\s+RequestId:\s+(?P<RequestId>\S+)\s+Duration:\s+(?P<Duration>\d+\.\d+)\s+ms\s+Billed Duration:\s+(?P<BilledDuration>\d+)\s+ms\s+Memory Size:\s+(?P<MemorySize>\d+)\s+MB\s+Max Memory Used:\s+(?P<MaxMemoryUsed>\d+)\s+MB(?:\s+Init Duration:\s+(?P<InitDuration>\d+\.\d+)\s+ms)?",
-                            message
-                        )
+                lambda_reports[log_group] = reports_for_log_group
 
-                        if match:
-                            report = {
-                                'Duration': float(match.group('Duration')),
-                                'InitDuration': float(match.group("InitDuration")),
-                                'BilledDuration': int(match.group('BilledDuration')),
-                                'MaxMemoryUsed': int(match.group('MaxMemoryUsed'))
-                            }
-                            lambda_reports[log_group].append(report)
     return lambda_reports
-
 
 def get_correct_answers(operations: list[str]) -> dict:
     correct_answers = {}
@@ -151,9 +161,9 @@ def get_lambda_api_urls() -> dict[str,str]:
 def create_tc(start_option: str, operation: str, language: str, lambda_url: str, test_case_input: dict[str,str], correct_answer: dict[str,str], iterations: int, arch_dir: str, memory_size: int)-> dict:
 
     # Clean in case of c# -> csharp
-    cleanedLang = operation.replace("#","sharp")
+    cleanedLang = language.replace("#","sharp")
 
-    cloudwatch_group_name = f"/lambda/${arch_dir}/${cleanedLang}/${operation}/${memory_size}"
+    cloudwatch_group_name = f"/aws/lambda/{arch_dir}-{cleanedLang}-{operation}-{memory_size}"
     # Build the test case
     test_case = {
         "operation_input": test_case_input,
@@ -185,6 +195,12 @@ def execute_warmup(lambda_url: str, payload_body: str) -> None:
         print(f"HTTP Request failed: {e}")
         exit(1)
 
+
+def ensure_https(url):
+    if not url.startswith("https://"):
+        url = "https://" + url
+    return url
+
 def execute_tc(test_case: dict):
 
     # Extract the lambda URL from the dictionary
@@ -203,47 +219,40 @@ def execute_tc(test_case: dict):
     if not iterations:
         raise ValueError("Missing 'iterations' in test case dictionary")
 
+    lambda_url = ensure_https(lambda_url)
 
     # Check if we need to do a warm-up, execute the operations 10 times to warm up
     if test_case["start_type"] == "warm":
 
         for _ in range(0,10):
-            execute_warmup(lambda_url,payload_body)    
+            execute_warmup(lambda_url, payload_body)    
 
     # Need to fix this later, this is to fix serialization issues
     if test_case_langauge == "c#":
         input = convert_dict_keys(payload_body)
         payload_body = input
-        print(payload_body)
 
-
-    #print(payload_body)
     # Get the current UTC time
-    current_utc_time = datetime.now(timezone.utc)
+    start_formatted_time = int(datetime.now(timezone.utc).timestamp() * 1000) - 2000 # add two second buffer
 
-    # Format the time as 'YYYY-MM-DDTHH:MM:SS.sssZ'
-    start_formatted_time = current_utc_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-
+    request_headers = {"Content-Type": "application/json"}
     for _ in range(0,iterations):
         try:
             # Perform an HTTP POST request
-            response = requests.post(lambda_url, json=payload_body)
-
+            response = requests.post(lambda_url, json=payload_body, headers=request_headers)
+            
             response.raise_for_status()  # Raise an error for any 4xx/5xx status codes
-
-            #json_resp = response.json()
 
         except requests.exceptions.RequestException as e:
                 print(f"HTTP Request failed: {e}")
-                exit(1)
+                print(f"Test Case: \n")
+                print(f"{test_case}")
+                time.sleep(10)
+                print("wait a second to test it again")
 
     # Once we are all done with the benchmarks
-    # Get the current UTC time
-    current_utc_time = datetime.now(timezone.utc)
-
     # Format the time as 'YYYY-MM-DDTHH:MM:SS.sssZ'
-    end_formatted_time = current_utc_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-
+    end_formatted_time = int(datetime.now(timezone.utc).timestamp() * 1000) + 2000 # add two second buffer
     start_end_benchmark_time = {}
 
     # Key will be the log group, values are the start and end times of executing the test cases in str
@@ -264,7 +273,7 @@ def main():
     print("Beginning Initialization of AWS Lambda Benchmark runner")
 
     architectures = [
-        #"x86",
+        "x86",
         "arm"
     ]
 
@@ -272,26 +281,26 @@ def main():
         #'c#',
         #'go',
         #'java',
-        # python',
-        #'rust',
-        'typescript',
+        'python', # Python is fully operational, for all combos.
+        'rust', # Rust is fully operational, for all combos
+        'typescript', # Typescript is fully operational, for all combos.
     ]
 
     operations = [
-        'aes256_decrypt',
+        'aes256_decrypt', 
         'aes256_encrypt',
-        #'ecc256_sign',
-        #'ecc256_verify',
-        #'ecc384_sign',
-        #'ecc384_verify',
-        #'rsa2048_decrypt',
-        #'rsa2048_encrypt',
-        #'rsa3072_decrypt',
-        #'rsa3072_encrypt',
-        #'rsa4096_decrypt',
-        #'rsa4096_encrypt',
-        #'sha256',
-        #'sha384',
+        'ecc256_sign',
+        'ecc256_verify',
+        'ecc384_sign',
+        'ecc384_verify',
+        'rsa2048_decrypt',
+        'rsa2048_encrypt',
+        'rsa3072_decrypt',
+        'rsa3072_encrypt',
+        'rsa4096_decrypt',
+        'rsa4096_encrypt',
+        'sha256',
+        'sha384',
     ]
 
     #Must comment out which one to test.
@@ -303,10 +312,10 @@ def main():
 
     # All in MB
     memory_sizes = [
-        # 128,
-        # 512,
-        # 1024,
-        # 1769,
+        128,
+        512,
+        1024,
+        1769,
         3008
     ]
 
@@ -322,10 +331,10 @@ def main():
     # Grab appropriate urls for lambda calls
     # value is string api_url
     operation_urls = get_lambda_api_urls()
-    print("Succesful Loading of AWS Lambda API GW URLs")
+    print("Succesful Loading of AWS Lambda URLs")
 
     test_cases = []
-    iterations = 1
+    iterations = 30
 
     # First we need to create the testcases themselves
     for language in languages:
@@ -365,6 +374,7 @@ def main():
     print("EXECUTE")
 
     # Then execute the test cases, http requests
+    num_of_test_cases = len(test_cases)
     for test_case in test_cases:
 
         print("---------------------------------------")
@@ -386,6 +396,8 @@ def main():
 
         # Execute Test Case
         execute_tc(test_case)
+        num_of_test_cases -= 1
+        print(f"Number of test cases left: {num_of_test_cases}")
         print("---------------------------------------")
         print("")
 
@@ -394,13 +406,15 @@ def main():
 
     print("-" * 10)
     print("-" * 10)
-    print("Waiting for Cloudwatch to settle, lambda operations may take 5-10 minutes to fully report.")
+    print("Waiting for Cloudwatch to settle, lambda operations may take a minute to fully report.")
+    print("Begin wait for 120 seconds.")
     print("-" * 10)
     print("-" * 10)
 
-    time.sleep(60*10)
+    # wait for 120 seconds
+    time.sleep(120)
 
-    lambda_reports = []
+    print("Finished waiting 120 seconds.")
 
     print("Begin Saving Results from benchmark.")
 
@@ -410,9 +424,8 @@ def main():
 
     print("Finished saving results from benchmark.")
 
-
-
     print("Finished AWS Lambda Benchmark Runner")
+    time.sleep(15000)
     exit(0)
 
 if __name__ == "__main__":

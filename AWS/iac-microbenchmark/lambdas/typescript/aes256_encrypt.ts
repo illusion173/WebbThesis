@@ -3,9 +3,7 @@ import { randomBytes, createCipheriv } from "crypto";
 import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 
 // handler for AWS Lambda
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
-  console.log(`Event: ${JSON.stringify(event, null, 2)}`);
-  console.log(`Context: ${JSON.stringify(context, null, 2)}`);
+export const handler = async (event: any, context: Context): Promise<any> => {
 
   // Initialize the KMS client
   const kmsClient = new KMSClient({ region: 'us-east-1' });

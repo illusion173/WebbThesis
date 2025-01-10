@@ -11,6 +11,7 @@ kms_client = boto3.client('kms')
 
 def lambda_handler(event, context):
 
+    body = json.loads(event['body'])
     # Get the KMS key ID from environment variables or directly
     rsa_kms_key_id = os.environ['RSA4096_KMS_KEY_ARN']
     
@@ -24,7 +25,7 @@ def lambda_handler(event, context):
     encryptor = cipher.encryptor()
 
     # Assuming the data to encrypt is passed in the event
-    plaintext = event.get('message').encode('utf-8')
+    plaintext = body.get('message').encode('utf-8')
     ciphertext = encryptor.update(plaintext) + encryptor.finalize()
 
     # Encrypt the AES key using KMS

@@ -28,11 +28,11 @@ type ECC256Response struct {
 }
 
 // Handler function processes incoming requests
-func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
 	// Get the KMS key ARN from environment variables
 	eccKmsKeyID := os.Getenv("ECC256_KMS_KEY_ARN")
 	if eccKmsKeyID == "" {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       `{"error": "ECC 256 KMS key ARN not set"}`,
 			Headers: map[string]string{
@@ -46,7 +46,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	var messageStruct ECC256Request
 	err := json.Unmarshal([]byte(event.Body), &messageStruct)
 	if err != nil || messageStruct.Message == "" || messageStruct.Signature == "" {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Body:       `{"error": "Invalid request body, missing message or signature"}`,
 			Headers: map[string]string{
@@ -59,7 +59,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Load AWS configuration
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       `{"error": "Failed to load AWS config"}`,
 			Headers: map[string]string{
@@ -75,7 +75,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Call the function to verify the signature using KMS
 	verificationResponse, err := kmsClientVerifyMessage(ctx, kmsClient, eccKmsKeyID, messageStruct.Message, messageStruct.Signature)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       fmt.Sprintf(`{"error": "Error verifying message: %v"}`, err),
 			Headers: map[string]string{
@@ -88,7 +88,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Prepare the response body
 	responseBody, _ := json.Marshal(verificationResponse)
 
-	return events.APIGatewayProxyResponse{
+	return events.LambdaFunctionURLResponse{
 		StatusCode: 200,
 		Body:       string(responseBody),
 		Headers: map[string]string{

@@ -9,9 +9,9 @@ kms_client = boto3.client('kms')
 SIGN_ALGORITHM = 'HMAC_SHA_384'
 
 def lambda_handler(event, context):
-
+    body = json.loads(event["body"])
     # Extract the message from the event payload
-    message = event.get('message')
+    message = body.get('message')
 
     sha_kms_key_id = os.environ['SHA384_KMS_KEY_ARN']
 

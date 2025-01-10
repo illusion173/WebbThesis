@@ -32,11 +32,11 @@ type DecryptedResponse struct {
 }
 
 // Lambda function handler for decryption
-func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
 	// Get the KMS key ARN from environment variables (optional, can be used for additional checks)
 	kmsKeyID := os.Getenv("AES_KMS_KEY_ARN")
 	if kmsKeyID == "" {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       `{"error": "KMS key ARN not set"}`,
 			Headers: map[string]string{
@@ -50,7 +50,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	var encryptedRequest EncryptedRequest
 	err := json.Unmarshal([]byte(event.Body), &encryptedRequest)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Body:       `{"error": "Invalid request body"}`,
 			Headers: map[string]string{
@@ -63,7 +63,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Decode Base64 fields
 	ciphertext, err := base64.StdEncoding.DecodeString(encryptedRequest.Ciphertext)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Body:       `{"error": "Failed to decode ciphertext"}`,
 			Headers: map[string]string{
@@ -74,7 +74,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	}
 	encryptedKey, err := base64.StdEncoding.DecodeString(encryptedRequest.EncryptedKey)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Body:       `{"error": "Failed to decode encrypted key"}`,
 			Headers: map[string]string{
@@ -85,7 +85,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	}
 	iv, err := base64.StdEncoding.DecodeString(encryptedRequest.IV)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Body:       `{"error": "Failed to decode IV"}`,
 			Headers: map[string]string{
@@ -96,7 +96,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	}
 	tag, err := base64.StdEncoding.DecodeString(encryptedRequest.Tag)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Body:       `{"error": "Failed to decode tag"}`,
 			Headers: map[string]string{
@@ -109,7 +109,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Load AWS configuration
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       `{"error": "Failed to load AWS config"}`,
 			Headers: map[string]string{
@@ -128,7 +128,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 		KeyId:          aws.String(kmsKeyID),
 	})
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       fmt.Sprintf(`{"error": "Failed to decrypt data key: %v"}`, err),
 			Headers: map[string]string{
@@ -141,7 +141,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Decrypt the message using AES-GCM
 	plaintextMessage, err := decryptMessageWithAESGCM(decryptedKeyOutput.Plaintext, ciphertext, iv, tag)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       fmt.Sprintf(`{"error": "Failed to decrypt message: %v"}`, err),
 			Headers: map[string]string{
@@ -157,7 +157,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	}
 	responseBody, _ := json.Marshal(response)
 
-	return events.APIGatewayProxyResponse{
+	return events.LambdaFunctionURLResponse{
 		StatusCode: 200,
 		Body:       string(responseBody),
 		Headers: map[string]string{

@@ -27,11 +27,11 @@ type ECC256Response struct {
 }
 
 // Handler function processes incoming requests
-func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
 	// Get the KMS key ARN from environment variables
 	eccKmsKeyID := os.Getenv("ECC384_KMS_KEY_ARN")
 	if eccKmsKeyID == "" {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       `{"error": "ECC 256 KMS key ARN not set"}`,
 			Headers: map[string]string{
@@ -45,7 +45,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	var messageStruct ECC256Request
 	err := json.Unmarshal([]byte(event.Body), &messageStruct)
 	if err != nil || messageStruct.Message == "" {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Body:       `{"error": "Invalid request body, missing message"}`,
 			Headers: map[string]string{
@@ -58,7 +58,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Load AWS configuration
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       `{"error": "Failed to load AWS config"}`,
 			Headers: map[string]string{
@@ -74,7 +74,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Call the function to sign the message using KMS
 	signatureResponse, err := kmsClientSignMessage(ctx, kmsClient, eccKmsKeyID, messageStruct.Message)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Body:       fmt.Sprintf(`{"error": "Error signing message: %v"}`, err),
 			Headers: map[string]string{
@@ -87,7 +87,7 @@ func functionHandler(ctx context.Context, event events.APIGatewayProxyRequest) (
 	// Prepare the response body
 	responseBody, _ := json.Marshal(signatureResponse)
 
-	return events.APIGatewayProxyResponse{
+	return events.LambdaFunctionURLResponse{
 		StatusCode: 200,
 		Body:       string(responseBody),
 		Headers: map[string]string{

@@ -1,20 +1,27 @@
 #!/bin/bash
 
-ARCH_DIR="x86"
-#ARCH_DIR="arm"
+#ARCH_DIR="x86"
+ARCH_DIR="arm"
 # The location of the requirements for dependencies.
 #REQTXTLOC="specific_requirements_for_lambda.txt"
 REQTXTLOC="../../specific_requirements_for_lambda.txt"
 #REQTXTLOC="../../../../../../requirements.txt"
+ALLOWED_FILES=("
+  aes256_decrypt"
+  )  # <-- Add the files you want to process (without .py extension)
 # Loop through all .py files in the current directory
 for py_file in *.py; do
 
   # Get the filename without the extension
   dir_name="${py_file%.py}"
 
+  # Check if the current file is in the allowed list
+  #if [[ ! " ${ALLOWED_FILES[@]} " =~ " ${dir_name} " ]]; then
+    #echo "Skipping $dir_name (not in allowed list)"
+    #continue
+  #fi
   
-  echo $dir_name
-
+  echo "Processing $dir_name"
   # Create string for project dir
   PROJDIR="${ARCH_DIR}/${dir_name}"
 

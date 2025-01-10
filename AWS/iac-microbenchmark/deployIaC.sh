@@ -7,15 +7,15 @@ stacks=(
     #"IaCBenchMark-Build-Lambdas-csharp-x86"
     #"IaCBenchMark-Build-Lambdas-go-x86"
     #"IaCBenchMark-Build-Lambdas-java-x86"
-    #"IaCBenchMark-Build-Lambdas-python-x86"
-    "IaCBenchMark-Build-Lambdas-rust-x86"
-    "IaCBenchMark-Build-Lambdas-typescript-x86"
-    "IaCBenchMark-Build-Lambdas-csharp-arm"
-    "IaCBenchMark-Build-Lambdas-go-arm"
-    "IaCBenchMark-Build-Lambdas-java-arm"
-    "IaCBenchMark-Build-Lambdas-python-arm"
-    "IaCBenchMark-Build-Lambdas-rust-arm"
-    "IaCBenchMark-Build-Lambdas-typescript-arm"
+    #"IaCBenchMark-Build-Lambdas-python-x86" # deployed
+    #"IaCBenchMark-Build-Lambdas-rust-x86" # deployed
+    #"IaCBenchMark-Build-Lambdas-typescript-x86" # deployed
+    #"IaCBenchMark-Build-Lambdas-csharp-arm"
+    #"IaCBenchMark-Build-Lambdas-go-arm"
+    #"IaCBenchMark-Build-Lambdas-java-arm"
+    #"IaCBenchMark-Build-Lambdas-python-arm" # deployed
+    #"IaCBenchMark-Build-Lambdas-rust-arm" # deployed
+    #"IaCBenchMark-Build-Lambdas-typescript-arm" # deployed
 )
 
 # Loop through each stack

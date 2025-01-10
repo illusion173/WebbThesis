@@ -23,8 +23,9 @@ def lambda_handler(event, context):
     cipher = Cipher(algorithms.AES(aes_key), modes.CTR(iv), backend=default_backend())
     encryptor = cipher.encryptor()
 
+    body = json.loads(event['body'])
     # Assuming the data to encrypt is passed in the event
-    plaintext = event.get('message').encode('utf-8')
+    plaintext = body.get('message').encode('utf-8')
     ciphertext = encryptor.update(plaintext) + encryptor.finalize()
 
     # Encrypt the AES key using KMS

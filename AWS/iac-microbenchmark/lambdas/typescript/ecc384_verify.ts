@@ -8,7 +8,7 @@ const kmsClient = new KMSClient({
   region: 'us-east-1' // Specify the desired region
 });
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: any, context: Context): Promise<any> => {
   // Retrieve the original message and the base64 encoded signature from the event
   const body = event.body ? JSON.parse(event.body) : {};
   const message: string = body.message || '';

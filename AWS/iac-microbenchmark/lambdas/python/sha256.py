@@ -11,7 +11,9 @@ SIGN_ALGORITHM = 'HMAC_SHA_256'
 def lambda_handler(event, context):
 
     # Extract the message from the event payload
-    message = event.get('message')
+    body = json.loads(event['body'])
+
+    message = body.get('message')
 
     sha_kms_key_id = os.environ['SHA256_KMS_KEY_ARN']
 

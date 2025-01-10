@@ -7,8 +7,11 @@ import os
 kms_client = boto3.client('kms')
 
 def lambda_handler(event, context):
-    message = event['message']  # The original message
-    signature_b64 = event['signature']  # The base64 encoded signature
+
+    body = json.loads(event["body"])
+
+    message = body['message']  # The original message
+    signature_b64 = body['signature']  # The base64 encoded signature
 
     ecc_kms_key_id = os.environ['ECC384_KMS_KEY_ARN']
 

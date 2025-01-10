@@ -9,7 +9,8 @@ kms_client = boto3.client('kms')
 
 def lambda_handler(event, context):
 
-    message = event['message']  # The message to sign
+    body = json.loads(event["body"])
+    message = body['message']  # The message to sign
 
     ecc_kms_key_id = os.environ['ECC384_KMS_KEY_ARN']
     try:

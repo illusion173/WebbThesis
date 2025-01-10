@@ -6,7 +6,7 @@ import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 // Initialize KMS Client
 const kmsClient = new KMSClient({});
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: any, context: Context): Promise<any> => {
 
   // Get the KMS key ID from environment variables
   const rsaKmsKeyId = process.env.RSA3072_KMS_KEY_ARN;

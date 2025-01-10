@@ -13,10 +13,11 @@ def lambda_handler(event, context):
     # Get the KMS key ID from environment variables or directly
     rsa_kms_key_id = os.environ['RSA4096_KMS_KEY_ARN']
     
+    body = json.loads(event['body'])
     # Get the data from the event
-    encrypted_aes_key_b64 = event.get('encrypted_aes_key')
-    iv_b64 = event.get('iv')
-    ciphertext_b64 = event.get('ciphertext')
+    encrypted_aes_key_b64 = body.get('encrypted_aes_key')
+    iv_b64 = body.get('iv')
+    ciphertext_b64 = body.get('ciphertext')
 
     # Decode base64 values
     encrypted_aes_key = base64.b64decode(encrypted_aes_key_b64)

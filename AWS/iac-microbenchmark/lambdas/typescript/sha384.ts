@@ -9,7 +9,7 @@ const kmsClient = new KMSClient({
 
 const SIGN_ALGORITHM = 'HMAC_SHA_384';
 
-export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: any, context: Context): Promise<any> => {
 
   // Extract the message from the event body, assuming it's passed as a JSON string
   const body = event.body ? JSON.parse(event.body) : {};

@@ -30,10 +30,10 @@ type RSA3072Response struct {
 	EncryptedKey string `json:"encrypted_aes_key"`
 }
 
-func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, request events.LambdaFunctionURLRequest) (events.LambdaFunctionURLResponse, error) {
 	rsaKmsKeyId := os.Getenv("RSA3072_KMS_KEY_ARN")
 	if rsaKmsKeyId == "" {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Headers: map[string]string{
 				"Access-Control-Allow-Origin": "*",
@@ -46,7 +46,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	var reqBody RSA3072Request
 	err := json.Unmarshal([]byte(request.Body), &reqBody)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 400,
 			Headers: map[string]string{
 				"Access-Control-Allow-Origin": "*",
@@ -58,7 +58,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Headers: map[string]string{
 				"Access-Control-Allow-Origin": "*",
@@ -73,7 +73,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	// Encrypt the message
 	rsaResponse, err := awsKmsRsaEncrypt(ctx, kmsClient, rsaKmsKeyId, reqBody.Message)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Headers: map[string]string{
 				"Access-Control-Allow-Origin": "*",
@@ -86,7 +86,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	// Build the response
 	responseBody, err := json.Marshal(rsaResponse)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
+		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
 			Headers: map[string]string{
 				"Access-Control-Allow-Origin": "*",
@@ -96,7 +96,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		}, nil
 	}
 
-	return events.APIGatewayProxyResponse{
+	return events.LambdaFunctionURLResponse{
 		StatusCode: 200,
 		Headers: map[string]string{
 			"Access-Control-Allow-Origin": "*",

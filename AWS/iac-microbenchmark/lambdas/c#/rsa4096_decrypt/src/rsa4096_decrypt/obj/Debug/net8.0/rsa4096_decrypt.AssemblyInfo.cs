@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("rsa4096_decrypt")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1f77fbb2cfaae4d6f7531840c569f6e3a6efe4e9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+901c3ab48e3f4320a04d46aa2475fda78ee4dc49")]
 [assembly: System.Reflection.AssemblyProductAttribute("rsa4096_decrypt")]
 [assembly: System.Reflection.AssemblyTitleAttribute("rsa4096_decrypt")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
