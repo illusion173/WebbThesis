@@ -51,7 +51,8 @@ for dir in "$BASE_DIR"/*; do
         # Check if the jar file exists
         if [[ -f "target/$JAR_FILE" ]]; then
             echo "Copying $JAR_FILE to $ARCH directory."
-            cp "target/$JAR_FILE" "$ARCH_DIR/"
+            mkdir -p "$ARCH_DIR/$PROJECT_NAME"
+            cp "target/$JAR_FILE" "$ARCH_DIR/$PROJECT_NAME"
         else
             echo "Warning: $JAR_FILE not found in $dir/target."
         fi

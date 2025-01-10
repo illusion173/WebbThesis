@@ -2,8 +2,8 @@ package com.webb;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Base64;
 import java.util.HashMap;
@@ -17,18 +17,18 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class LambdaHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     // Create an instance of ObjectMapper for JSON parsing and serialization
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private KmsClient kmsClient;
 
     @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent request, Context context) {
+    public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
         context.getLogger().log("Received event: " + request);
 
           // Create a response object
-          APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+          APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
           HashMap<String,String> rspHeaders = new HashMap<>();
           rspHeaders.put("Access-Control-Allow-Origin", "*");
           rspHeaders.put("Content-Type", "application/json");

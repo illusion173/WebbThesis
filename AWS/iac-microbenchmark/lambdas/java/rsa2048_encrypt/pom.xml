@@ -5,7 +5,7 @@
   <artifactId>rsa2048_encrypt</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>sha256</name>
+  <name>rsa2048_encrypt</name>
   <url>http://maven.apache.org</url>
 
   <properties>
