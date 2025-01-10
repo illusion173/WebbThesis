@@ -1,23 +1,23 @@
 package com.webb;
 
 
-import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
-import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.services.kms.KmsClient;
-import software.amazon.awssdk.services.kms.model.EncryptRequest;
-import software.amazon.awssdk.services.kms.model.EncryptResponse;
-import software.amazon.awssdk.regions.Region;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.SecureRandom;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.kms.KmsClient;
+import software.amazon.awssdk.services.kms.model.EncryptRequest;
+import software.amazon.awssdk.services.kms.model.EncryptResponse;
+import com.amazonaws.services.lambda.runtime.Context;
+
 public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     // Create an instance of ObjectMapper for JSON parsing and serialization
@@ -26,7 +26,6 @@ public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
-        context.getLogger().log("Received event: " + request);
 
           // Create a response object
           APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();

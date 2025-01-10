@@ -274,23 +274,23 @@ def main():
 
     architectures = [
         "x86",
-        "arm"
+        #"arm"
     ]
 
     languages = [
         #'c#',
         #'go',
-        #'java',
-        'python', # Python is fully operational, for all combos.
-        'rust', # Rust is fully operational, for all combos
-        'typescript', # Typescript is fully operational, for all combos.
+        'java',
+        #'python', # Python is fully operational, for all combos.
+        #'rust', # Rust is fully operational, for all combos
+        #'typescript', # Typescript is fully operational, for all combos.
     ]
 
     operations = [
         'aes256_decrypt', 
         'aes256_encrypt',
         'ecc256_sign',
-        'ecc256_verify',
+         'ecc256_verify',
         'ecc384_sign',
         'ecc384_verify',
         'rsa2048_decrypt',
@@ -312,10 +312,10 @@ def main():
 
     # All in MB
     memory_sizes = [
-        128,
-        512,
-        1024,
-        1769,
+        #128,
+        #512,
+        #1024,
+        #1769,
         3008
     ]
 
@@ -334,7 +334,7 @@ def main():
     print("Succesful Loading of AWS Lambda URLs")
 
     test_cases = []
-    iterations = 30
+    iterations = 1
 
     # First we need to create the testcases themselves
     for language in languages:

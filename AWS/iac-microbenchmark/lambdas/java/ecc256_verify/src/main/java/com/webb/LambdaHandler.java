@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import software.amazon.awssdk.core.SdkBytes;
@@ -45,8 +47,8 @@ public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIG
           
 
             byte[] signature = Base64.getDecoder().decode(requestMessage.getSignature());
-            byte[] message = Base64.getDecoder().decode(requestMessage.getMessage());
-            
+            byte[] message = requestMessage.getMessage().getBytes(StandardCharsets.UTF_8);
+ 
             
             try {
             	

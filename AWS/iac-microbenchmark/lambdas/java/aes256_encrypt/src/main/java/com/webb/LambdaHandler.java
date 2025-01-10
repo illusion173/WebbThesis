@@ -17,8 +17,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.Arrays;
-
-
+import java.nio.charset.StandardCharsets;
 
 public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
@@ -28,7 +27,6 @@ public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
-        context.getLogger().log("Received event: " + request);
 
           // Create a response object
           APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
@@ -40,7 +38,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIG
         try {
         	
             // Get KMS key ARN from environment variables
-            String Aes256EncryptKmsKeyId = System.getenv("AES256_KMS_KEY_ARN");
+            String Aes256EncryptKmsKeyId = System.getenv("AES_KMS_KEY_ARN");
         	
             // Get the JSON string from the request body
             String body = request.getBody();
@@ -50,7 +48,7 @@ public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
 
             String message = requestMessage.getMessage();
-            byte[] messageBytes = message.getBytes();
+            byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
                        
             try {
 

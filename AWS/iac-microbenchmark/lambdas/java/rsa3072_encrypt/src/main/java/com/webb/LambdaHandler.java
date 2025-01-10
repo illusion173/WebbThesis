@@ -26,7 +26,6 @@ public class LambdaHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent request, Context context) {
-        context.getLogger().log("Received event: " + request);
 
           // Create a response object
           APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
