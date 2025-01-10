@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "YEL5cgG0ObeE+OKuh0DwwmqcyCKFIzv4IkgXIaBwY3AJ2jfkV3kE1+vEQEiNPGohaxbN3fUGRijn/BeOMBbaMQ==",
+  "dgSpecHash": "orPxDKarrKaEtN/hmlTBKAbu+KiHYi+20yFBLkahlTIbyzkwUlNU0/4zkATt45jOSBOUIK7tFCv+kq7Ya1FAYA==",
   "success": true,
   "projectFilePath": "/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/lambdas/c#/ecc384_sign/src/ecc384_sign/ecc384_sign.csproj",
   "expectedPackageFiles": [
@@ -9,9 +9,9 @@
     "/home/illusion/.nuget/packages/amazon.lambda.serialization.systemtextjson/2.4.3/amazon.lambda.serialization.systemtextjson.2.4.3.nupkg.sha512",
     "/home/illusion/.nuget/packages/awssdk.core/3.7.400.33/awssdk.core.3.7.400.33.nupkg.sha512",
     "/home/illusion/.nuget/packages/awssdk.keymanagementservice/3.7.400.33/awssdk.keymanagementservice.3.7.400.33.nupkg.sha512",
-    "/home/illusion/.nuget/packages/microsoft.netcore.app.runtime.linux-arm64/8.0.11/microsoft.netcore.app.runtime.linux-arm64.8.0.11.nupkg.sha512",
+    "/home/illusion/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/8.0.11/microsoft.netcore.app.runtime.linux-x64.8.0.11.nupkg.sha512",
     "/home/illusion/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.11/microsoft.aspnetcore.app.ref.8.0.11.nupkg.sha512",
-    "/home/illusion/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-arm64/8.0.11/microsoft.aspnetcore.app.runtime.linux-arm64.8.0.11.nupkg.sha512",
+    "/home/illusion/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/8.0.11/microsoft.aspnetcore.app.runtime.linux-x64.8.0.11.nupkg.sha512",
     "/home/illusion/.nuget/packages/microsoft.netcore.app.crossgen2.linux-x64/8.0.11/microsoft.netcore.app.crossgen2.linux-x64.8.0.11.nupkg.sha512"
   ],
   "logs": []
