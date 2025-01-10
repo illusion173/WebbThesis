@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ecc384_verify")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+901c3ab48e3f4320a04d46aa2475fda78ee4dc49")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53886fd7a668adf2e94024ab5915721ee111ed9a")]
 [assembly: System.Reflection.AssemblyProductAttribute("ecc384_verify")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ecc384_verify")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

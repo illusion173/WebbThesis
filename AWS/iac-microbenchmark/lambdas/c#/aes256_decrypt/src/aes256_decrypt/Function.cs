@@ -33,9 +33,9 @@ namespace LambdaApiProxy
         private static readonly IAmazonKeyManagementService kmsClient = new AmazonKeyManagementServiceClient(RegionEndpoint.USEast1);
 
         // The Lambda handler function
-        public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            var APIGWResponse = new APIGatewayProxyResponse
+            var APIGWResponse = new APIGatewayHttpApiV2ProxyResponse
             {
                 Headers = new Dictionary<string, string>
                 {
