@@ -4,14 +4,14 @@
 #
 # List of stack names
 stacks=(
-    #"IaCBenchMark-Build-Lambdas-csharp-x86"
-    "IaCBenchMark-Build-Lambdas-go-x86"
+    #"IaCBenchMark-Build-Lambdas-csharp-x86" # deployed
+    #"IaCBenchMark-Build-Lambdas-go-x86" # deployed
    # "IaCBenchMark-Build-Lambdas-java-x86" deployed
     #"IaCBenchMark-Build-Lambdas-python-x86" # deployed
     #"IaCBenchMark-Build-Lambdas-rust-x86" # deployed
     #"IaCBenchMark-Build-Lambdas-typescript-x86" # deployed
-    #"IaCBenchMark-Build-Lambdas-csharp-arm"
-    "IaCBenchMark-Build-Lambdas-go-arm"
+    #"IaCBenchMark-Build-Lambdas-csharp-arm" # deployed
+    #"IaCBenchMark-Build-Lambdas-go-arm" # deployed
    # "IaCBenchMark-Build-Lambdas-java-arm" # deployed
     #"IaCBenchMark-Build-Lambdas-python-arm" # deployed
     #"IaCBenchMark-Build-Lambdas-rust-arm" # deployed
@@ -29,6 +29,8 @@ do
         echo "Deployment failed for $stack. Exiting."
         exit 1
     fi
+
+    echo "Finished Deploying $stack"
 
     # Sleep for 1 minute
     echo "Sleeping for 1 minute before deploying the next stack..."

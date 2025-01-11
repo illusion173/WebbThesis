@@ -272,13 +272,13 @@ def main():
     print("Beginning Initialization of AWS Lambda Benchmark runner")
 
     architectures = [
-        #"x86",
+        "x86",
         "arm"
     ]
 
     languages = [
-        #'c#',
-        'go',
+        #'c#', # csharp is fully operational, for all combos.
+        #'go',
         #'java', # Java is fully operational, for all combos.
         #'python', # Python is fully operational, for all combos.
         #'rust', # Rust is fully operational, for all combos
@@ -289,7 +289,7 @@ def main():
         'aes256_decrypt', 
         'aes256_encrypt',
         'ecc256_sign',
-         'ecc256_verify',
+        'ecc256_verify',
         'ecc384_sign',
         'ecc384_verify',
         'rsa2048_decrypt',

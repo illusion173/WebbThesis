@@ -74,7 +74,7 @@
         }
       }
     },
-    "net8.0/linux-x64": {
+    "net8.0/linux-arm64": {
       "Amazon.Lambda.APIGatewayEvents/2.7.1": {
         "type": "package",
         "compile": {
@@ -344,7 +344,7 @@
             "version": "[8.0.11, 8.0.11]"
           },
           {
-            "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
+            "name": "Microsoft.AspNetCore.App.Runtime.linux-arm64",
             "version": "[8.0.11, 8.0.11]"
           },
           {
@@ -352,7 +352,7 @@
             "version": "[8.0.11, 8.0.11]"
           },
           {
-            "name": "Microsoft.NETCore.App.Runtime.linux-x64",
+            "name": "Microsoft.NETCore.App.Runtime.linux-arm64",
             "version": "[8.0.11, 8.0.11]"
           }
         ],
@@ -365,7 +365,7 @@
       }
     },
     "runtimes": {
-      "linux-x64": {
+      "linux-arm64": {
         "#import": []
       }
     }
