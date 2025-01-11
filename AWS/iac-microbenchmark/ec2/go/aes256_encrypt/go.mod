@@ -1,6 +1,6 @@
 module github.com/illusion173/aes256_encrypt
 
-go 1.23.1
+go 1.23
 
 require (
 	github.com/aws/aws-lambda-go v1.47.0 // indirect
