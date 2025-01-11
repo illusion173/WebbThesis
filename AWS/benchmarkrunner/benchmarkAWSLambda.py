@@ -195,7 +195,6 @@ def execute_warmup(lambda_url: str, payload_body: str) -> None:
         print(f"HTTP Request failed: {e}")
         exit(1)
 
-
 def ensure_https(url):
     if not url.startswith("https://"):
         url = "https://" + url
@@ -221,18 +220,25 @@ def execute_tc(test_case: dict):
 
     lambda_url = ensure_https(lambda_url)
 
-    # Check if we need to do a warm-up, execute the operations 10 times to warm up
-    if test_case["start_type"] == "warm":
-
-        for _ in range(0,10):
-            execute_warmup(lambda_url, payload_body)    
-
     # Need to fix this later, this is to fix serialization issues
     if test_case_langauge == "c#":
         input = convert_dict_keys(payload_body)
         payload_body = input
+        print("C#!")
+        print(payload_body)
 
-    # Get the current UTC time
+    # Check if we need to do a warm-up, execute the operations 10 times to warm up
+    if test_case["start_type"] == "warm":
+
+        print("Begin Warmup")
+        for _ in range(0,10):
+            execute_warmup(lambda_url, payload_body)    
+
+        print("Finished Warmup")
+        print("Begin sleeping 2.5 for cloudwatch")
+        time.sleep(2.5)
+        print("finish waiting")    # Get the current UTC time
+
     start_formatted_time = int(datetime.now(timezone.utc).timestamp() * 1000) - 2000 # add two second buffer
 
     request_headers = {"Content-Type": "application/json"}
@@ -277,9 +283,9 @@ def main():
     ]
 
     languages = [
-        #'c#', # csharp is fully operational, for all combos.
-        #'go',
-        #'java', # Java is fully operational, for all combos.
+        'c#', # csharp is fully operational, for all combos.
+        'go', # Go is fully operational, for all combos.
+        'java', # Java is fully operational, for all combos.
         #'python', # Python is fully operational, for all combos.
         #'rust', # Rust is fully operational, for all combos
         #'typescript', # Typescript is fully operational, for all combos.
@@ -311,10 +317,10 @@ def main():
 
     # All in MB
     memory_sizes = [
-        #128,
-        #512,
-        #1024,
-        #1769,
+        128,
+        512,
+        1024,
+        1769,
         3008
     ]
 
@@ -333,7 +339,7 @@ def main():
     print("Succesful Loading of AWS Lambda URLs")
 
     test_cases = []
-    iterations = 1
+    iterations = 30
 
     # First we need to create the testcases themselves
     for language in languages:

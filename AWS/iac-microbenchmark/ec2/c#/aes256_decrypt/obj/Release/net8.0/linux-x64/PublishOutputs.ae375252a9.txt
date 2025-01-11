@@ -1,0 +1,2 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/aes256_decrypt/bin/Release/net8.0/linux-x64/publish/aes256_decrypt.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/aes256_decrypt/bin/Release/net8.0/linux-x64/publish/aes256_decrypt

@@ -1,0 +1,2 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/ecc256_verify/bin/Release/net8.0/linux-x64/publish/ecc256_verify.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/ecc256_verify/bin/Release/net8.0/linux-x64/publish/ecc256_verify

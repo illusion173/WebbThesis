@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "OqY8HEuRR3u8jE5AtH0opUGKyiJu+gt84A1YTTb+6Fn6hg/JBqHKJ6dthSj0P2fdOgF1HMZWY/6RTLpbM4SONg==",
+  "success": true,
+  "projectFilePath": "/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/ecc256_sign/ecc256_sign.csproj",
+  "expectedPackageFiles": [
+    "/home/illusion/.nuget/packages/awssdk.core/3.7.400.40/awssdk.core.3.7.400.40.nupkg.sha512",
+    "/home/illusion/.nuget/packages/awssdk.keymanagementservice/3.7.400.40/awssdk.keymanagementservice.3.7.400.40.nupkg.sha512",
+    "/home/illusion/.nuget/packages/microsoft.net.illink.tasks/8.0.11/microsoft.net.illink.tasks.8.0.11.nupkg.sha512",
+    "/home/illusion/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/8.0.11/microsoft.netcore.app.runtime.linux-x64.8.0.11.nupkg.sha512",
+    "/home/illusion/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.11/microsoft.aspnetcore.app.ref.8.0.11.nupkg.sha512",
+    "/home/illusion/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/8.0.11/microsoft.aspnetcore.app.runtime.linux-x64.8.0.11.nupkg.sha512",
+    "/home/illusion/.nuget/packages/microsoft.netcore.app.host.linux-x64/8.0.11/microsoft.netcore.app.host.linux-x64.8.0.11.nupkg.sha512"
+  ],
+  "logs": []
+}

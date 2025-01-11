@@ -1,0 +1,2 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/rsa2048_encrypt/bin/Release/net8.0/linux-x64/publish/rsa2048_encrypt.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/rsa2048_encrypt/bin/Release/net8.0/linux-x64/publish/rsa2048_encrypt

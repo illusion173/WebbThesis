@@ -46,7 +46,7 @@ def save_lambda_reports_to_csv(lambda_reports: dict, start_option: str)-> None:
 
 
     # Write the DataFrame to a CSV file
-    csv_file_path = f"./Lambda-Benchmark-Results-x86-{start_option}-rust-python-typescript.csv"
+    csv_file_path = f"./Lambda-Benchmark-Results-{start_option}-java-csharp-go.csv"
     df.to_csv(csv_file_path, index=False, mode='a')  # Set index=False to avoid writing row indices
 
 def get_lambda_reports(start_end_benchmark_times: list[dict[str, list]]) -> dict[str, list]:
@@ -183,14 +183,15 @@ def create_tc(start_option: str, operation: str, language: str, lambda_url: str,
 def execute_warmup(lambda_url: str, payload_body: str) -> None:
 
     try:
+        request_headers = {"Content-Type": "application/json"}
+
         # Perform an HTTP POST request
-        response = requests.post(lambda_url, json=payload_body)
+        response = requests.post(lambda_url, json=payload_body, headers=request_headers)
 
         response.raise_for_status()  # Raise an error for any 4xx/5xx status codes
-        
-        return None
     
     except requests.exceptions.RequestException as e:
+
         print(f"HTTP Request failed: {e}")
         exit(1)
 
@@ -220,22 +221,23 @@ def execute_tc(test_case: dict):
 
     lambda_url = ensure_https(lambda_url)
 
-    # Check if we need to do a warm-up, execute the operations 10 times to warm up
-    if test_case["start_type"] == "warm":
-        print("Begin Warmup")
-        for _ in range(0,10):
-            execute_warmup(lambda_url, payload_body)    
-        print("Finished Warmup")
-
-    # Ensure between warm up that we won't track the warm up data in cloudwatch
-    print("Wait 2.5 seconds after warmup.")
-    time.sleep(2.5)
-
-    print("Finished Wait")
     # Need to fix this later, this is to fix serialization issues
     if test_case_langauge == "c#":
         input = convert_dict_keys(payload_body)
         payload_body = input
+
+    # Check if we need to do a warm-up, execute the operations 10 times to warm up
+    if test_case["start_type"] == "warm":
+
+        print("Begin Warmup")
+        for _ in range(0,10):
+            execute_warmup(lambda_url, payload_body)    
+
+        print("Finished Warmup")
+        print("Begin sleeping 2.5 for cloudwatch")
+        time.sleep(2.5)
+        print("finish waiting")
+
 
     # Get the current UTC time
     start_formatted_time = int(datetime.now(timezone.utc).timestamp() * 1000) - 2000 # add two second buffer
@@ -259,7 +261,6 @@ def execute_tc(test_case: dict):
     # Format the time as 'YYYY-MM-DDTHH:MM:SS.sssZ'
     end_formatted_time = int(datetime.now(timezone.utc).timestamp() * 1000) + 2000 # add two second buffer
     start_end_benchmark_time = {}
-
     # Key will be the log group, values are the start and end times of executing the test cases in str
     start_end_benchmark_time[test_case_log_group] = [start_formatted_time, end_formatted_time]
 
@@ -283,12 +284,12 @@ def main():
     ]
 
     languages = [
-        #'c#',
-        #'go',
-        #'java',
-        'python', # Python is fully operational, for all combos.
-        'rust', # Rust is fully operational, for all combos
-        'typescript', # Typescript is fully operational, for all combos.
+        'c#', # csharp is fully operational, for all combos.
+        'go', # Go is fully operational, for all combos.
+        'java', # Java is fully operational, for all combos.
+        #'python', # Python is fully operational, for all combos.
+        #'rust', # Rust is fully operational, for all combos
+        #'typescript', # Typescript is fully operational, for all combos.
     ]
 
     operations = [
@@ -430,6 +431,7 @@ def main():
     print("Finished saving results from benchmark.")
 
     print("Finished AWS Lambda Benchmark Runner")
+    time.sleep(15000)
     exit(0)
 
 if __name__ == "__main__":

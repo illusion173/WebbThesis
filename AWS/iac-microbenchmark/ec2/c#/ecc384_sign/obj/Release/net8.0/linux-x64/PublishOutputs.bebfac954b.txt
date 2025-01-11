@@ -1,0 +1,2 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/ecc384_sign/bin/Release/net8.0/linux-x64/publish/ecc384_sign.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/ecc384_sign/bin/Release/net8.0/linux-x64/publish/ecc384_sign

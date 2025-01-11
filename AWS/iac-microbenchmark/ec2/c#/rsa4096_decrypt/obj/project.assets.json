@@ -1,0 +1,290 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "AWSSDK.Core/3.7.400.40": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "AWSSDK.KeyManagementService/3.7.400.40": {
+        "type": "package",
+        "dependencies": {
+          "AWSSDK.Core": "[3.7.400.40, 4.0.0)"
+        },
+        "compile": {
+          "lib/net8.0/AWSSDK.KeyManagementService.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.KeyManagementService.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Microsoft.NET.ILLink.Tasks/8.0.11": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      }
+    },
+    "net8.0/linux-x64": {
+      "AWSSDK.Core/3.7.400.40": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "AWSSDK.KeyManagementService/3.7.400.40": {
+        "type": "package",
+        "dependencies": {
+          "AWSSDK.Core": "[3.7.400.40, 4.0.0)"
+        },
+        "compile": {
+          "lib/net8.0/AWSSDK.KeyManagementService.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.KeyManagementService.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "Microsoft.NET.ILLink.Tasks/8.0.11": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.NET.ILLink.Tasks.props": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AWSSDK.Core/3.7.400.40": {
+      "sha512": "Bt3id437I3k363mHCvBdpUwdw9P2zM3te+wCZ2EWv+PIOyz1NbYqTfrn04U3x333wxsOfT9Ln+cUJeUw96HsTw==",
+      "type": "package",
+      "path": "awssdk.core/3.7.400.40",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "awssdk.core.3.7.400.40.nupkg.sha512",
+        "awssdk.core.nuspec",
+        "images/AWSLogo.png",
+        "lib/net35/AWSSDK.Core.dll",
+        "lib/net35/AWSSDK.Core.pdb",
+        "lib/net35/AWSSDK.Core.xml",
+        "lib/net45/AWSSDK.Core.dll",
+        "lib/net45/AWSSDK.Core.pdb",
+        "lib/net45/AWSSDK.Core.xml",
+        "lib/net8.0/AWSSDK.Core.dll",
+        "lib/net8.0/AWSSDK.Core.pdb",
+        "lib/net8.0/AWSSDK.Core.xml",
+        "lib/netcoreapp3.1/AWSSDK.Core.dll",
+        "lib/netcoreapp3.1/AWSSDK.Core.pdb",
+        "lib/netcoreapp3.1/AWSSDK.Core.xml",
+        "lib/netstandard2.0/AWSSDK.Core.dll",
+        "lib/netstandard2.0/AWSSDK.Core.pdb",
+        "lib/netstandard2.0/AWSSDK.Core.xml",
+        "tools/account-management.ps1"
+      ]
+    },
+    "AWSSDK.KeyManagementService/3.7.400.40": {
+      "sha512": "Da2AbpwlPuZt6vxQZWV9nJMsASYw8Xs2DQhwv9+vczYxT2XM6Xhl76RNKdJmTp3xuF6DmxJYXbHX2jkvUW6cNw==",
+      "type": "package",
+      "path": "awssdk.keymanagementservice/3.7.400.40",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "analyzers/dotnet/cs/AWSSDK.KeyManagementService.CodeAnalysis.dll",
+        "analyzers/dotnet/cs/SharedAnalysisCode.dll",
+        "awssdk.keymanagementservice.3.7.400.40.nupkg.sha512",
+        "awssdk.keymanagementservice.nuspec",
+        "images/AWSLogo.png",
+        "lib/net35/AWSSDK.KeyManagementService.dll",
+        "lib/net35/AWSSDK.KeyManagementService.pdb",
+        "lib/net35/AWSSDK.KeyManagementService.xml",
+        "lib/net45/AWSSDK.KeyManagementService.dll",
+        "lib/net45/AWSSDK.KeyManagementService.pdb",
+        "lib/net45/AWSSDK.KeyManagementService.xml",
+        "lib/net8.0/AWSSDK.KeyManagementService.dll",
+        "lib/net8.0/AWSSDK.KeyManagementService.pdb",
+        "lib/net8.0/AWSSDK.KeyManagementService.xml",
+        "lib/netcoreapp3.1/AWSSDK.KeyManagementService.dll",
+        "lib/netcoreapp3.1/AWSSDK.KeyManagementService.pdb",
+        "lib/netcoreapp3.1/AWSSDK.KeyManagementService.xml",
+        "lib/netstandard2.0/AWSSDK.KeyManagementService.dll",
+        "lib/netstandard2.0/AWSSDK.KeyManagementService.pdb",
+        "lib/netstandard2.0/AWSSDK.KeyManagementService.xml",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
+      ]
+    },
+    "Microsoft.NET.ILLink.Tasks/8.0.11": {
+      "sha512": "zk5lnZrYJgtuJG8L4v17Ej8rZ3PUcR2iweNV08BaO5LbYHIi2wNaVNcJoLxvqgQdnjLlKnCCfVGLDr6QHeAarQ==",
+      "type": "package",
+      "path": "microsoft.net.illink.tasks/8.0.11",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "Sdk/Sdk.props",
+        "THIRD-PARTY-NOTICES.TXT",
+        "analyzers/dotnet/cs/ILLink.CodeFixProvider.dll",
+        "analyzers/dotnet/cs/ILLink.RoslynAnalyzer.dll",
+        "build/Microsoft.NET.ILLink.Analyzers.props",
+        "build/Microsoft.NET.ILLink.Tasks.props",
+        "build/Microsoft.NET.ILLink.targets",
+        "microsoft.net.illink.tasks.8.0.11.nupkg.sha512",
+        "microsoft.net.illink.tasks.nuspec",
+        "tools/net472/ILLink.Tasks.dll",
+        "tools/net472/ILLink.Tasks.dll.config",
+        "tools/net472/Mono.Cecil.Mdb.dll",
+        "tools/net472/Mono.Cecil.Pdb.dll",
+        "tools/net472/Mono.Cecil.Rocks.dll",
+        "tools/net472/Mono.Cecil.dll",
+        "tools/net472/Sdk/Sdk.props",
+        "tools/net472/System.Buffers.dll",
+        "tools/net472/System.Collections.Immutable.dll",
+        "tools/net472/System.Memory.dll",
+        "tools/net472/System.Numerics.Vectors.dll",
+        "tools/net472/System.Reflection.Metadata.dll",
+        "tools/net472/System.Runtime.CompilerServices.Unsafe.dll",
+        "tools/net472/build/Microsoft.NET.ILLink.Analyzers.props",
+        "tools/net472/build/Microsoft.NET.ILLink.Tasks.props",
+        "tools/net472/build/Microsoft.NET.ILLink.targets",
+        "tools/net8.0/ILLink.Tasks.deps.json",
+        "tools/net8.0/ILLink.Tasks.dll",
+        "tools/net8.0/Mono.Cecil.Mdb.dll",
+        "tools/net8.0/Mono.Cecil.Pdb.dll",
+        "tools/net8.0/Mono.Cecil.Rocks.dll",
+        "tools/net8.0/Mono.Cecil.dll",
+        "tools/net8.0/Sdk/Sdk.props",
+        "tools/net8.0/build/Microsoft.NET.ILLink.Analyzers.props",
+        "tools/net8.0/build/Microsoft.NET.ILLink.Tasks.props",
+        "tools/net8.0/build/Microsoft.NET.ILLink.targets",
+        "tools/net8.0/illink.deps.json",
+        "tools/net8.0/illink.dll",
+        "tools/net8.0/illink.runtimeconfig.json",
+        "useSharedDesignerContext.txt"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "AWSSDK.KeyManagementService >= 3.7.400.40",
+      "Microsoft.NET.ILLink.Tasks >= 8.0.11"
+    ]
+  },
+  "packageFolders": {
+    "/home/illusion/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/rsa4096_decrypt/rsa4096_decrypt.csproj",
+      "projectName": "rsa4096_decrypt",
+      "projectPath": "/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/rsa4096_decrypt/rsa4096_decrypt.csproj",
+      "packagesPath": "/home/illusion/.nuget/packages/",
+      "outputPath": "/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/rsa4096_decrypt/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/illusion/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "dependencies": {
+          "AWSSDK.KeyManagementService": {
+            "target": "Package",
+            "version": "[3.7.400.40, )"
+          },
+          "Microsoft.NET.ILLink.Tasks": {
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[8.0.11, )",
+            "autoReferenced": true
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.11, 8.0.11]"
+          },
+          {
+            "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
+            "version": "[8.0.11, 8.0.11]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.linux-x64",
+            "version": "[8.0.11, 8.0.11]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.linux-x64",
+            "version": "[8.0.11, 8.0.11]"
+          }
+        ],
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.111/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "linux-x64": {
+        "#import": []
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/sha384/bin/Release/net8.0/linux-x64/publish/sha384.pdb
+/home/illusion/school/Thesis/WebbThesis/AWS/iac-microbenchmark/ec2/c#/sha384/bin/Release/net8.0/linux-x64/publish/sha384
