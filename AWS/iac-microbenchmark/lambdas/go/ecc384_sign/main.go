@@ -16,13 +16,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/kms/types"
 )
 
-// ECC256Request represents the input message
-type ECC256Request struct {
+// ECC384Request represents the input message
+type ECC384Request struct {
 	Message string `json:"message"`
 }
 
-// ECC256Response represents the signed response
-type ECC256Response struct {
+// ECC384Response represents the signed response
+type ECC384Response struct {
 	Signature string `json:"signature"`
 }
 
@@ -33,7 +33,7 @@ func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest)
 	if eccKmsKeyID == "" {
 		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
-			Body:       `{"error": "ECC 256 KMS key ARN not set"}`,
+			Body:       `{"error": "ECC 384 KMS key ARN not set"}`,
 			Headers: map[string]string{
 				"Access-Control-Allow-Origin": "*",
 				"Content-Type":                "application/json",
@@ -42,7 +42,7 @@ func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest)
 	}
 
 	// Parse the incoming request body
-	var messageStruct ECC256Request
+	var messageStruct ECC384Request
 	err := json.Unmarshal([]byte(event.Body), &messageStruct)
 	if err != nil || messageStruct.Message == "" {
 		return events.LambdaFunctionURLResponse{
@@ -97,8 +97,8 @@ func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest)
 	}, nil
 }
 
-// kmsClientSignMessage calls KMS to sign the message using ECC256
-func kmsClientSignMessage(ctx context.Context, kmsClient *kms.Client, keyID string, message string) (*ECC256Response, error) {
+// kmsClientSignMessage calls KMS to sign the message using ECC384
+func kmsClientSignMessage(ctx context.Context, kmsClient *kms.Client, keyID string, message string) (*ECC384Response, error) {
 	// Convert the message to a Blob
 	messageBlob := []byte(message)
 
@@ -107,7 +107,7 @@ func kmsClientSignMessage(ctx context.Context, kmsClient *kms.Client, keyID stri
 		KeyId:            aws.String(keyID),
 		Message:          messageBlob,
 		MessageType:      types.MessageTypeRaw,
-		SigningAlgorithm: types.SigningAlgorithmSpecEcdsaSha256,
+		SigningAlgorithm: types.SigningAlgorithmSpecEcdsaSha384,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to sign message: %w", err)
@@ -122,7 +122,7 @@ func kmsClientSignMessage(ctx context.Context, kmsClient *kms.Client, keyID stri
 	signatureB64 := base64.StdEncoding.EncodeToString(signOutput.Signature)
 
 	// Prepare the response
-	return &ECC256Response{
+	return &ECC384Response{
 		Signature: signatureB64,
 	}, nil
 }

@@ -46,7 +46,7 @@ def save_lambda_reports_to_csv(lambda_reports: dict, start_option: str)-> None:
 
 
     # Write the DataFrame to a CSV file
-    csv_file_path = f"./Lambda-Benchmark-Results-x86-{start_option}-rust-python-typescript.csv"
+    csv_file_path = f"./Lambda-Benchmark-Results-{start_option}-java-csharp-go.csv"
     df.to_csv(csv_file_path, index=False, mode='a')  # Set index=False to avoid writing row indices
 
 def get_lambda_reports(start_end_benchmark_times: list[dict[str, list]]) -> dict[str, list]:
@@ -254,7 +254,6 @@ def execute_tc(test_case: dict):
     # Format the time as 'YYYY-MM-DDTHH:MM:SS.sssZ'
     end_formatted_time = int(datetime.now(timezone.utc).timestamp() * 1000) + 2000 # add two second buffer
     start_end_benchmark_time = {}
-
     # Key will be the log group, values are the start and end times of executing the test cases in str
     start_end_benchmark_time[test_case_log_group] = [start_formatted_time, end_formatted_time]
 
@@ -273,14 +272,14 @@ def main():
     print("Beginning Initialization of AWS Lambda Benchmark runner")
 
     architectures = [
-        "x86",
-        #"arm"
+        #"x86",
+        "arm"
     ]
 
     languages = [
         #'c#',
-        #'go',
-        'java',
+        'go',
+        #'java', # Java is fully operational, for all combos.
         #'python', # Python is fully operational, for all combos.
         #'rust', # Rust is fully operational, for all combos
         #'typescript', # Typescript is fully operational, for all combos.

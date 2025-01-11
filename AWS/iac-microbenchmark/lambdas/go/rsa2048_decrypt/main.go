@@ -21,7 +21,7 @@ import (
 type RSA2048DecryptRequest struct {
 	Ciphertext   string `json:"ciphertext"`
 	Iv           string `json:"iv"`
-	EncryptedKey string `json:"encrypted__aes_key"`
+	EncryptedKey string `json:"encrypted_aes_key"`
 }
 
 type RSA2048DecryptResponse struct {
@@ -50,7 +50,7 @@ func handler(ctx context.Context, request events.LambdaFunctionURLRequest) (even
 				"Access-Control-Allow-Origin": "*",
 				"Content-Type":                "application/json",
 			},
-			Body: "Invalid Request Body, missing data.",
+			Body: "Invalid Request Body, missing fields.",
 		}, nil
 	}
 
@@ -69,7 +69,7 @@ func handler(ctx context.Context, request events.LambdaFunctionURLRequest) (even
 	kmsClient := kms.NewFromConfig(cfg)
 
 	// Decrypt the message
-	decryptedMessage, err := awsKmsRsaDecrypt(ctx, kmsClient, rsaKmsKeyId, &reqBody)
+	message, err := awsKmsRsaDecrypt(ctx, kmsClient, rsaKmsKeyId, reqBody)
 	if err != nil {
 		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
@@ -82,9 +82,7 @@ func handler(ctx context.Context, request events.LambdaFunctionURLRequest) (even
 	}
 
 	// Build the response
-	responseBody, err := json.Marshal(RSA2048DecryptResponse{
-		Message: decryptedMessage,
-	})
+	responseBody, err := json.Marshal(RSA2048DecryptResponse{Message: message})
 	if err != nil {
 		return events.LambdaFunctionURLResponse{
 			StatusCode: 500,
@@ -106,11 +104,11 @@ func handler(ctx context.Context, request events.LambdaFunctionURLRequest) (even
 	}, nil
 }
 
-func awsKmsRsaDecrypt(ctx context.Context, kmsClient *kms.Client, keyID string, request *RSA2048DecryptRequest) (string, error) {
-	// Step 1: Decode the base64-encoded AES key, IV, and ciphertext
+func awsKmsRsaDecrypt(ctx context.Context, kmsClient *kms.Client, keyID string, request RSA2048DecryptRequest) (string, error) {
+	// Decode the base64-encoded AES key, IV, and ciphertext
 	encryptedAESKey, err := base64.StdEncoding.DecodeString(request.EncryptedKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to decode encrypted_key: %v", err)
+		return "", fmt.Errorf("failed to decode encrypted key: %v", err)
 	}
 
 	iv, err := base64.StdEncoding.DecodeString(request.Iv)
@@ -123,7 +121,7 @@ func awsKmsRsaDecrypt(ctx context.Context, kmsClient *kms.Client, keyID string, 
 		return "", fmt.Errorf("failed to decode ciphertext: %v", err)
 	}
 
-	// Step 2: Decrypt the AES key using AWS KMS
+	// Decrypt the AES key using KMS
 	kmsDecryptOutput, err := kmsClient.Decrypt(ctx, &kms.DecryptInput{
 		KeyId:               aws.String(keyID),
 		CiphertextBlob:      encryptedAESKey,
@@ -135,7 +133,7 @@ func awsKmsRsaDecrypt(ctx context.Context, kmsClient *kms.Client, keyID string, 
 
 	decryptedAESKey := kmsDecryptOutput.Plaintext
 
-	// Step 3: Decrypt the message using AES-256-CTR
+	// Decrypt the message using AES-CTR
 	block, err := aes.NewCipher(decryptedAESKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to create AES cipher: %v", err)
@@ -146,9 +144,7 @@ func awsKmsRsaDecrypt(ctx context.Context, kmsClient *kms.Client, keyID string, 
 	stream.XORKeyStream(decryptedMessage, ciphertext)
 
 	// Convert decrypted message to string
-	decryptedMessageStr := string(decryptedMessage)
-
-	return decryptedMessageStr, nil
+	return string(decryptedMessage), nil
 }
 
 func main() {

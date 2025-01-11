@@ -16,14 +16,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/kms/types"
 )
 
-// ECC256Request represents the input message and signature
-type ECC256Request struct {
+// ECC384Request represents the input message and signature
+type ECC384Request struct {
 	Message   string `json:"message"`
 	Signature string `json:"signature"`
 }
 
-// ECC256Response represents the validation response
-type ECC256Response struct {
+// ECC384Response represents the validation response
+type ECC384Response struct {
 	Valid bool `json:"valid"`
 }
 
@@ -43,7 +43,7 @@ func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest)
 	}
 
 	// Parse the incoming request body
-	var messageStruct ECC256Request
+	var messageStruct ECC384Request
 	err := json.Unmarshal([]byte(event.Body), &messageStruct)
 	if err != nil || messageStruct.Message == "" || messageStruct.Signature == "" {
 		return events.LambdaFunctionURLResponse{
@@ -98,8 +98,8 @@ func functionHandler(ctx context.Context, event events.LambdaFunctionURLRequest)
 	}, nil
 }
 
-// kmsClientVerifyMessage verifies the message signature using ECC256 and AWS KMS
-func kmsClientVerifyMessage(ctx context.Context, kmsClient *kms.Client, keyID string, message string, signatureB64 string) (*ECC256Response, error) {
+// kmsClientVerifyMessage verifies the message signature using ECC384 and AWS KMS
+func kmsClientVerifyMessage(ctx context.Context, kmsClient *kms.Client, keyID string, message string, signatureB64 string) (*ECC384Response, error) {
 	// Decode the base64-encoded signature
 	signature, err := base64.StdEncoding.DecodeString(signatureB64)
 	if err != nil {
@@ -112,14 +112,14 @@ func kmsClientVerifyMessage(ctx context.Context, kmsClient *kms.Client, keyID st
 		Message:          []byte(message),
 		MessageType:      types.MessageTypeRaw,
 		Signature:        signature,
-		SigningAlgorithm: types.SigningAlgorithmSpecEcdsaSha256,
+		SigningAlgorithm: types.SigningAlgorithmSpecEcdsaSha384,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to verify message: %w", err)
 	}
 
 	// Prepare the response
-	return &ECC256Response{
+	return &ECC384Response{
 		Valid: verifyOutput.SignatureValid,
 	}, nil
 }
