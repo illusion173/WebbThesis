@@ -6,3 +6,5 @@ export RSA3072_KMS_KEY_ARN="arn:aws:kms:us-east-1:417838760454:key/e42b73f3-1996
 export RSA4096_KMS_KEY_ARN="arn:aws:kms:us-east-1:417838760454:key/2ed02f0d-6420-4a55-8378-820e2b5e228c"
 export ECC256_KMS_KEY_ARN="arn:aws:kms:us-east-1:417838760454:key/a0bb4951-0a8c-47ed-901d-cd1658305239"
 export ECC384_KMS_KEY_ARN="arn:aws:kms:us-east-1:417838760454:key/7d27cfe2-5863-4f7c-8257-a452e582ee1a"
+export AWS_REGION=us-east-1
+export AWS_DEFAULT_REGION=us-east-1
