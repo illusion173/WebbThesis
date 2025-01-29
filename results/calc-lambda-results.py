@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import seaborn as sns
 architectures = [
     "x86",
     "arm"
@@ -25,15 +26,6 @@ languageKey = {
     'typescript': '#3178C6', # Blue for TypeScript
 }
 
-languageColors = [
-'#5A2073',
-'#00ADD8'
-'#F80000',
-'#FFD43B',
-'#D66B00',
-'#3178C6'
-]
-
 operations = [
     'aes256_decrypt', 
     'aes256_encrypt',
@@ -51,12 +43,11 @@ operations = [
     'sha384',
 ]
 
-#Must comment out which one to test.
-# comment out cold to do warm testing, vice versa.
 start_options = [
     "cold",
     "warm"
 ]
+
 
 # All in MB
 memory_sizes = [
@@ -86,14 +77,105 @@ lambda_arm_pricing_per_ms = {
 '''
 lambda csv header
 architecture,start_type,operation,language,memory_size,execution_time_ms,max_memory_usage_mb,init_duration_ms,billed_duration_ms
-
-ec2 csv header
-id,instance_type,architecture,start_type,operation,language,iteration,execution_time_ms,avg_cpu_usage_percent,max_memory_usage_mb,avg_memory_usage_mb
 '''
 # Define output directory for saved plots
 output_dir_lambda = "assets/aws/lambda/"
-
 os.makedirs(output_dir_lambda, exist_ok=True)
+
+def save_architecture_comparison_heatmaps(df):
+    output_dir = f"{output_dir_lambda}heatmaps"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
+
+    # Filter relevant columns
+    df_filtered = df[['architecture', 'start_type', 'operation', 'language', 'memory_size', 'execution_time_ms']]
+    
+    # Pivot to compare x86 and ARM times
+    pivot_df = df_filtered.pivot_table(
+        index=['start_type', 'operation', 'language', 'memory_size'],
+        columns='architecture',
+        values='execution_time_ms'
+    ).reset_index()
+
+    # Compute percentage difference
+    pivot_df['percentage_diff'] = ((pivot_df['x86'] - pivot_df['arm']) / pivot_df['arm']) * 100
+
+    # Remove extreme cases (keep only the 95% most common cases)
+    lower_bound, upper_bound = np.percentile(pivot_df['percentage_diff'], [2.5, 97.5])
+    pivot_df = pivot_df[(pivot_df['percentage_diff'] >= lower_bound) & (pivot_df['percentage_diff'] <= upper_bound)]
+
+    # Save heatmaps for cold and warm starts
+    for start in ["cold", "warm"]:
+        plt.figure(figsize=(12, 8))
+        
+        # Filter by start type
+        df_start = pivot_df[pivot_df['start_type'] == start]
+        
+        # Pivot for heatmap
+        heatmap_data = df_start.pivot_table(index='memory_size', columns='language', values='percentage_diff')
+
+        # Plot heatmap
+        sns.heatmap(heatmap_data, annot=True, cmap="coolwarm", center=0, fmt=".1f")
+        plt.title(f'ARM vs x86 Execution Time Difference (%) All Operations (95%) - {start.capitalize()} Start \n Negative Means x86 is Faster')
+        plt.xlabel('Programming Language')
+        plt.ylabel('Memory Size (MB)')
+
+        # Save to disk
+        filename = f"{output_dir}/execution_time_diff_{start}.png"
+        plt.savefig(filename, dpi=300, bbox_inches="tight")
+        plt.close()
+
+    print(f"Heatmaps saved in '{output_dir}' directory.")
+
+def save_operation_specific_heatmaps(df):
+    output_dir = f"{output_dir_lambda}heatmap_per_op"
+    os.makedirs(output_dir, exist_ok=True)  # Ensure output directory exists
+
+    # Filter relevant columns
+    df_filtered = df[['architecture', 'start_type', 'operation', 'language', 'memory_size', 'execution_time_ms']]
+    
+    # Pivot to compare x86 and ARM times
+    pivot_df = df_filtered.pivot_table(
+        index=['start_type', 'operation', 'language', 'memory_size'],
+        columns='architecture',
+        values='execution_time_ms'
+    ).reset_index()
+
+    # Compute percentage difference
+    pivot_df['percentage_diff'] = ((pivot_df['x86'] - pivot_df['arm']) / pivot_df['arm']) * 100
+
+    # Remove extreme cases (keep only the 95% most common cases)
+    lower_bound, upper_bound = np.percentile(pivot_df['percentage_diff'], [2.5, 97.5])
+    pivot_df = pivot_df[(pivot_df['percentage_diff'] >= lower_bound) & (pivot_df['percentage_diff'] <= upper_bound)]
+
+    # Generate heatmaps for each operation and start type
+    for operation in pivot_df['operation'].unique():
+        for start in ["cold", "warm"]:
+            plt.figure(figsize=(12, 8))
+
+           
+
+            # Filter data for operation and start type
+            df_op = pivot_df[(pivot_df['operation'] == operation) & (pivot_df['start_type'] == start)]
+
+            if operation == "sha384":
+                print(df_op)
+            
+            # Pivot for heatmap
+            heatmap_data = df_op.pivot_table(index='memory_size', columns='language', values='percentage_diff')
+
+            # Plot heatmap
+            sns.heatmap(heatmap_data, annot=True, cmap="coolwarm", center=0, fmt=".1f")
+            plt.title(f'ARM vs x86 Execution Time Diff (%) - {operation} - {start.capitalize()} Start \n Negative Means x86 is Faster')
+            plt.xlabel('Programming Language')
+            plt.ylabel('Memory Size (MB)')
+
+            # Save to disk
+            filename = f"{output_dir}/execution_time_diff_{operation}_{start}.png"
+            plt.savefig(filename, dpi=300, bbox_inches="tight")
+            plt.close()
+
+    print(f"Heatmaps saved in '{output_dir}' directory.")
+
 
 # Load CSV data
 def load_data(file_path: str)->pd.DataFrame:
@@ -140,8 +222,10 @@ def gen_blox_plot(lambda_results_df: pd.DataFrame, architecture: str, operation:
 
             # Filter to only the top 95% (remove extreme outliers)
             if not execution_times.empty:
-                percentile_95 = np.percentile(execution_times, 95)  # Compute 95th percentile
-                execution_times = execution_times[execution_times <= percentile_95]
+
+                lower_bound, upper_bound = np.percentile(execution_times, [2.5, 97.5])
+                execution_times = execution_times[(execution_times >= lower_bound) & (execution_times <= upper_bound)]
+
             
             # Append the execution times to the respective start_option list
             data_by_language_and_start[language][start_option] = execution_times.tolist()
@@ -181,7 +265,7 @@ def gen_blox_plot(lambda_results_df: pd.DataFrame, architecture: str, operation:
     # Configure plot aesthetics
     plt.title(f"Execution Times - ({architecture} {memory_size}MB {operation}) 95%", fontsize=16)
     plt.xlabel("Languages", fontsize=14)
-    plt.ylabel("Execution Time (ms)", fontsize=14)
+    plt.ylabel("Mean Execution Time (ms)", fontsize=14)
     plt.xticks(positions, languages, rotation=45, ha='right', fontsize=12)
 
     # Add a caption explaining the color scheme (darker is cold)
@@ -235,10 +319,6 @@ def gen_bar_plot(lambda_results_df: pd.DataFrame, architecture: str, operation: 
     for i, memory_size in enumerate(memory_sizes):
         x_pos = x_base  # Starting x position for this memory size group
         for language in languages:
-            '''
-                percentile_95 = np.percentile(execution_times, 95)  # Compute 95th percentile
-                execution_times = execution_times[execution_times <= percentile_95]
-            '''
 
             cold_times = filtered_df[
                 (filtered_df['memory_size'] == memory_size) &
@@ -246,12 +326,15 @@ def gen_bar_plot(lambda_results_df: pd.DataFrame, architecture: str, operation: 
                 (filtered_df['start_type'] == 'cold')
             ]['execution_time_ms']
 
-            cold_times_percentile_95 = np.percentile(cold_times, 95)  # Compute 95th percentile
-            
-            cold_time = cold_times[cold_times <= cold_times_percentile_95]
+            # Compute the 2.5th and 97.5th percentiles to remove extreme low and high values
+            lower_bound, upper_bound = np.percentile(cold_times, [2.5, 97.5])
 
-            # Get the mean values of the top 95% of cold cases.
+            # Keep only the values within this range (middle 95%)
+            cold_time = cold_times[(cold_times >= lower_bound) & (cold_times <= upper_bound)]
+
+            # Get the mean of the middle 95% of cold start cases
             cold_time_mean = cold_time.mean()
+
 
             warm_times = filtered_df[
                 (filtered_df['memory_size'] == memory_size) &
@@ -259,26 +342,15 @@ def gen_bar_plot(lambda_results_df: pd.DataFrame, architecture: str, operation: 
                 (filtered_df['start_type'] == 'warm')
             ]['execution_time_ms']
             
-            warm_times_percentile_95 = np.percentile(warm_times,95)
 
-            warm_time = warm_times[warm_times <= warm_times_percentile_95]
+            # Compute the 2.5th and 97.5th percentiles to remove extreme low and high values
+            lower_bound, upper_bound = np.percentile(warm_times, [2.5, 97.5])
 
+            # Keep only the values within this range (middle 95%)
+            warm_time = warm_times[(warm_times >= lower_bound) & (warm_times <= upper_bound)]
+
+            # Get the mean of the middle 95% of warm start cases
             warm_time_mean = warm_time.mean()
-
-
-            '''
-            cold_time = filtered_df[
-                (filtered_df['memory_size'] == memory_size) &
-                (filtered_df['language'] == language) &
-                (filtered_df['start_type'] == 'cold')
-            ]['execution_time_ms'].mean()
-            
-            warm_time = filtered_df[
-                (filtered_df['memory_size'] == memory_size) &
-                (filtered_df['language'] == language) &
-                (filtered_df['start_type'] == 'warm')
-            ]['execution_time_ms'].mean()
-            '''
 
             # Plot cold start
             if not pd.isna(cold_time_mean):
@@ -300,7 +372,7 @@ def gen_bar_plot(lambda_results_df: pd.DataFrame, architecture: str, operation: 
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_tick_labels)
     ax.set_xlabel('Memory Size (MB)')
-    ax.set_ylabel('Execution Time (ms)')
+    ax.set_ylabel('Mean Execution Time (ms)')
     ax.set_title(f'Mean Execution Times ({architecture} - {operation}) 95%')
 
     plt.grid(axis='y', linestyle='--', alpha=0.7)
@@ -322,17 +394,26 @@ def gen_bar_plots(lambda_results_df: pd.DataFrame)->None:
 
 
 def gen_architecture_comparison(lambda_results_df: pd.DataFrame):
+    # Step 1: Calculate the 2.5th and 97.5th percentiles for execution time based on architecture and memory size
+    percentiles = lambda_results_df.groupby(['architecture', 'memory_size'])['execution_time_ms'].quantile([0.025, 0.975]).unstack()
 
-    # Group by architecture and memory size, then calculate mean execution time
+    # Step 2: Filter the data to keep only the middle 95% (between 2.5th and 97.5th percentiles)
+    filtered_data = lambda_results_df[
+        lambda_results_df.apply(
+            lambda row: percentiles.loc[row['architecture'], row['memory_size']][0.025] <= row['execution_time_ms'] <= percentiles.loc[row['architecture'], row['memory_size']][0.975],
+            axis=1
+        )
+    ]
+
+    # Step 3: Group by architecture and memory size, then calculate the mean of the middle 95%
     mean_execution_by_memory = (
-        lambda_results_df.groupby(['architecture', 'memory_size'])['execution_time_ms']
+        filtered_data.groupby(['architecture', 'memory_size'])['execution_time_ms']
         .mean()
         .reset_index()
     )
 
-    # Pivot the table for easier percentage difference calculation
+    # Step 4: Pivot the table for easier percentage difference calculation
     pivot = mean_execution_by_memory.pivot(index='memory_size', columns='architecture', values='execution_time_ms').reset_index()
-
     # Calculate percentage difference (arm vs x86)
     pivot['percentage_difference'] = ((pivot['x86'] - pivot['arm']) / pivot['arm']) * 100 * -1 # make it positive
 
@@ -399,6 +480,7 @@ def calculate_cost(row):
     return 0
 
 def gen_architecture_cost_comparison(lambda_results_df: pd.DataFrame):
+    # Relevant columns to work with
     relevant_columns = ['architecture', 'memory_size', 'billed_duration_ms']
 
     # Filter for relevant columns
@@ -407,15 +489,19 @@ def gen_architecture_cost_comparison(lambda_results_df: pd.DataFrame):
     # Add a cost column based on architecture and memory size
     df_filtered['cost'] = df_filtered.apply(calculate_cost, axis=1)
 
-    # Group by architecture and memory size, and calculate the 95th percentile of the cost
-    percentile_95_cost = (
-        df_filtered.groupby(['architecture', 'memory_size'])['cost']
-        .quantile(0.95)
-        .reset_index()
-    )
+    # Compute the 2.5th and 97.5th percentiles for cost based on architecture and memory size
+    percentiles = df_filtered.groupby(['architecture', 'memory_size'])['cost'].quantile([0.025, 0.975]).unstack()
+
+    # Filter the data to keep only the middle 95% (between 2.5th and 97.5th percentiles)
+    percentile_95_cost = df_filtered[
+        df_filtered.apply(
+            lambda row: percentiles.loc[row['architecture'], row['memory_size']][0.025] <= row['cost'] <= percentiles.loc[row['architecture'], row['memory_size']][0.975],
+            axis=1
+        )
+    ]
 
     # Pivot for easier plotting
-    cost_pivot = percentile_95_cost.pivot(index='memory_size', columns='architecture', values='cost')
+    cost_pivot = percentile_95_cost.pivot_table(index='memory_size', columns='architecture', values='cost', aggfunc='mean')
 
     # Calculate percentage difference (x86 vs ARM)
     cost_pivot['percent_diff'] = (
@@ -466,15 +552,6 @@ def gen_architecture_cost_comparison_by_operation_and_language(lambda_results_df
     # Add a cost column based on architecture and memory size
     df_filtered['cost'] = df_filtered.apply(calculate_cost, axis=1)
 
-    # Define operations and languages
-    languages = ['c#', 'go', 'java', 'python', 'rust', 'typescript']
-    operations = [
-        'aes256_decrypt', 'aes256_encrypt', 'ecc256_sign', 'ecc256_verify', 
-        'ecc384_sign', 'ecc384_verify', 'rsa2048_decrypt', 'rsa2048_encrypt', 
-        'rsa3072_decrypt', 'rsa3072_encrypt', 'rsa4096_decrypt', 'rsa4096_encrypt', 
-        'sha256', 'sha384'
-    ]
-
     # Iterate through each operation and language
     for operation in operations:
         for language in languages:
@@ -484,15 +561,22 @@ def gen_architecture_cost_comparison_by_operation_and_language(lambda_results_df
             if df_subset.empty:
                 continue  # Skip if no data for this combination
 
-            # Group by architecture and memory size, calculate the 95th percentile cost
-            percentile_95_cost = (
-                df_subset.groupby(['architecture', 'memory_size'])['cost']
-                .quantile(0.95)
-                .reset_index()
-            )
+
+
+            # Step 3: Compute the 2.5th and 97.5th percentiles for cost based on architecture and memory size
+            percentiles = df_filtered.groupby(['architecture', 'memory_size'])['cost'].quantile([0.025, 0.975]).unstack()
+
+            # Step 4: Filter the data to keep only the middle 95% (between 2.5th and 97.5th percentiles)
+            percentile_95_cost = df_filtered[
+                df_filtered.apply(
+                    lambda row: percentiles.loc[row['architecture'], row['memory_size']][0.025] <= row['cost'] <= percentiles.loc[row['architecture'], row['memory_size']][0.975],
+                    axis=1
+                )
+            ]
+
 
             # Pivot the data for easier plotting
-            cost_pivot = percentile_95_cost.pivot(index='memory_size', columns='architecture', values='cost')
+            cost_pivot = percentile_95_cost.pivot_table(index='memory_size', columns='architecture', values='cost', aggfunc='mean')
 
             # Calculate percentage difference (x86 vs ARM)
             cost_pivot['percent_diff'] = (
@@ -534,41 +618,27 @@ def gen_architecture_cost_comparison_by_operation_and_language(lambda_results_df
             # Save the plot to disk
             output_path = f"{output_dir_lambda}cost_of_ops/{operation}_{language}_cost_comparison.png"
             plt.savefig(output_path, dpi=300, bbox_inches='tight')
+            print("Done")
 
             # Optionally, show the plot
             plt.close(fig)
 
 def analyze_lambda():
-
-    print("Running Analyzation For Lambda")
-
     aws_lambda_results_file_path = "cleaned-results-aws/Lambda-Results.csv"
 
     lambda_results_df = load_data(aws_lambda_results_file_path)
+    save_architecture_comparison_heatmaps(lambda_results_df)
+    save_operation_specific_heatmaps(lambda_results_df)
+
+    #gen_blox_plots(lambda_results_df)
+    #gen_bar_plots(lambda_results_df)
+    #gen_architecture_comparison(lambda_results_df)
+    #gen_architecture_cost_comparison(lambda_results_df)
+    #gen_architecture_cost_comparison_by_operation_and_language(lambda_results_df)
 
 
-    gen_blox_plots(lambda_results_df)
-    gen_bar_plots(lambda_results_df)
-    gen_architecture_comparison(lambda_results_df)
-    gen_architecture_cost_comparison(lambda_results_df)
-    gen_architecture_cost_comparison_by_operation_and_language(lambda_results_df)
-
-def analyze_ec2():
-    print("Running Analyzation For EC2")
-    # Load the dataset
-    aws_ec2_results_file_path = "cleaned-results-aws/EC2-Results.csv"
-
-    ec2_r = load_data(aws_ec2_results_file_path)
-
-    output_dir = "assets/aws/ec2/"
-    os.makedirs(output_dir, exist_ok=True)
 
 
-# Main execution
 if __name__ == "__main__":
-
     analyze_lambda()
-
-    
-
-
+    print("Analyzing Lambda Results.")
