@@ -2,7 +2,6 @@ import json
 import base64
 import sys
 import os
-import hashlib
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.keys import KeyClient
 from azure.keyvault.keys.crypto import CryptographyClient, SignatureAlgorithm
@@ -12,9 +11,9 @@ def main():
     request_json_raw = sys.argv[1]
     request_json = json.loads(request_json_raw)
 
-    # Extract the message from the event payload
-    message = request_json.get('message')
-
+    # Extract the message digest from the event payload
+    message_digest = request_json.get('message_digest')
+    message_digest_bytes = bytes.fromhex(message_digest)
     # Get environment variables
     key_vault_url = os.environ["AZURE_KEY_VAULT_URL"]
     key_name = os.environ["ECC256_KEY_NAME"]
@@ -29,13 +28,10 @@ def main():
     # Initialize the cryptography client for signing
     crypto_client = CryptographyClient(key, credential)
 
-    # Compute the SHA-256 hash of the message
-    message_digest = hashlib.sha256(message.encode("utf-8")).digest()
-
     # Sign the hash
     sign_result = crypto_client.sign(
         algorithm=SignatureAlgorithm.es256,  # Specify the signing algorithm
-        digest=message_digest  # Pass the SHA-256 hash
+        digest=message_digest_bytes  # Pass the SHA-256 hash
     )
 
     # Encode the signature to base64 for easier transport

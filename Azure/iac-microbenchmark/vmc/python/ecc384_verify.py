@@ -1,43 +1,58 @@
 import json
-import boto3
 import base64
-from botocore.exceptions import ClientError
+import sys
 import os
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.keys import KeyClient
+from azure.keyvault.keys.crypto import CryptographyClient, SignatureAlgorithm
 
-kms_client = boto3.client('kms')
+def main():
+    # Get the input JSON from command-line arguments
+    request_json_raw = sys.argv[1]
+    request_json = json.loads(request_json_raw)
 
-def lambda_handler(event, context):
+    # Extract message and signature from the input
+    message_digest = request_json.get("message_digest")
 
-    body = json.loads(event["body"])
+    message_digest_bytes = bytes.fromhex(message_digest)
 
-    message = body['message']  # The original message
-    signature_b64 = body['signature']  # The base64 encoded signature
+    signature_b64 = request_json.get("signature")
 
-    ecc_kms_key_id = os.environ['ECC384_KMS_KEY_ARN']
-
-    # Decode the signature from base64
-    signature = base64.b64decode(signature_b64)
+    is_valid = False
 
     try:
-        # Verify the signature
-        response = kms_client.verify(
-            KeyId=ecc_kms_key_id,
-            Message=message.encode('utf-8'),
-            MessageType='RAW',
-            Signature=signature,
-            SigningAlgorithm='ECDSA_SHA_384'  # Use 'ECDSA_SHA_384' for P-384
+        # Get environment variables
+        key_vault_url = os.environ["AZURE_KEY_VAULT_URL"]
+        key_name = os.environ["ECC384_KEY_NAME"]
+
+        # Authenticate using DefaultAzureCredential
+        credential = DefaultAzureCredential()
+        key_client = KeyClient(vault_url=key_vault_url, credential=credential)
+
+        # Retrieve the ECC P-384 key from Azure Key Vault
+        key = key_client.get_key(key_name)
+
+        # Initialize the cryptography client
+        crypto_client = CryptographyClient(key, credential)
+
+        # Decode the Base64-encoded signature
+        signature = base64.b64decode(signature_b64)
+
+        # Verify the signature using ECC P-384 (ES384)
+        verify_result = crypto_client.verify(
+            algorithm=SignatureAlgorithm.es384,
+            digest=message_digest_bytes,
+            signature=signature
         )
-        
-        return {
-            'statusCode': 200,
-        'headers' : {"Access-Control-Allow-Origin": "*",
-                     "content-type": "application/json"},
-            'body': json.dumps({'verified': response['SignatureValid']})
-        }
-    except ClientError as e:
-        return {
-            'statusCode': e.response['ResponseMetadata']['HTTPStatusCode'],
-        'headers' : {"Access-Control-Allow-Origin": "*",
-                     "content-type": "application/json"},
-            'body': json.dumps({'error': str(e)})
-        }
+
+        is_valid = verify_result.is_valid
+
+    except Exception as e:
+        print(json.dumps({"error": str(e)}))
+        return False
+
+    # Print the result as JSON
+    print(json.dumps({"is_valid": is_valid}))
+
+if __name__ == "__main__":
+    main()

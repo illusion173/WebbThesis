@@ -1,43 +1,44 @@
 import json
-import boto3
 import base64
-from botocore.exceptions import ClientError
+import sys
 import os
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.keys import KeyClient
+from azure.keyvault.keys.crypto import CryptographyClient, SignatureAlgorithm
 
-# Initialize the KMS client
-kms_client = boto3.client('kms')
+def main():
+    # Get the name argument from sys.argv
+    request_json_raw = sys.argv[1]
+    request_json = json.loads(request_json_raw)
 
-def lambda_handler(event, context):
+    # Extract the message digest from the event payload
+    message_digest = request_json.get('message_digest')
+    message_digest_bytes = bytes.fromhex(message_digest)
 
-    body = json.loads(event["body"])
-    message = body['message']  # The message to sign
+    # Get environment variables
+    key_vault_url = os.environ["AZURE_KEY_VAULT_URL"]
+    key_name = os.environ["ECC384_KEY_NAME"]
 
-    ecc_kms_key_id = os.environ['ECC384_KMS_KEY_ARN']
-    try:
-        # Sign the message
-        response = kms_client.sign(
-            KeyId=ecc_kms_key_id,
-            Message=message.encode('utf-8'),
-            MessageType='RAW',
-            SigningAlgorithm='ECDSA_SHA_384'  # Use 'ECDSA_SHA_384' for P-384
-        )
-        
-        signature = response['Signature']
+    # Authenticate using DefaultAzureCredential
+    credential = DefaultAzureCredential()
+    key_client = KeyClient(vault_url=key_vault_url, credential=credential)
 
-        # Encode the signature to base64 for easier transport
-        signature_b64 = base64.b64encode(signature).decode('utf-8')
+    # Get the key from Azure Key Vault
+    key = key_client.get_key(key_name)
 
-        return {
-            'statusCode': 200,
-        'headers' : {"Access-Control-Allow-Origin": "*",
-                     "content-type": "application/json"},
-            'body': json.dumps({'signature': signature_b64})
-        }
+    # Initialize the cryptography client for signing
+    crypto_client = CryptographyClient(key, credential)
 
-    except ClientError as e:
-        return {
-            'statusCode': e.response['ResponseMetadata']['HTTPStatusCode'],
-        'headers' : {"Access-Control-Allow-Origin": "*",
-                     "content-type": "application/json"},
-            'body': json.dumps({'error': str(e)})
-        }
+    # Sign the hash
+    sign_result = crypto_client.sign(
+        algorithm=SignatureAlgorithm.es256,  # Specify the signing algorithm
+        digest=message_digest_bytes  # Pass the SHA-256 hash
+    )
+
+    # Encode the signature to base64 for easier transport
+    signature_b64 = base64.b64encode(sign_result.signature).decode("utf-8")
+
+    print(json.dumps({"signature": signature_b64}))
+
+if __name__ == "__main__":
+    main()

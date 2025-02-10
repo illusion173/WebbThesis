@@ -1,54 +1,42 @@
 import base64
 import json
 import os
-from botocore.exceptions import ClientError
-import boto3
-from cryptography.hazmat.backends import default_backend
+import sys
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.keys import KeyClient
+from azure.keyvault.keys.crypto import CryptographyClient, EncryptionAlgorithm
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
 
-# AWS KMS Client
-kms_client = boto3.client('kms')
+def main():
+    # Read encrypted input JSON from CLI argument
+    encrypted_json = json.loads(sys.argv[1])
 
-def lambda_handler(event, context):
-    # Get the KMS key ID from environment variables or directly
-    rsa_kms_key_id = os.environ['RSA4096_KMS_KEY_ARN']
-    
-    body = json.loads(event['body'])
-    # Get the data from the event
-    encrypted_aes_key_b64 = body.get('encrypted_aes_key')
-    iv_b64 = body.get('iv')
-    ciphertext_b64 = body.get('ciphertext')
+    # Extract base64-encoded values and decode them
+    iv = base64.b64decode(encrypted_json['iv'])
+    ciphertext = base64.b64decode(encrypted_json['ciphertext'])
+    encrypted_aes_key = base64.b64decode(encrypted_json['encrypted_aes_key'])
 
-    # Decode base64 values
-    encrypted_aes_key = base64.b64decode(encrypted_aes_key_b64)
-    iv = base64.b64decode(iv_b64)
-    ciphertext = base64.b64decode(ciphertext_b64)
+    # Azure Key Vault configurations
+    key_vault_url = os.environ["AZURE_KEY_VAULT_URL"]  
+    key_name = os.environ["RSA4096_KEY_NAME"]
 
-    # Decrypt the AES key using KMS
-    try:
-        response = kms_client.decrypt(
-            CiphertextBlob=encrypted_aes_key,
-            KeyId=rsa_kms_key_id,
-            EncryptionAlgorithm="RSAES_OAEP_SHA_256"
-        )
-        aes_key = response['Plaintext']
-    except ClientError as e:
-        print(f"Error decrypting AES key: {e}")
-        return {
-            'statusCode': 500,
-        'headers' : {"Access-Control-Allow-Origin": "*",
-                     "content-type": "application/json"},
-            'body': json.dumps('Decryption failed')
-        }
+    # Authenticate to Azure
+    credential = DefaultAzureCredential()
+    key_client = KeyClient(vault_url=key_vault_url, credential=credential)
+    crypto_client = CryptographyClient(key_client.get_key(key_name), credential)
 
-    # Decrypt the data using AES
+    # Decrypt the AES key using Azure Key Vault RSA key
+    decrypt_result = crypto_client.decrypt(EncryptionAlgorithm.rsa_oaep_256, encrypted_aes_key)
+    aes_key = decrypt_result.plaintext
+
+    # Decrypt the ciphertext using AES-CTR
     cipher = Cipher(algorithms.AES(aes_key), modes.CTR(iv), backend=default_backend())
     decryptor = cipher.decryptor()
     plaintext = decryptor.update(ciphertext) + decryptor.finalize()
 
-    return {
-        'statusCode': 200,
-        'headers' : {"Access-Control-Allow-Origin": "*",
-                     "content-type": "application/json"},
-        'body': plaintext.decode('utf-8')
-    }
+    # Print the decrypted message
+    print(json.dumps({"decrypted_message": plaintext.decode('utf-8')}))
+
+if __name__ == "__main__":
+    main()
