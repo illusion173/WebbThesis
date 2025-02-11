@@ -36,7 +36,7 @@ def main():
 
     # Encode the signature to base64 for easier transport
     signature_b64 = base64.b64encode(sign_result.signature).decode("utf-8")
-
+    let base64url_digest = URL_SAFE_NO_PAD.encode(digest_bytes);
     print(json.dumps({"signature": signature_b64}))
 
 if __name__ == "__main__":

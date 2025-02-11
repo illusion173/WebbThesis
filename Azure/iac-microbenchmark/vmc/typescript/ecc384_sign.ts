@@ -1,55 +1,53 @@
-import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { KMSClient, SignCommand } from '@aws-sdk/client-kms';
-import * as process from 'process';
-import * as base64 from 'base64-js';
+import { DefaultAzureCredential } from "@azure/identity";
+import { KeyClient, KeyVaultKey, CryptographyClient, KnownSignatureAlgorithms } from "@azure/keyvault-keys";
+import * as base64 from "base64-js";
+import * as dotenv from "dotenv";
 
-// Initialize the AWS KMS client with the specified region
-const kmsClient = new KMSClient({
-  region: 'us-east-1' // Specify the desired region
-});
-export const handler = async (event: any, context: Context): Promise<any> => {
+dotenv.config();
 
-  const message: string = Buffer.from(event.body ? JSON.parse(event.body).message : '', 'utf-8').toString();
-
-  const eccKmsKeyId: string = process.env.ECC384_KMS_KEY_ARN!;
-
-  if (!eccKmsKeyId) {
-    throw new Error("ECC384_KMS_KEY_ARN environment variable is not set");
-  }
-
+async function main() {
   try {
-    // Sign the message using KMS
+    // Get the input argument (assuming it's a JSON string)
+    const requestJsonRaw = process.argv[2];
+    const requestJson = JSON.parse(requestJsonRaw);
 
-    const signCommand = new SignCommand({
-      KeyId: eccKmsKeyId,
-      Message: Buffer.from(message, 'utf-8'),
-      MessageType: 'RAW',
-      SigningAlgorithm: 'ECDSA_SHA_384' // Use 'ECDSA_SHA_384' for P-384
-    });
+    // Extract the message digest from the event payload
+    const messageDigestHex: string = requestJson.message_digest;
+    const messageDigestBytes = Buffer.from(messageDigestHex, "hex");
 
-    const response = await kmsClient.send(signCommand);
-    const signature = response.Signature as Uint8Array;
+    // Get environment variables
+    const keyVaultUrl = process.env.AZURE_KEY_VAULT_URL;
+    const keyName = process.env.ECC384_KEY_NAME;
 
-    // Encode the signature to base64 for easier transport
-    const signatureB64 = base64.fromByteArray(signature);
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ signature: signatureB64 })
-    };
+    if (!keyVaultUrl || !keyName) {
+      throw new Error("Missing required environment variables.");
+    }
 
+    // Authenticate using DefaultAzureCredential
+    const credential = new DefaultAzureCredential();
+    const keyClient = new KeyClient(keyVaultUrl, credential);
+
+    // Get the key from Azure Key Vault
+    const key: KeyVaultKey = await keyClient.getKey(keyName);
+
+    if (!key.id) {
+      throw new Error("Key ID is undefined.");
+    }
+
+    // Initialize the cryptography client for signing
+    const cryptoClient = new CryptographyClient(key.id, credential);
+
+    // Sign the hash
+    const signResult = await cryptoClient.sign(KnownSignatureAlgorithms.ES384, messageDigestBytes);
+
+    // Encode the signature to base64
+    const signatureB64 = base64.fromByteArray(signResult.result);
+
+    console.log(JSON.stringify({ signature: signatureB64 }));
   } catch (error) {
-    console.error("Error signing data: ", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ message: "Signing failed" }),
-    };
+    console.error("Error:", error);
+    process.exit(1);
   }
-};
+}
+
+main();

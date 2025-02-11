@@ -1,0 +1,1 @@
+npm install @azure/identity @azure/keyvault-keys dotenv

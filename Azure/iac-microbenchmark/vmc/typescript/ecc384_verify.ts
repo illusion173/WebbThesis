@@ -1,59 +1,60 @@
-import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
-import { KMSClient, VerifyCommand } from '@aws-sdk/client-kms';
-import * as process from 'process';
-import * as base64 from 'base64-js';
+import { DefaultAzureCredential } from "@azure/identity";
+import { KeyClient, CryptographyClient, KnownSignatureAlgorithms } from "@azure/keyvault-keys";
+import * as base64 from "base64-js";
+import * as dotenv from "dotenv";
 
-// Initialize the AWS KMS client with the specified region
-const kmsClient = new KMSClient({
-  region: 'us-east-1' // Specify the desired region
-});
+dotenv.config();
 
-export const handler = async (event: any, context: Context): Promise<any> => {
-  // Retrieve the original message and the base64 encoded signature from the event
-  const body = event.body ? JSON.parse(event.body) : {};
-  const message: string = body.message || '';
-  const signatureB64: string = body.signature || ''; // Assuming the signature is also passed in the body
-
-  const eccKmsKeyId: string = process.env.ECC384_KMS_KEY_ARN!;
-
-  // Decode the signature from base64
-  const signature: Buffer = Buffer.from(signatureB64, 'base64');
-
-  if (!eccKmsKeyId) {
-    throw new Error("ECC384_KMS_KEY_ARN environment variable is not set");
-  }
-
+async function main() {
   try {
+    // Get the input argument (assuming it's a JSON string)
+    const requestJsonRaw = process.argv[2];
+    const requestJson = JSON.parse(requestJsonRaw);
 
+    // Extract the message digest and signature from the event payload
+    const messageDigestHex: string = requestJson.message_digest;
+    const signatureB64: string = requestJson.signature;
 
-    // Verify the signature using KMS
-    const verifyCommand = new VerifyCommand({
-      KeyId: eccKmsKeyId,
-      Message: Buffer.from(message, 'utf-8'),
-      MessageType: 'RAW',
-      Signature: signature,
-      SigningAlgorithm: 'ECDSA_SHA_384' // Use 'ECDSA_SHA_384' for P-384
-    });
+    // Convert message digest and signature to byte arrays
+    const messageDigestBytes = Buffer.from(messageDigestHex, "hex");
+    const signatureBytes = base64.toByteArray(signatureB64);
 
-    const response = await kmsClient.send(verifyCommand);
+    // Get environment variables
+    const keyVaultUrl = process.env.AZURE_KEY_VAULT_URL;
+    const keyName = process.env.ECC384_KEY_NAME;
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ verified: response.SignatureValid })
-    };
+    if (!keyVaultUrl || !keyName) {
+      throw new Error("Missing required environment variables.");
+    }
+
+    // Authenticate using DefaultAzureCredential
+    const credential = new DefaultAzureCredential();
+    const keyClient = new KeyClient(keyVaultUrl, credential);
+
+    // Get the key from Azure Key Vault
+    const key = await keyClient.getKey(keyName);
+
+    if (!key.id) {
+      throw new Error("Key ID is undefined.");
+    }
+
+    // Initialize the cryptography client for verification
+    const cryptoClient = new CryptographyClient(key.id, credential);
+
+    // Verify the signature
+    const verifyResult = await cryptoClient.verify(
+      KnownSignatureAlgorithms.ES384,
+      messageDigestBytes,
+      signatureBytes
+    );
+
+    const is_valid = verifyResult.result
+
+    console.log(JSON.stringify({ is_valid: is_valid }));
   } catch (error) {
-    console.error("Error verifying signature: ", error);
-    return {
-      statusCode: (error as any).statusCode || 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ error: 'Verification failed' })
-    };
+    console.error("Error:", error);
+    process.exit(1);
   }
-};
+}
+
+main();

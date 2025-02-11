@@ -1,94 +1,60 @@
-import { KMSClient, DecryptCommand } from "@aws-sdk/client-kms";
+import { DefaultAzureCredential } from "@azure/identity";
+import { KeyClient, CryptographyClient, KnownEncryptionAlgorithms, RsaDecryptParameters } from "@azure/keyvault-keys";
+import * as base64 from "base64-js";
+import * as dotenv from "dotenv";
 import * as crypto from "crypto";
-import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 
-// Initialize KMS Client
-const kmsClient = new KMSClient({});
+dotenv.config();
 
-export const handler = async (event: any, context: Context): Promise<any> => {
-
-  // Get the KMS key ID from environment variables 
-  const rsaKmsKeyId = process.env.RSA2048_KMS_KEY_ARN;
-
-  if (!rsaKmsKeyId) {
-    return {
-      statusCode: 400,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ message: "KMS Key ID not provided" }),
-    };
-  }
-
-  // Get encrypted data from the event body
-  const body = event.body ? JSON.parse(event.body) : {};
-  const encryptedAesKeyB64 = body.encrypted_aes_key;
-  const ivB64 = body.iv;
-  const ciphertextB64 = body.ciphertext;
-
-  if (!encryptedAesKeyB64 || !ivB64 || !ciphertextB64) {
-    return {
-      statusCode: 400,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ message: "Missing encrypted data in the event" }),
-    };
-  }
-
+async function main() {
   try {
-    // Decode base64 values
-    const encryptedAesKey = Buffer.from(encryptedAesKeyB64, 'base64');
-    const iv = Buffer.from(ivB64, 'base64');
-    const ciphertext = Buffer.from(ciphertextB64, 'base64');
+    // Get the input argument (assuming it's a JSON string)
+    const requestJsonRaw = process.argv[2];
+    const requestJson = JSON.parse(requestJsonRaw);
 
-    // Decrypt the AES key using KMS
-    const decryptCommand = new DecryptCommand({
-      CiphertextBlob: encryptedAesKey,
-      KeyId: rsaKmsKeyId,
-      EncryptionAlgorithm: "RSAES_OAEP_SHA_256",
-    });
+    // Extract the encrypted data
+    const iv = base64.toByteArray(requestJson.iv);
+    const ciphertext = base64.toByteArray(requestJson.ciphertext);
+    const encryptedAesKey = base64.toByteArray(requestJson.encrypted_aes_key);
 
-    const kmsResponse = await kmsClient.send(decryptCommand);
-    const aesKey = kmsResponse.Plaintext;
+    // Get environment variables
+    const keyVaultUrl = process.env.AZURE_KEY_VAULT_URL;
+    const keyName = process.env.RSA2048_KEY_NAME;
 
-    if (!aesKey) {
-      return {
-        statusCode: 500,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "content-type": "application/json"
-        },
-        body: JSON.stringify({ message: "Failed to decrypt AES key" }),
-      };
+    if (!keyVaultUrl || !keyName) {
+      throw new Error("Missing required environment variables.");
     }
 
-    // Decrypt the ciphertext using AES-CTR
-    const decipher = crypto.createDecipheriv('aes-256-ctr', aesKey as Buffer, iv);
-    const decrypted = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+    // Authenticate using DefaultAzureCredential
+    const credential = new DefaultAzureCredential();
+    const keyClient = new KeyClient(keyVaultUrl, credential);
 
-    // Return the plaintext data
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({
-        plaintext: decrypted.toString('utf-8'),
-      }),
-    };
+    // Get the key from Azure Key Vault
+    const key = await keyClient.getKey(keyName);
+
+    if (!key.id) {
+      throw new Error("Key ID is undefined.");
+    }
+
+    // Initialize the cryptography client for decryption
+    const cryptoClient = new CryptographyClient(key.id, credential);
+
+    const decryptParams: RsaDecryptParameters = { algorithm: KnownEncryptionAlgorithms.RSAOaep256, ciphertext: encryptedAesKey };
+
+    // Decrypt the AES key using RSA-OAEP (SHA-256)
+    const decryptResult = await cryptoClient.decrypt(decryptParams);
+    const aesKey = decryptResult.result;
+
+    // Decrypt the message using AES-CTR
+    const decipher = crypto.createDecipheriv("aes-256-ctr", aesKey, iv);
+    const decryptedMessage = Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString("utf8");
+
+    // Print the decrypted message
+    console.log(JSON.stringify({ message: decryptedMessage }));
   } catch (error) {
-    console.error("Error decrypting data: ", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ message: "Decryption failed" }),
-    };
+    console.error("Error:", error);
+    process.exit(1);
   }
-};
+}
+
+main();
