@@ -2,7 +2,7 @@ import base64
 import json
 import os
 import sys
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 from azure.keyvault.keys import KeyClient
 from azure.keyvault.keys.crypto import CryptographyClient, EncryptionAlgorithm
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -22,7 +22,7 @@ def main():
     key_name = os.environ["RSA4096_KEY_NAME"]
 
     # Authenticate to Azure
-    credential = DefaultAzureCredential()
+    credential = AzureCliCredential()
     key_client = KeyClient(vault_url=key_vault_url, credential=credential)
     crypto_client = CryptographyClient(key_client.get_key(key_name), credential)
 

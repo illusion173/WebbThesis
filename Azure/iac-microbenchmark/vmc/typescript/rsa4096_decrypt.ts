@@ -1,4 +1,4 @@
-import { DefaultAzureCredential } from "@azure/identity";
+import { AzureCliCredential } from "@azure/identity";
 import { KeyClient, CryptographyClient, KnownEncryptionAlgorithms, RsaDecryptParameters } from "@azure/keyvault-keys";
 import * as base64 from "base64-js";
 import * as dotenv from "dotenv";
@@ -25,8 +25,8 @@ async function main() {
       throw new Error("Missing required environment variables.");
     }
 
-    // Authenticate using DefaultAzureCredential
-    const credential = new DefaultAzureCredential();
+    // Authenticate using AzureCliCredential
+    const credential = new AzureCliCredential();
     const keyClient = new KeyClient(keyVaultUrl, credential);
 
     // Get the key from Azure Key Vault

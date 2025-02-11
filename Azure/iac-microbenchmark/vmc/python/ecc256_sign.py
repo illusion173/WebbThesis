@@ -2,7 +2,7 @@ import json
 import base64
 import sys
 import os
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 from azure.keyvault.keys import KeyClient
 from azure.keyvault.keys.crypto import CryptographyClient, SignatureAlgorithm
 
@@ -18,8 +18,8 @@ def main():
     key_vault_url = os.environ["AZURE_KEY_VAULT_URL"]
     key_name = os.environ["ECC256_KEY_NAME"]
 
-    # Authenticate using DefaultAzureCredential
-    credential = DefaultAzureCredential()
+    # Authenticate using AzureCliCredential
+    credential = AzureCliCredential()
     key_client = KeyClient(vault_url=key_vault_url, credential=credential)
 
     # Get the key from Azure Key Vault
@@ -36,7 +36,6 @@ def main():
 
     # Encode the signature to base64 for easier transport
     signature_b64 = base64.b64encode(sign_result.signature).decode("utf-8")
-    let base64url_digest = URL_SAFE_NO_PAD.encode(digest_bytes);
     print(json.dumps({"signature": signature_b64}))
 
 if __name__ == "__main__":

@@ -5,6 +5,14 @@ PROJECTS=("ecc256_verify" "ecc384_verify" "rsa2048_decrypt" "rsa3072_decrypt" "r
 
 dependencies='
         <dependency>
+        <groupId>com.azure</groupId>
+        <artifactId>azure-sdk-bom</artifactId>
+        <version>1.2.10</version>
+        <type>pom</type>
+        <scope>import</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-security-keyvault-keys</artifactId>
             <version>4.9.2</version>
@@ -26,8 +34,14 @@ dependencies='
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
+            <artifactId>slf4j-nop</artifactId>
             <version>2.0.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.azure.tools</groupId>
+            <artifactId>azure-sdk-build-tool</artifactId>
+            <version>1.0.0</version>
         </dependency>
 '
 
@@ -48,6 +62,16 @@ for PROJECT in "${PROJECTS[@]}"; do
                 <version>3.2.2</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
                 <executions>
                     <execution>
@@ -76,7 +100,7 @@ for PROJECT in "${PROJECTS[@]}"; do
     </properties>
     "
 
-    mvn archetype:generate -DgroupId=com.webb -DartifactId="$PROJECT" -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+    mvn archetype:generate -DgroupId=com.webb -DartifactId="$PROJECT" -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false -DjavaVersion=21
 
     # Navigate to the project directory
     cd "$PROJECT" || exit

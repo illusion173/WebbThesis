@@ -2,7 +2,7 @@ import json
 import base64
 import sys
 import os
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 from azure.keyvault.keys import KeyClient
 from azure.keyvault.keys.crypto import CryptographyClient, SignatureAlgorithm
 
@@ -19,8 +19,8 @@ def main():
     key_vault_url = os.environ["AZURE_KEY_VAULT_URL"]
     key_name = os.environ["ECC384_KEY_NAME"]
 
-    # Authenticate using DefaultAzureCredential
-    credential = DefaultAzureCredential()
+    # Authenticate using AzureCliCredential
+    credential = AzureCliCredential()
     key_client = KeyClient(vault_url=key_vault_url, credential=credential)
 
     # Get the key from Azure Key Vault

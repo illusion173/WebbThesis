@@ -54,7 +54,7 @@ func main() {
 	}
 
 	// Authenticate with Azure
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	cred, err := azidentity.NewAzureCLICredential(nil)
 	if err != nil {
 		log.Fatalf("Failed to authenticate with Azure: %v", err)
 	}
