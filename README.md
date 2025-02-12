@@ -10,6 +10,7 @@ A Multi-Language Study on FaaS and IaaS Platforms by Jeremiah Webb @ Embry-Riddl
 - Go 1.23.0
 - TypeScript 5.7.2 (Node 23.4.0)
 - C# (Dotnet v8)
+- Java 21
 
 
 ## Cryptographic Workloads: 

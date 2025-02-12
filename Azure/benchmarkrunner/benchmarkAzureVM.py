@@ -310,8 +310,8 @@ def main():
     # Get Architecture
     architecture = platform.machine()
 
-    #instance_type = get_azure_instance_type()
-    instance_type = "TEST"
+    instance_type = get_azure_instance_type()
+    #instance_type = "TEST"
 
     if architecture == "x86_64":
         arch_dir = "x86"
