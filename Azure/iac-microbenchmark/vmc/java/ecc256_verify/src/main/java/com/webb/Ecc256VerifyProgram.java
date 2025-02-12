@@ -31,7 +31,7 @@ public class Ecc256VerifyProgram {
 
         Ecc256VerifyRequestMessage request = mapper.readValue(requestJsonString, Ecc256VerifyRequestMessage.class);
         byte[] messageDigestBytes = hexStringToByteArray(request.getmessage_digest());
-        byte[] signatureBytes = Base64.getUrlDecoder().decode(request.getsignature());
+        byte[] signatureBytes = Base64.getDecoder().decode(request.getsignature());
  
         
         AzureCliCredential creds = new AzureCliCredentialBuilder().build();

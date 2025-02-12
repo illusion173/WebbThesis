@@ -1,0 +1,2 @@
+/home/illusion/school/Thesis/WebbThesis/Azure/iac-microbenchmark/vmc/c#/ecc256_sign/bin/Release/net8.0/linux-x64/publish/ecc256_sign.pdb
+/home/illusion/school/Thesis/WebbThesis/Azure/iac-microbenchmark/vmc/c#/ecc256_sign/bin/Release/net8.0/linux-x64/publish/ecc256_sign

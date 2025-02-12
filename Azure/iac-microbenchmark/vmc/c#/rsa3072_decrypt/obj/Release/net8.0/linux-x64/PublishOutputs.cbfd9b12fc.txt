@@ -1,0 +1,2 @@
+/home/illusion/school/Thesis/WebbThesis/Azure/iac-microbenchmark/vmc/c#/rsa3072_decrypt/bin/Release/net8.0/linux-x64/publish/rsa3072_decrypt.pdb
+/home/illusion/school/Thesis/WebbThesis/Azure/iac-microbenchmark/vmc/c#/rsa3072_decrypt/bin/Release/net8.0/linux-x64/publish/rsa3072_decrypt

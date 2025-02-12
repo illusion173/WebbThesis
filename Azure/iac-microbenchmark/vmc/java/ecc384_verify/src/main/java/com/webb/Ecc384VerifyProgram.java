@@ -30,7 +30,7 @@ public class Ecc384VerifyProgram {
 
         Ecc384VerifyRequestMessage request = mapper.readValue(requestJsonString, Ecc384VerifyRequestMessage.class);
         byte[] messageDigestBytes = hexStringToByteArray(request.getmessage_digest());
-        byte[] signatureBytes = Base64.getUrlDecoder().decode(request.getsignature());
+        byte[] signatureBytes = Base64.getDecoder().decode(request.getsignature());
  
         
         AzureCliCredential creds = new AzureCliCredentialBuilder().build();

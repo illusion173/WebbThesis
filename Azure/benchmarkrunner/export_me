@@ -1,3 +1,6 @@
-AZURE_KEY_VAULT_URL="https://azbenchmarkkvwebb.vault.azure.net/"
-ECC256_KEY_NAME="ecc256benchmark"
-
+export AZURE_KEY_VAULT_URL="https://azbenchmarkkvwebb.vault.azure.net/"
+export ECC256_KEY_NAME="ecc256benchmark"
+export ECC384_KEY_NAME="ecc384benchmark-2"
+export RSA2048_KEY_NAME="rsa2048benchmark"
+export RSA3072_KEY_NAME="rsa3072benchmark"
+export RSA4096_KEY_NAME="rsa4096benchmark"

@@ -627,14 +627,16 @@ def analyze_lambda():
     aws_lambda_results_file_path = "cleaned-results-aws/Lambda-Results.csv"
 
     lambda_results_df = load_data(aws_lambda_results_file_path)
-    save_architecture_comparison_heatmaps(lambda_results_df)
-    save_operation_specific_heatmaps(lambda_results_df)
-
+    #save_architecture_comparison_heatmaps(lambda_results_df)
+    #save_operation_specific_heatmaps(lambda_results_df)
     #gen_blox_plots(lambda_results_df)
     #gen_bar_plots(lambda_results_df)
     #gen_architecture_comparison(lambda_results_df)
     #gen_architecture_cost_comparison(lambda_results_df)
     #gen_architecture_cost_comparison_by_operation_and_language(lambda_results_df)
+
+
+
 
 
 

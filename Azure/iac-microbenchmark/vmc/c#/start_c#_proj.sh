@@ -96,6 +96,7 @@ namespace Program
                 var requestModel = JsonSerializer.Deserialize<${project}Request>(args[0], options);
 
 
+                string message = "";
                 // Put main code here
                 try
                 {

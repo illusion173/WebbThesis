@@ -45,9 +45,9 @@ public class Ecc256SignProgram {
         
         
         SignResult signResult = cryptoClient.sign(SignatureAlgorithm.ES256, messageDigestBytes);
-        
-        String signatureBase64 = Base64.getUrlEncoder().withoutPadding().encodeToString(signResult.getSignature());
-         
+ 
+        String signatureBase64 = Base64.getEncoder().encodeToString(signResult.getSignature());
+ 
         Ecc256SignResponseMessage response = new Ecc256SignResponseMessage(signatureBase64);
         
         OutputStream output = System.out;

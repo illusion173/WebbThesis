@@ -44,8 +44,8 @@ public class Ecc384SignProgram {
         	    .buildClient();
         SignResult signResult = cryptoClient.sign(SignatureAlgorithm.ES384, messageDigestBytes);
         
-        String signatureBase64 = Base64.getUrlEncoder().withoutPadding().encodeToString(signResult.getSignature());
-         
+        String signatureBase64 = Base64.getEncoder().encodeToString(signResult.getSignature());
+ 
         Ecc384SignResponseMessage response = new Ecc384SignResponseMessage(signatureBase64);
         
         OutputStream output = System.out;

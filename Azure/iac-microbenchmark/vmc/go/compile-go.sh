@@ -14,7 +14,7 @@ for PROJECT in "${PROJECTS[@]}"; do
     cd "$PROJECT" || exit
 
     # Build the project and place the binary in the bin directory
-    go build -o "../$1/$PROJECT"
+    go build -o "../$1"
 
     cd ..
 done

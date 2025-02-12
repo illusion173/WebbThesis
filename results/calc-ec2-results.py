@@ -460,7 +460,7 @@ def generate_arm_vs_x86_heatmaps(df):
         heatmap_data = df_start.pivot_table(index='instance_size', columns='language', values='percentage_diff')
 
         # Plot heatmap
-        sns.heatmap(heatmap_data, annot=True, cmap="coolwarm", center=0, fmt=".1f")
+        sns.heatmap(heatmap_data, annot=True, cmap="coolwarm", center=0, fmt=".1f", vmin=-30, vmax=100)
         plt.title(f'ARM vs x86 Execution Time Difference (%) All Operations (95%) - {start.capitalize()} Start \n Negative Means x86 is Faster')
         plt.xlabel('Programming Language')
         plt.ylabel('Instance Size')
@@ -569,9 +569,9 @@ def analyze_ec2():
     ec2_r = load_data(aws_ec2_results_file_path)
 
     #ec2_gen_blox_plots(ec2_r)
-    gen_bar_plots_for_ec2(ec2_r)
+    #gen_bar_plots_for_ec2(ec2_r)
     #gen_instance_type_comparison(ec2_r)
-    generate_arm_vs_x86_heatmaps_for_operations(ec2_r)
+    #generate_arm_vs_x86_heatmaps_for_operations(ec2_r)
     generate_arm_vs_x86_heatmaps(ec2_r)
 
 # Main execution
