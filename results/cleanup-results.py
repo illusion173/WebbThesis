@@ -18,6 +18,18 @@ ec2_files = [
     "x86_64-t2.xlarge-AWSEC2-Benchmarkresults.csv"
 ]
 
+
+
+
+azure_vm_files = [
+"aarch64-standard_b2pls_v2-AzureVM-Benchmarkresults.csv",
+"aarch64-standard_b4ps_v2-AzureVM-Benchmarkresults.csv",   
+"aarch64-standard_b8ps_v2-AzureVM-Benchmarkresults.csv",
+"x86_64-standard_b2s-AzureVM-Benchmarkresults.csv",
+"x86_64-standard_b4ms-AzureVM-Benchmarkresults.csv"
+"x86_64-standard_b8ms-AzureVM-Benchmarkresults.csv"
+]
+
 # Combine CSV files into one dataframe
 def combine_csv(files, output_file):
     """Combine multiple CSV files into one and save to output_file."""
@@ -33,11 +45,17 @@ def combine_csv(files, output_file):
     combined_df.to_csv(output_file, index=False)
     print(f"Combined file saved to {output_file}")
 
+
+
+
 # Main script
 if __name__ == "__main__":
     # Combine Lambda results
-    combine_csv(lambda_files, "Lambda-Results.csv")
+    #combine_csv(lambda_files, "Lambda-Results.csv")
 
     # Combine EC2 results
-    combine_csv(ec2_files, "EC2-Results.csv")
+    #combine_csv(ec2_files, "EC2-Results.csv")
+    
+    # Combine Azure VM results into single file.
 
+    combine_csv(azure_vm_files, "Azure-VM-Results.csv")
