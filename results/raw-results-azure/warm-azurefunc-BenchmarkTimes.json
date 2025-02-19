@@ -1,0 +1,714 @@
+[
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_sign",
+        "language": "c#",
+        "azure_url": "https://dotnetecc256signbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_ecc256_sign_program",
+        "architecture": "x86",
+        "operationName": "c#_ecc256_sign",
+        "benchmarktimes": [
+            "2025-02-18T23:37:06Z",
+            "2025-02-18T23:37:34Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b",
+            "signature": "WSxumTxna9IrNHwj4N85qKoroDqeofYCOYcmbenyw5LZerrgMgVNTpOvUvpiP3fC8FwWriFDa0+5HdUvFT8Gow=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_verify",
+        "language": "c#",
+        "azure_url": "https://dotnetecc256verifybenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_ecc256_verify_program",
+        "architecture": "x86",
+        "operationName": "c#_ecc256_verify",
+        "benchmarktimes": [
+            "2025-02-18T23:37:53Z",
+            "2025-02-18T23:38:20Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_sign",
+        "language": "c#",
+        "azure_url": "https://dotnetecc384signbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_ecc384_sign_program",
+        "architecture": "x86",
+        "operationName": "c#_ecc384_sign",
+        "benchmarktimes": [
+            "2025-02-18T23:38:41Z",
+            "2025-02-18T23:39:11Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6",
+            "signature": "1kW/T7W6wJSKIry/cxOM4+E+00v4c+99ek4eO1Cc5zaZeeiXoc8Ce1AVJPM3XLmf7FOlirUHBZ8zD4o96m80hsnHBCrAQ7fUlobgnCKUS4WlBqKnO0SwPZKMyaAyMEEv"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_verify",
+        "language": "c#",
+        "azure_url": "https://dotnetecc384verifybenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_ecc384_verify_program",
+        "architecture": "x86",
+        "operationName": "c#_ecc384_verify",
+        "benchmarktimes": [
+            "2025-02-18T23:39:30Z",
+            "2025-02-18T23:39:54Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "kGFSRYBClmN4XCECqRXsTQ==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "f6aXkc+sS1ylwXGcpVXL9eB3kYEvT/vf4o8FbWPTlGLiN21IZTT722+DlQDV6DjcSgXP3Rh9CrA3/XAgyF34t5791hVPMkxWGvrY+IbrIjWp6TThf3VnYTPT2+rRQBEIPYIhPb9Yq+e990yFSqVmtFzNOAJ9WnkSuyzm23Qus1TkFBbXjzbECd7tnxNipE0acW0+j874RR5z7nbESawUL+cY9tLE3m7V3PhA8u8Zyrc9CjcfYAeBRo+XhiPqcvy5ZbJ+L12fYO0d8di7BDnst1AkWBuEV3qQP0G6GWXIO6xHnsrImDgqoEjCnl0q1etPSbR1wx7/IEX1obTD+hdwzg=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_decrypt",
+        "language": "c#",
+        "azure_url": "https://dotnetrsa2048decryptbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_rsa2048_decrypt_program",
+        "architecture": "x86",
+        "operationName": "c#_rsa2048_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:40:13Z",
+            "2025-02-18T23:40:41Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_encrypt",
+        "language": "c#",
+        "azure_url": "https://dotnetrsa2048encryptbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_rsa2048_encrypt_program",
+        "architecture": "x86",
+        "operationName": "c#_rsa2048_encrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:41:00Z",
+            "2025-02-18T23:41:28Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "OdgSuPlCpFkEapD9dC6CxQ==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "khqA+ZhFfaHrzgnrF5o66QwD1oD0XyKLD6LQ0a6JwzQWUHPMejk+7H8DhcL6488fNezXfLEHRS70GHndUNha9Cz+1Rj4UKIGJJfkHzcqon8pZI6K4Jw8PTRSa9ToM6O1bYhRaIw48RavBJm5+uyNUHk4ix2w/zSEtaB7a92sLNjLCDWH10sLzPMP8llWmpxTsyrrqe9iznpRnLqFozoaWBX65bzSfxNmadXQiuhkoYX1OudGsn240jZpllmptKFNOvycv7khSuZMMjKWbCpqO1A+97uLH5IIC6A+8sR54FU1MR4q5zrhuT2LxKUXxYGK1cJwxlSCq0jXWBmO6uu1gyvtzmPRtdLev4+u6KA+dBWrvwBtOqgKB6TZLAripqvhq+4OMl+h35mZsPs2Wt9kallZlswy3emuleqEZXPTzKsAcb8+3FJaK8Wiprhozod+X8Bqblgjo3H0aBr0bTb9bxMZDE6QnOReSP1URpOkEfrKsXXEyZhi+QCJbRyerb0e"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_decrypt",
+        "language": "c#",
+        "azure_url": "https://dotnetrsa3072decryptbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_rsa3072_decrypt_program",
+        "architecture": "x86",
+        "operationName": "c#_rsa3072_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:41:46Z",
+            "2025-02-18T23:42:14Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_encrypt",
+        "language": "c#",
+        "azure_url": "https://dotnetrsa3072encryptbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_rsa3072_encrypt_program",
+        "architecture": "x86",
+        "operationName": "c#_rsa3072_encrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:42:33Z",
+            "2025-02-18T23:43:00Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "EHSTaoV1LGbBosp442LAlw==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "TqFyI/mveiaBlClYyGAIp3aBCE50NbVCGD3bhgD3uvPauSZZpzACeUeas/+CU1/nT3hKp+s30BDCzX83rRUjze6smUpQRqSyvqU21Lbk9fXtiFC/E6NutfUwfaopQAoGLkdBJNvc9ztHyUVQaYMaa9icDgoLlgIsyIRDlsXpELLIoTCdmbFmTRC31NhLcSkM+e3xU2rrcaT35dWPdTxBNcESPvbl//8Xi7c8xiF2Swq6wg82Tr50g77LQMQ+C9DsRus+keD9gs1/y/DzgQMOFi62e/VhpIqD4E0xBYiWhodlwEUXBMeFy/W4CVGpALKSsNSVlHCAtz+66UDA1bfIC6/b32/ZYgbaZfnsnXGrWWdadiweDeOXsXnFygFNjCijAXXtWZz57mr5Ft/G7wQXphrxQ1Wq+35AJNle8xJpUBLTG7pE4r0l0EgUdwlnvcYUBXRcPKacBbX7l1rMd2k8mzWPYDeVG2OYlU9O3SqFnKCeWW9ugR1XrBwqKWP4d9T9ZrGac/fEZ/dm4Rw87zrF5Wl8g4FRIfmfZqnwtAm/kyGdOVxofkdQ24r3DKUEV1+cClo7jTAzagVcrHXoODoQAtvmRSJDc4MTI9r3c1iEvShnXrdfqSDkSH13NVyIArVuPIAr5aji55hl59miFEe3xuKViKXo7VaSMrzpfTsupn4="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_decrypt",
+        "language": "c#",
+        "azure_url": "https://dotnetrsa4096decryptbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_rsa4096_decrypt_program",
+        "architecture": "x86",
+        "operationName": "c#_rsa4096_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:43:19Z",
+            "2025-02-18T23:43:49Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_encrypt",
+        "language": "c#",
+        "azure_url": "https://dotnetrsa4096encryptbenchmarkappwebbeecserau.azurewebsites.net/api/dotnet_rsa4096_encrypt_program",
+        "architecture": "x86",
+        "operationName": "c#_rsa4096_encrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:44:10Z",
+            "2025-02-18T23:44:40Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_sign",
+        "language": "java",
+        "azure_url": "https://javaecc256signbenchmarkappwebbeecserau.azurewebsites.net/api/java_ecc256_sign",
+        "architecture": "x86",
+        "operationName": "java_ecc256_sign",
+        "benchmarktimes": [
+            "2025-02-18T23:45:06Z",
+            "2025-02-18T23:45:35Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b",
+            "signature": "WSxumTxna9IrNHwj4N85qKoroDqeofYCOYcmbenyw5LZerrgMgVNTpOvUvpiP3fC8FwWriFDa0+5HdUvFT8Gow=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_verify",
+        "language": "java",
+        "azure_url": "https://javaecc256verifybenchmarkappwebbeecserau.azurewebsites.net/api/java_ecc256_verify",
+        "architecture": "x86",
+        "operationName": "java_ecc256_verify",
+        "benchmarktimes": [
+            "2025-02-18T23:45:59Z",
+            "2025-02-18T23:46:27Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_sign",
+        "language": "java",
+        "azure_url": "https://javaecc384signbenchmarkappwebbeecserau.azurewebsites.net/api/java_ecc384_sign",
+        "architecture": "x86",
+        "operationName": "java_ecc384_sign",
+        "benchmarktimes": [
+            "2025-02-18T23:46:51Z",
+            "2025-02-18T23:47:23Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6",
+            "signature": "1kW/T7W6wJSKIry/cxOM4+E+00v4c+99ek4eO1Cc5zaZeeiXoc8Ce1AVJPM3XLmf7FOlirUHBZ8zD4o96m80hsnHBCrAQ7fUlobgnCKUS4WlBqKnO0SwPZKMyaAyMEEv"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_verify",
+        "language": "java",
+        "azure_url": "https://javaecc384verifybenchmarkappwebbeecserau.azurewebsites.net/api/java_ecc384_verify",
+        "architecture": "x86",
+        "operationName": "java_ecc384_verify",
+        "benchmarktimes": [
+            "2025-02-18T23:47:46Z",
+            "2025-02-18T23:48:14Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "kGFSRYBClmN4XCECqRXsTQ==",
+            "ciphertext": "yRYlXQr0CjUnznQmL+ERAozFRYmFL+jQ4fF2ND+qZSkNLrpXt9/3XCjN+s4GEbN/r1g18+0RIx2nH6Wm9QSVGAndoiqgPVtTiYs1LVlLWNZ9To1xgFXop8Fm0jYe2aLNOhXUejNupc7CdwFpBGMykRJfQQ5PgDUuhybF0GkBzLAZpi0UvILnHmQoRfju7UCY3Wei87/UnqKbjzs71tIYf9/pdFwdzXRvdWdkOEvH8urOE7CmWbf4F6pD33At2o8PlR6tzh4JF+naPEnDxnfLboGw8T9tSTb64AccQdGaBwNzGiNho0QQmQ3m2AbkNeG3mT+rU3rcHKvexlKsJW4lkfb57qj/k0GziO0fkNTeOSkOb3rOlsBPQ5IE/6RTUzjCZBUGTnBLwXIkbJc2WeVWWa6W04HFSfEW7UqKxkmuwHv7VikAMnSrhQT02qNb4twJ7JuADi4aNlG+Xe6rKW4SkIotQA5UWPVNQSuupPcUha3DlMyUgVkkHfHcydH05Zwj5TJnVadQFgcB+e6Oh80nz+ArAA57N4Gccv70fBDg3GF7sQ6mP1yiTRIm3Uex4jd4XPYNduHtdiZ06RryyJDm1pWr1w2eVH3V0bvCvSVokeaQJdTJTKUMENvBbvWUlO304QhPiuuEeY2i2D0gXfxJIZzegMa6rctnfoW/8sEbaW2y/N5+CI2tue/CWiokcS6M2v903ev9p0hTK7SA17QTFu9ClWL+/g4TUPOyyekEbVIofOGpN1zTdhr0CuRQRHmJl5I0bddBwNUy0hJw4BltRz9/8v5aj+XZcxnZ/5vov503q0o7Me3rDGFI2fY9gOMBb84gHAvFtq/vKmXDKb4aBidCensLO74e6gUy1+tSa89DxfRNQ+ACG5m145T8Ol6ZpFUS6On8uCl//nh12+MS1k0IY/620+mKh1oJSlFrlimgGEIW+7bb1iHtCHL/xAI95FESZ87HWtotfnQ8K+/M1DO9/0mqVnjsKN9PlVK5yqkPIl9OE979MTdSU26JDtbxLKNxzza+BWAkzq+X3hIk/YGTZ/Fiilolr4mgbTuhBzFLiJcw8znvMQSI6H9kZ2O4bwcSF+DNpGeGgZx3NBTinyNAH/jBBzyN1iTpkgs/WLHzcTkeqABMbzk1Q+xGGRDoDhxhutFA+1mOvgi4bResa7ao3mfBlTHSPQIdo7ymb5iGbxvfcaMy4NmhpwDpQuNnxFpjP6RyhbLC/FjcxMA6NZ0kTVdpK7hZA1w8N4+Rik5LijT2M7ReI6aa6yr/6bGaI6+y02bR5A00Sy0B2t2x4KGaKpV+aiapzYB1zoT+DPwQmjnJZwtb6XeKYnFpuzD7Xfe0+eD0JylY+hbL+X31g9JDbSJXyV7nHGzB/uC54je+O3Lcpqv+poAeJTLuRl+AZlP08sVAvW7/IciakVeeldGZ3cpa8KNiaEEBsf0o7nOrG1Q3eWPIhNniUPVWAclWXkZk/lq2HAKuFcd9NqfEzX0QkgpN9ThXFn+NPyeBFmUaMQN02MnRN9KGXhRxW/XiAuBa+AZFj5Khv5+D3i5HO3lPTrBjYDQKnOoAbQegGca1utIdZbs14F7y7W9oqDiroDcAw2OFprAxTUST3kyATfzj2YwSpKYxXmPweD0HyNd5PtOMa9KMDzMSAdJwvfW4XrZq7w/nCko1TqFxZQWNfha11Ad+zuvMrkiUX+CHbxHPeg9F63NVTN/kf+iAP6rDpxgljP3C9dl+DL77ZI54MpvDwS6SIiqquMdppZBScbI7FR3sszlmwe8hAnR7uab86m+xl8PbQccwpFsvBI4sU9sOXUE0sSqNOemmsp2/F0aiUs0xbPF5tt9vNrwMnOqFKtibjLrUye7v2I4xfC4Puli4C4uLxOQZ8czsQ0w5wLDoYTvv5tF+VQfCLMaLY8mTCHAZ8+iEZXIJ1QlHT581gIli8E3SC8/c7HCOsV6cN/Ubf+bKQ3GHfybGpa3aZeX/h3BlOSadmgynG3d1xQsODKjiiMCD1VoEl92JxkvQyUtM8YmoibEXmGT//+41v2OHaMZYwwyAvoOL7KBVsRhj3zeixsTjqO3iBJYpEC3dswA20Pg7Or9f1iRjGbeRrG+e5Wsr7+E1zCwJx8yjpec6qqhg8v0Wvxy4OX78mE/fByvd0tl97ZOFw3c3ihYdDSJmH2gKqshL29TlrDg+u0tr2AV6UXV/I4rU6Q/Gn3/s/ZkQAbBS5Tvv82l1QIV2+vk0qBvqvc8GykW5n05uX/S05x0ldRgDNm+Gr8sB9IQIYTiIWpqyvgWHMLtKXE36ltJHY5jERJglx/1/faQwMn7u2pKAyvG0ELonom77T9E1hQr9lI10czUPEj416qUjG1OpAW7Q5tReM6yPTDFL49spNZ9rFVnprrWIBXvwhcX+MoBwlQTTXJP89stG6qEZhvEjr4Nmje0IqUDN5WL4JsqQXjV3ckp4d7MA+sU8OW0G9da7GFM/InTUmNzD/FvurHPPzji3/zNGM3qO9OdO+jUCLya1Qu2XQB6NGadozhIpCvKUZIDKLmqgDUFFQ5sXEDkafK4Mt7Gwp1Zz6G6ICFTZt496lPSv69C+SB06f7zluHpz63CF6MnGOg00fn9mqKNeMNMrAXxaxzpg/1wPpJkFNJPkOhJ8Z+I8uXE/jR2/5M1jwj3oyJ62IqGrF6ammcavC58MyDWC01qotr2i71bIpQ+xjJCTBAjuDnWXZ8+ykZbARfALsWvya2DRh3BCAgapJCtTBpwuZYSLu/NZWRzWyf27Ptduk6VJ+qmqnncDlXTfnxhFjElGpRvQdCdom3NVnY6rc6vDst6D+eaaAHoc2Ni3PaMJCtMhM6CVF9fGdh3FBxqQyDiQYJ1Xo4HWnQWGKEUcXxKmw5AMwHzKO8YzxywEwgnCR/I/u5WlACGoeuX6cwfzR6W0pv4ZMRXkdpziaw1FJHKaSkr6CPdBVk2Saf0d8C65cN/fffLr8qo/HihjWjK7gBtSbp5lY90NZAtx8gF/3TUOxEQDW5KqFmZGlcwsSEbkXfd14rKucvljl1HsN2PLejDWL5rq+tJSsVAofs+B9WcJt/rgqkQEwjtn4XJb1BPsMDghhR27dbnC+UXsD8GWP4KP+9YtVWTsfJ0d0lhdbgCo454rprIKivLmSi09TY9bm/hu9j5F7j5OLVGylDv45kMRMtGmCatuDi4MpHd6sVTMtbihQTiUA1KAavCaZ03K98tKjRWH3Eyy8m7XiMNuQcdNXLpR0+hM/RmR8e5KMTSZTrpwggwCc7htmW36nhcOAA==",
+            "encrypted_aes_key": "f6aXkc+sS1ylwXGcpVXL9eB3kYEvT/vf4o8FbWPTlGLiN21IZTT722+DlQDV6DjcSgXP3Rh9CrA3/XAgyF34t5791hVPMkxWGvrY+IbrIjWp6TThf3VnYTPT2+rRQBEIPYIhPb9Yq+e990yFSqVmtFzNOAJ9WnkSuyzm23Qus1TkFBbXjzbECd7tnxNipE0acW0+j874RR5z7nbESawUL+cY9tLE3m7V3PhA8u8Zyrc9CjcfYAeBRo+XhiPqcvy5ZbJ+L12fYO0d8di7BDnst1AkWBuEV3qQP0G6GWXIO6xHnsrImDgqoEjCnl0q1etPSbR1wx7/IEX1obTD+hdwzg=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_decrypt",
+        "language": "java",
+        "azure_url": "https://javarsa2048decryptbenchmarkappwebbeecserau.azurewebsites.net/api/java_rsa2048_decrypt",
+        "architecture": "x86",
+        "operationName": "java_rsa2048_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:48:41Z",
+            "2025-02-18T23:49:12Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_encrypt",
+        "language": "java",
+        "azure_url": "https://javarsa2048encryptbenchmarkappwebbeecserau.azurewebsites.net/api/java_rsa2048_encrypt",
+        "architecture": "x86",
+        "operationName": "java_rsa2048_encrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:49:37Z",
+            "2025-02-18T23:50:07Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "OdgSuPlCpFkEapD9dC6CxQ==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "khqA+ZhFfaHrzgnrF5o66QwD1oD0XyKLD6LQ0a6JwzQWUHPMejk+7H8DhcL6488fNezXfLEHRS70GHndUNha9Cz+1Rj4UKIGJJfkHzcqon8pZI6K4Jw8PTRSa9ToM6O1bYhRaIw48RavBJm5+uyNUHk4ix2w/zSEtaB7a92sLNjLCDWH10sLzPMP8llWmpxTsyrrqe9iznpRnLqFozoaWBX65bzSfxNmadXQiuhkoYX1OudGsn240jZpllmptKFNOvycv7khSuZMMjKWbCpqO1A+97uLH5IIC6A+8sR54FU1MR4q5zrhuT2LxKUXxYGK1cJwxlSCq0jXWBmO6uu1gyvtzmPRtdLev4+u6KA+dBWrvwBtOqgKB6TZLAripqvhq+4OMl+h35mZsPs2Wt9kallZlswy3emuleqEZXPTzKsAcb8+3FJaK8Wiprhozod+X8Bqblgjo3H0aBr0bTb9bxMZDE6QnOReSP1URpOkEfrKsXXEyZhi+QCJbRyerb0e"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_decrypt",
+        "language": "java",
+        "azure_url": "https://javarsa3072decryptbenchmarkappwebbeecserau.azurewebsites.net/api/java_rsa3072_decrypt",
+        "architecture": "x86",
+        "operationName": "java_rsa3072_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:50:31Z",
+            "2025-02-18T23:50:59Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_encrypt",
+        "language": "java",
+        "azure_url": "https://javarsa3072encryptbenchmarkappwebbeecserau.azurewebsites.net/api/java_rsa3072_encrypt",
+        "architecture": "x86",
+        "operationName": "java_rsa3072_encrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:51:23Z",
+            "2025-02-18T23:51:54Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "EHSTaoV1LGbBosp442LAlw==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "TqFyI/mveiaBlClYyGAIp3aBCE50NbVCGD3bhgD3uvPauSZZpzACeUeas/+CU1/nT3hKp+s30BDCzX83rRUjze6smUpQRqSyvqU21Lbk9fXtiFC/E6NutfUwfaopQAoGLkdBJNvc9ztHyUVQaYMaa9icDgoLlgIsyIRDlsXpELLIoTCdmbFmTRC31NhLcSkM+e3xU2rrcaT35dWPdTxBNcESPvbl//8Xi7c8xiF2Swq6wg82Tr50g77LQMQ+C9DsRus+keD9gs1/y/DzgQMOFi62e/VhpIqD4E0xBYiWhodlwEUXBMeFy/W4CVGpALKSsNSVlHCAtz+66UDA1bfIC6/b32/ZYgbaZfnsnXGrWWdadiweDeOXsXnFygFNjCijAXXtWZz57mr5Ft/G7wQXphrxQ1Wq+35AJNle8xJpUBLTG7pE4r0l0EgUdwlnvcYUBXRcPKacBbX7l1rMd2k8mzWPYDeVG2OYlU9O3SqFnKCeWW9ugR1XrBwqKWP4d9T9ZrGac/fEZ/dm4Rw87zrF5Wl8g4FRIfmfZqnwtAm/kyGdOVxofkdQ24r3DKUEV1+cClo7jTAzagVcrHXoODoQAtvmRSJDc4MTI9r3c1iEvShnXrdfqSDkSH13NVyIArVuPIAr5aji55hl59miFEe3xuKViKXo7VaSMrzpfTsupn4="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_decrypt",
+        "language": "java",
+        "azure_url": "https://javarsa4096decryptbenchmarkappwebbeecserau.azurewebsites.net/api/java_rsa4096_decrypt",
+        "architecture": "x86",
+        "operationName": "java_rsa4096_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:52:19Z",
+            "2025-02-18T23:53:07Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_encrypt",
+        "language": "java",
+        "azure_url": "https://javarsa4096encryptbenchmarkappwebbeecserau.azurewebsites.net/api/java_rsa4096_encrypt",
+        "architecture": "x86",
+        "operationName": "java_rsa4096_encrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:53:34Z",
+            "2025-02-18T23:54:12Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_sign",
+        "language": "python",
+        "azure_url": "https://pythonecc256signbenchmarkappwebbeecserau.azurewebsites.net/api/ecc256_sign",
+        "architecture": "x86",
+        "operationName": "python_ecc256_sign",
+        "benchmarktimes": [
+            "2025-02-18T23:54:31Z",
+            "2025-02-18T23:55:02Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b",
+            "signature": "WSxumTxna9IrNHwj4N85qKoroDqeofYCOYcmbenyw5LZerrgMgVNTpOvUvpiP3fC8FwWriFDa0+5HdUvFT8Gow=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_verify",
+        "language": "python",
+        "azure_url": "https://pythonecc256verifybenchmarkappwebbeecserau.azurewebsites.net/api/ecc256_verify",
+        "architecture": "x86",
+        "operationName": "python_ecc256_verify",
+        "benchmarktimes": [
+            "2025-02-18T23:55:21Z",
+            "2025-02-18T23:55:48Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_sign",
+        "language": "python",
+        "azure_url": "https://pythonecc384signbenchmarkappwebbeecserau.azurewebsites.net/api/ecc384_sign",
+        "architecture": "x86",
+        "operationName": "python_ecc384_sign",
+        "benchmarktimes": [
+            "2025-02-18T23:56:09Z",
+            "2025-02-18T23:56:44Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6",
+            "signature": "1kW/T7W6wJSKIry/cxOM4+E+00v4c+99ek4eO1Cc5zaZeeiXoc8Ce1AVJPM3XLmf7FOlirUHBZ8zD4o96m80hsnHBCrAQ7fUlobgnCKUS4WlBqKnO0SwPZKMyaAyMEEv"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_verify",
+        "language": "python",
+        "azure_url": "https://pythonecc384verifybenchmarkappwebbeecserau.azurewebsites.net/api/ecc384_verify",
+        "architecture": "x86",
+        "operationName": "python_ecc384_verify",
+        "benchmarktimes": [
+            "2025-02-18T23:57:02Z",
+            "2025-02-18T23:57:30Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "kGFSRYBClmN4XCECqRXsTQ==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "f6aXkc+sS1ylwXGcpVXL9eB3kYEvT/vf4o8FbWPTlGLiN21IZTT722+DlQDV6DjcSgXP3Rh9CrA3/XAgyF34t5791hVPMkxWGvrY+IbrIjWp6TThf3VnYTPT2+rRQBEIPYIhPb9Yq+e990yFSqVmtFzNOAJ9WnkSuyzm23Qus1TkFBbXjzbECd7tnxNipE0acW0+j874RR5z7nbESawUL+cY9tLE3m7V3PhA8u8Zyrc9CjcfYAeBRo+XhiPqcvy5ZbJ+L12fYO0d8di7BDnst1AkWBuEV3qQP0G6GWXIO6xHnsrImDgqoEjCnl0q1etPSbR1wx7/IEX1obTD+hdwzg=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_decrypt",
+        "language": "python",
+        "azure_url": "https://pythonrsa2048decryptbenchmarkappwebbeecserau.azurewebsites.net/api/rsa2048_decrypt",
+        "architecture": "x86",
+        "operationName": "python_rsa2048_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:57:49Z",
+            "2025-02-18T23:58:30Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_encrypt",
+        "language": "python",
+        "azure_url": "https://pythonrsa2048encryptbenchmarkappwebbeecserau.azurewebsites.net/api/rsa2048_encrypt",
+        "architecture": "x86",
+        "operationName": "python_rsa2048_encrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:58:51Z",
+            "2025-02-18T23:59:21Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "OdgSuPlCpFkEapD9dC6CxQ==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "khqA+ZhFfaHrzgnrF5o66QwD1oD0XyKLD6LQ0a6JwzQWUHPMejk+7H8DhcL6488fNezXfLEHRS70GHndUNha9Cz+1Rj4UKIGJJfkHzcqon8pZI6K4Jw8PTRSa9ToM6O1bYhRaIw48RavBJm5+uyNUHk4ix2w/zSEtaB7a92sLNjLCDWH10sLzPMP8llWmpxTsyrrqe9iznpRnLqFozoaWBX65bzSfxNmadXQiuhkoYX1OudGsn240jZpllmptKFNOvycv7khSuZMMjKWbCpqO1A+97uLH5IIC6A+8sR54FU1MR4q5zrhuT2LxKUXxYGK1cJwxlSCq0jXWBmO6uu1gyvtzmPRtdLev4+u6KA+dBWrvwBtOqgKB6TZLAripqvhq+4OMl+h35mZsPs2Wt9kallZlswy3emuleqEZXPTzKsAcb8+3FJaK8Wiprhozod+X8Bqblgjo3H0aBr0bTb9bxMZDE6QnOReSP1URpOkEfrKsXXEyZhi+QCJbRyerb0e"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_decrypt",
+        "language": "python",
+        "azure_url": "https://pythonrsa3072decryptbenchmarkappwebbeecserau.azurewebsites.net/api/rsa3072_decrypt",
+        "architecture": "x86",
+        "operationName": "python_rsa3072_decrypt",
+        "benchmarktimes": [
+            "2025-02-18T23:59:41Z",
+            "2025-02-19T00:00:13Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_encrypt",
+        "language": "python",
+        "azure_url": "https://pythonrsa3072encryptbenchmarkappwebbeecserau.azurewebsites.net/api/rsa3072_encrypt",
+        "architecture": "x86",
+        "operationName": "python_rsa3072_encrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:00:33Z",
+            "2025-02-19T00:01:02Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "EHSTaoV1LGbBosp442LAlw==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "TqFyI/mveiaBlClYyGAIp3aBCE50NbVCGD3bhgD3uvPauSZZpzACeUeas/+CU1/nT3hKp+s30BDCzX83rRUjze6smUpQRqSyvqU21Lbk9fXtiFC/E6NutfUwfaopQAoGLkdBJNvc9ztHyUVQaYMaa9icDgoLlgIsyIRDlsXpELLIoTCdmbFmTRC31NhLcSkM+e3xU2rrcaT35dWPdTxBNcESPvbl//8Xi7c8xiF2Swq6wg82Tr50g77LQMQ+C9DsRus+keD9gs1/y/DzgQMOFi62e/VhpIqD4E0xBYiWhodlwEUXBMeFy/W4CVGpALKSsNSVlHCAtz+66UDA1bfIC6/b32/ZYgbaZfnsnXGrWWdadiweDeOXsXnFygFNjCijAXXtWZz57mr5Ft/G7wQXphrxQ1Wq+35AJNle8xJpUBLTG7pE4r0l0EgUdwlnvcYUBXRcPKacBbX7l1rMd2k8mzWPYDeVG2OYlU9O3SqFnKCeWW9ugR1XrBwqKWP4d9T9ZrGac/fEZ/dm4Rw87zrF5Wl8g4FRIfmfZqnwtAm/kyGdOVxofkdQ24r3DKUEV1+cClo7jTAzagVcrHXoODoQAtvmRSJDc4MTI9r3c1iEvShnXrdfqSDkSH13NVyIArVuPIAr5aji55hl59miFEe3xuKViKXo7VaSMrzpfTsupn4="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_decrypt",
+        "language": "python",
+        "azure_url": "https://pythonrsa4096decryptbenchmarkappwebbeecserau.azurewebsites.net/api/rsa4096_decrypt",
+        "architecture": "x86",
+        "operationName": "python_rsa4096_decrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:01:22Z",
+            "2025-02-19T00:01:58Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_encrypt",
+        "language": "python",
+        "azure_url": "https://pythonrsa4096encryptbenchmarkappwebbeecserau.azurewebsites.net/api/rsa4096_encrypt",
+        "architecture": "x86",
+        "operationName": "python_rsa4096_encrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:02:16Z",
+            "2025-02-19T00:02:45Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_sign",
+        "language": "typescript",
+        "azure_url": "https://typescriptecc256signbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_ecc256_sign",
+        "architecture": "x86",
+        "operationName": "typescript_ecc256_sign",
+        "benchmarktimes": [
+            "2025-02-19T00:03:05Z",
+            "2025-02-19T00:03:36Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "210cbb13b3f0ed334f5dedd207c5c57ad3a6fe0ff9ca36828e3627363a4f044b",
+            "signature": "WSxumTxna9IrNHwj4N85qKoroDqeofYCOYcmbenyw5LZerrgMgVNTpOvUvpiP3fC8FwWriFDa0+5HdUvFT8Gow=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc256_verify",
+        "language": "typescript",
+        "azure_url": "https://typescriptecc256verifybenchmarkappwebbeecserau.azurewebsites.net/api/typescript_ecc256_verify",
+        "architecture": "x86",
+        "operationName": "typescript_ecc256_verify",
+        "benchmarktimes": [
+            "2025-02-19T00:03:58Z",
+            "2025-02-19T00:04:31Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_sign",
+        "language": "typescript",
+        "azure_url": "https://typescriptecc384signbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_ecc384_sign",
+        "architecture": "x86",
+        "operationName": "typescript_ecc384_sign",
+        "benchmarktimes": [
+            "2025-02-19T00:04:53Z",
+            "2025-02-19T00:05:22Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message_digest": "35924cd895ef69809b3be7d1d39ab3e06ca55a2ee43f43a2285c1f29a0a7aa033a50b618370aede340179ad863c7cff6",
+            "signature": "1kW/T7W6wJSKIry/cxOM4+E+00v4c+99ek4eO1Cc5zaZeeiXoc8Ce1AVJPM3XLmf7FOlirUHBZ8zD4o96m80hsnHBCrAQ7fUlobgnCKUS4WlBqKnO0SwPZKMyaAyMEEv"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "ecc384_verify",
+        "language": "typescript",
+        "azure_url": "https://typescriptecc384verifybenchmarkappwebbeecserau.azurewebsites.net/api/typescript_ecc384_verify",
+        "architecture": "x86",
+        "operationName": "typescript_ecc384_verify",
+        "benchmarktimes": [
+            "2025-02-19T00:05:42Z",
+            "2025-02-19T00:06:10Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "kGFSRYBClmN4XCECqRXsTQ==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "f6aXkc+sS1ylwXGcpVXL9eB3kYEvT/vf4o8FbWPTlGLiN21IZTT722+DlQDV6DjcSgXP3Rh9CrA3/XAgyF34t5791hVPMkxWGvrY+IbrIjWp6TThf3VnYTPT2+rRQBEIPYIhPb9Yq+e990yFSqVmtFzNOAJ9WnkSuyzm23Qus1TkFBbXjzbECd7tnxNipE0acW0+j874RR5z7nbESawUL+cY9tLE3m7V3PhA8u8Zyrc9CjcfYAeBRo+XhiPqcvy5ZbJ+L12fYO0d8di7BDnst1AkWBuEV3qQP0G6GWXIO6xHnsrImDgqoEjCnl0q1etPSbR1wx7/IEX1obTD+hdwzg=="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_decrypt",
+        "language": "typescript",
+        "azure_url": "https://typescriptrsa2048decryptbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_rsa2048_decrypt",
+        "architecture": "x86",
+        "operationName": "typescript_rsa2048_decrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:06:31Z",
+            "2025-02-19T00:07:03Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa2048_encrypt",
+        "language": "typescript",
+        "azure_url": "https://typescriptrsa2048encryptbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_rsa2048_encrypt",
+        "architecture": "x86",
+        "operationName": "typescript_rsa2048_encrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:07:23Z",
+            "2025-02-19T00:07:54Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "OdgSuPlCpFkEapD9dC6CxQ==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "khqA+ZhFfaHrzgnrF5o66QwD1oD0XyKLD6LQ0a6JwzQWUHPMejk+7H8DhcL6488fNezXfLEHRS70GHndUNha9Cz+1Rj4UKIGJJfkHzcqon8pZI6K4Jw8PTRSa9ToM6O1bYhRaIw48RavBJm5+uyNUHk4ix2w/zSEtaB7a92sLNjLCDWH10sLzPMP8llWmpxTsyrrqe9iznpRnLqFozoaWBX65bzSfxNmadXQiuhkoYX1OudGsn240jZpllmptKFNOvycv7khSuZMMjKWbCpqO1A+97uLH5IIC6A+8sR54FU1MR4q5zrhuT2LxKUXxYGK1cJwxlSCq0jXWBmO6uu1gyvtzmPRtdLev4+u6KA+dBWrvwBtOqgKB6TZLAripqvhq+4OMl+h35mZsPs2Wt9kallZlswy3emuleqEZXPTzKsAcb8+3FJaK8Wiprhozod+X8Bqblgjo3H0aBr0bTb9bxMZDE6QnOReSP1URpOkEfrKsXXEyZhi+QCJbRyerb0e"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_decrypt",
+        "language": "typescript",
+        "azure_url": "https://typescriptrsa3072decryptbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_rsa3072_decrypt",
+        "architecture": "x86",
+        "operationName": "typescript_rsa3072_decrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:08:13Z",
+            "2025-02-19T00:08:46Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa3072_encrypt",
+        "language": "typescript",
+        "azure_url": "https://typescriptrsa3072encryptbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_rsa3072_encrypt",
+        "architecture": "x86",
+        "operationName": "typescript_rsa3072_encrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:09:06Z",
+            "2025-02-19T00:09:34Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "iv": "EHSTaoV1LGbBosp442LAlw==",
+            "ciphertext": "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",
+            "encrypted_aes_key": "TqFyI/mveiaBlClYyGAIp3aBCE50NbVCGD3bhgD3uvPauSZZpzACeUeas/+CU1/nT3hKp+s30BDCzX83rRUjze6smUpQRqSyvqU21Lbk9fXtiFC/E6NutfUwfaopQAoGLkdBJNvc9ztHyUVQaYMaa9icDgoLlgIsyIRDlsXpELLIoTCdmbFmTRC31NhLcSkM+e3xU2rrcaT35dWPdTxBNcESPvbl//8Xi7c8xiF2Swq6wg82Tr50g77LQMQ+C9DsRus+keD9gs1/y/DzgQMOFi62e/VhpIqD4E0xBYiWhodlwEUXBMeFy/W4CVGpALKSsNSVlHCAtz+66UDA1bfIC6/b32/ZYgbaZfnsnXGrWWdadiweDeOXsXnFygFNjCijAXXtWZz57mr5Ft/G7wQXphrxQ1Wq+35AJNle8xJpUBLTG7pE4r0l0EgUdwlnvcYUBXRcPKacBbX7l1rMd2k8mzWPYDeVG2OYlU9O3SqFnKCeWW9ugR1XrBwqKWP4d9T9ZrGac/fEZ/dm4Rw87zrF5Wl8g4FRIfmfZqnwtAm/kyGdOVxofkdQ24r3DKUEV1+cClo7jTAzagVcrHXoODoQAtvmRSJDc4MTI9r3c1iEvShnXrdfqSDkSH13NVyIArVuPIAr5aji55hl59miFEe3xuKViKXo7VaSMrzpfTsupn4="
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_decrypt",
+        "language": "typescript",
+        "azure_url": "https://typescriptrsa4096decryptbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_rsa4096_decrypt",
+        "architecture": "x86",
+        "operationName": "typescript_rsa4096_decrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:09:57Z",
+            "2025-02-19T00:10:28Z"
+        ]
+    },
+    {
+        "operation_input": {
+            "message": "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"
+        },
+        "validation": {},
+        "start_type": "warm",
+        "iterations": 30,
+        "operation": "rsa4096_encrypt",
+        "language": "typescript",
+        "azure_url": "https://typescriptrsa4096encryptbenchmarkappwebbeecserau.azurewebsites.net/api/typescript_rsa4096_encrypt",
+        "architecture": "x86",
+        "operationName": "typescript_rsa4096_encrypt",
+        "benchmarktimes": [
+            "2025-02-19T00:10:55Z",
+            "2025-02-19T00:11:23Z"
+        ]
+    }
+]
