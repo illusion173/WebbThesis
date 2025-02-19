@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "dotnet_rsa3072_decrypt": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7125",
+      "launchBrowser": false
+    }
+  }
+}

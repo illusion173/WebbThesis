@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "dotnet_rsa4096_encrypt": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7219",
+      "launchBrowser": false
+    }
+  }
+}

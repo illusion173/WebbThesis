@@ -47,6 +47,17 @@ def combine_csv(files, output_file):
 
 
 
+def azure_clean_cols(file_name):
+
+    cleaned_df = pd.DataFrame()
+
+    df = pd.read_csv(file_name)
+    cleaned_df = pd.concat([cleaned_df, df], ignore_index=True)
+
+    cleaned_df["instance_type"] = df["instance_type"].str.replace("standard_", "", regex=True)
+
+    cleaned_df.to_csv("clean-azure-vm.csv", index=False)
+
 
 # Main script
 if __name__ == "__main__":

@@ -3,16 +3,13 @@ import {
   linuxFXVersion
   runtimeMap
   keyvaultname
+  azure_key_vault_url
 } from 'iac-inputs.bicep'
 
-// param in cli call
 param location string = resourceGroup().location
-param tenantId string = subscription().tenantId
-@description('Name of the Staging Slot')
-param functionAppStagingSlot string = 'staging'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: 'storageBenchWebbeecserau'
+  name: 'storagebenchwebbeecserau'
   location: location
   kind: 'StorageV2'
   sku: {
@@ -20,10 +17,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-var azStorageAccountPrimaryAccessKey = listkeys(storageAccount.id, storageAccount.apiVersion).keys[0].value
+// Assuming you have your storage account resource
+var azStorageAccountPrimaryAccessKey = listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
-  name: 'consumption-benchmark-plan-webb-eecserau'
+  name: 'consumptionplan-webbeecserau'
   location: location
   sku: {
     name: 'Y1' // This is the Consumption Plan SKU
@@ -36,38 +34,46 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
 }
 
 resource appInsight 'Microsoft.Insights/components@2020-02-02' = {
-  name: 'benchmarkAppInsight-webb-eecserau'
+  name: 'benchmarkAppInsight-webbeecserau'
   location: location
   kind: 'web'
   properties: {
-    Application_Type: 'FunctionApp'
-    publicNetworkAccessForQuery: 'Enabled'
+    Application_Type: 'web'
     publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
   }
 }
+
+var azAppInsightsInstrumentationKey = appInsight.properties.InstrumentationKey
 
 // Reference the existing Key Vault, forces user to create the keys themselves, intentional
 resource keyVault 'Microsoft.KeyVault/vaults@2024-04-01-preview' existing = {
   name: keyvaultname // Replace with your existing Key Vault name
 }
 
-var InstrumentationKeyFromAppInsight = appInsight.properties.InstrumentationKey
-
+@batchSize(5)
 resource functionApps 'Microsoft.Web/sites@2022-09-01' = [
   for i in range(0, length(functionCombos)): {
-    name: '${functionCombos[i].full}-benchmark-app-webb-eecserau'
+    name: '${functionCombos[i].language}${functionCombos[i].operation}benchmarkappwebbeecserau'
     location: location
-    kind: 'functionapp,linux'
+    kind: 'functionapp'
     identity: {
       type: 'SystemAssigned'
     }
     properties: {
       serverFarmId: appServicePlan.id
+      httpsOnly: true
       siteConfig: {
+        //comment the linuxFXVersion for go deployment. 
+        linuxFxVersion: linuxFXVersion[functionCombos[i].language]
         appSettings: [
           {
             name: 'AzureWebJobsStorage'
-            value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name}'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${azStorageAccountPrimaryAccessKey}'
+          }
+          {
+            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+            value: 'InstrumentationKey=${azAppInsightsInstrumentationKey}'
           }
           {
             name: 'FUNCTIONS_WORKER_RUNTIME'
@@ -78,96 +84,66 @@ resource functionApps 'Microsoft.Web/sites@2022-09-01' = [
             value: '~4'
           }
           {
-            name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-            value: InstrumentationKeyFromAppInsight
+            name: 'WEBSITE_RUN_FROM_PACKAGE'
+            value: functionCombos[i].blob_url
           }
           {
-            name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-            value: 'InstrumentationKey=${InstrumentationKeyFromAppInsight}'
+            name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+            value: 'true'
           }
           {
-            name: 'WEBSITE_CONTAINERSHARE'
-            value: toLower(storageAccount.name)
+            name: 'WEBSITES_PORT'
+            value: '8080'
+          }
+          {
+            name: 'WEBSITE_CONTENTSHARE'
+            value: '${functionCombos[i].language}${functionCombos[i].operation}benchmarkappwebbeecserau'
           }
           {
             name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-            value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${azStorageAccountPrimaryAccessKey};FileEndpoint=<your-storage-account-file-endpoint>'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${azStorageAccountPrimaryAccessKey}'
           }
+          {
+            name: 'AZURE_KEY_VAULT_URL'
+            value: azure_key_vault_url
+          }
+          { name: 'ECC256_KEY_NAME', value: 'ecc256benchmark' }
+          { name: 'ECC384_KEY_NAME', value: 'ecc384benchmark-2' }
+          { name: 'RSA2048_KEY_NAME', value: 'rsa2048benchmark' }
+          { name: 'RSA3072_KEY_NAME', value: 'rsa3072benchmark' }
+          { name: 'RSA4096_KEY_NAME', value: 'rsa4096benchmark' }
         ]
-        linuxFxVersion: linuxFXVersion[functionCombos[i].language] // Specifies a runtime
-        alwaysOn: true
       }
-      httpsOnly: true
     }
   }
 ]
 
+@batchSize(5)
 // Assign RBAC roles (Key Vault Secrets User and Key Vault Crypto Officer) to the Function App's Managed Identity
 resource keyVaultSecretsUserRoleAssignments 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [
   for i in range(0, length(functionCombos)): {
-    name: guid(functionApps[i].id, 'KeyVaultSecretsUser')
+    name: guid(functionApps[i].id, 'KeyVaultSecretsOfficer')
     properties: {
-      principalId: functionApps[i].identity.principalId // Managed identity of the Function App
-      roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', 'c1f2e3d4-5678-90ab-cdef-1234567890ab') // Key Vault Secrets User role
+      principalId: functionApps[i].identity.principalId
+      roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7')
       principalType: 'ServicePrincipal'
     }
     scope: keyVault
+    dependsOn: [functionApps]
   }
 ]
 
+@batchSize(5)
 // Assign RBAC role for Key Vault Crypto Officer (for encryption and decryption)
 resource keyVaultCryptoOfficerRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = [
   for i in range(0, length(functionCombos)): {
     name: guid(functionApps[i].id, 'KeyVaultCryptoOfficer')
     properties: {
-      principalId: functionApps[i].identity.principalId // Managed identity of the Function App
-      roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', 'a34f6265-4502-4602-a561-d72d34cb3fe9') // Key Vault Crypto Officer role
+      principalId: functionApps[i].identity.principalId
+      roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', '14b46e9e-c2b7-41b4-b07b-48a6ebf60603')
+      principalType: 'ServicePrincipal'
     }
     scope: keyVault
-  }
-]
-
-/* may not need this 
-// Ensure each function app has access to key vault
-// Grant Key Vault access to the Function App's managed identity
-resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2024-04-01-preview' = [
-  for i in range(0, length(functionCombos)): {
-    name: '${keyVault.name}-Policy-${functionCombos[i].full}'
-    properties: {
-      accessPolicies: [
-        {
-          tenantId: tenantId
-          objectId: functionApps[i].identity.principalId // Managed identity of the Function App
-          permissions: {
-            secrets: [
-              'get' // Permission to get secrets
-              'list'
-            ]
-            keys: [
-              'get' // Permission to get keys (if needed)
-              'encrypt' // Permission to encrypt keys
-              'decrypt' // Permission to decrypt keys
-              'wrapKey' // Permission to wrap keys
-              'unwrapKey' // Permission to unwrap keys
-            ]
-          }
-        }
-      ]
-    }
-  }
-]
-*/
-// Establish different slots prod and staging for deployment on Azure
-resource azFunctionSlotStagings 'Microsoft.Web/sites/slots@2024-04-01' = [
-  for i in range(0, length(functionCombos)): {
-    name: '${functionApps[i].name}/${functionAppStagingSlot}'
-    location: location
-    identity: {
-      type: 'SystemAssigned'
-    }
-    properties: {
-      enabled: true
-      httpsOnly: true
-    }
+    dependsOn: [functionApps]
   }
 ]

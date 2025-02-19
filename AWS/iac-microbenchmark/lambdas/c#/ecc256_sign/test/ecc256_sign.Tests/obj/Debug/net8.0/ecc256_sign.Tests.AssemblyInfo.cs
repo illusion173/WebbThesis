@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ecc256_sign.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53886fd7a668adf2e94024ab5915721ee111ed9a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4440a3498e4c7701e02a2b72bde51f222b6756b9")]
 [assembly: System.Reflection.AssemblyProductAttribute("ecc256_sign.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ecc256_sign.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "dotnet_ecc256_verify": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7031",
+      "launchBrowser": false
+    }
+  }
+}

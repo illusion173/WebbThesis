@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "dotnet_rsa2048_decrypt": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7048",
+      "launchBrowser": false
+    }
+  }
+}
