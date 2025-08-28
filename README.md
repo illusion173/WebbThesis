@@ -6,8 +6,8 @@ A Multi-Language Study on FaaS and IaaS Platforms by Jeremiah Webb @ Embry-Riddl
 # Chosen benchmark configurations
 ## Languages Tested
 - Python3.11
-- Rust 1.83.0
-- Go 1.23.0
+- Rust 1.86.0
+- Go 1.24.6
 - TypeScript 5.7.2 (Node 23.4.0)
 - C# (Dotnet v8)
 - Java 21
